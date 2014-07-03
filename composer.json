@@ -1,0 +1,21 @@
+{
+    "name": "larix/larix-core",
+    "type": "library",
+    "description": "larix framework",
+    "keywords": ["framework"],
+    "authors": [
+        {
+            "name": "Vasily Kartashov",
+            "email": "vasily@kartashov.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "twig/twig": ">=1.12"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    }
+}
