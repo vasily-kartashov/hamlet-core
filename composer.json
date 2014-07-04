@@ -1,7 +1,7 @@
 {
     "name": "hamlet/hamlet-core",
     "type": "library",
-    "description": "larix framework",
+    "description": "hamlet framework",
     "keywords": ["framework"],
     "authors": [
         {
