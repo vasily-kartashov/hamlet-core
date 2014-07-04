@@ -15,7 +15,7 @@
         "simpletest/simpletest": ">=1.1.6",
         "symfony/console": ">=2.5.0",
         "phpoffice/phpexcel": ">=1.8.0",
-        "google/apiclient": ">=1.0.4-beta"
+        "google/apiclient": "1.0.*@dev"
     },
     "autoload": {
         "classmap": [
