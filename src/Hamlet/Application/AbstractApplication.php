@@ -2,6 +2,9 @@
 
 namespace Hamlet\Application;
 
+use Hamlet\Request\RequestInterface;
+use Hamlet\Response\ResponseInterface;
+
 abstract class AbstractApplication
 {
     /** @var \Memcached */

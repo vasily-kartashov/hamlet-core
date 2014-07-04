@@ -2,10 +2,10 @@
 
 namespace Hamlet\Resource;
 
-use Phoundation\Entity\EntityInterface;
-use Phoundation\Request\RequestInterface;
-use Phoundation\Response\MethodNotAllowedResponse;
-use Phoundation\Response\OKORNotModifiedResponse;
+use Hamlet\Entity\EntityInterface;
+use Hamlet\Request\RequestInterface;
+use Hamlet\Response\MethodNotAllowedResponse;
+use Hamlet\Response\OKORNotModifiedResponse;
 
 class EntityResource implements ResourceInterface
 {
