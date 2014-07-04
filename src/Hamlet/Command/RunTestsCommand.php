@@ -2,8 +2,8 @@
 
 namespace Hamlet\Command;
 
-use Hamlet\TestRunner\OutputReporterFacade;
-use Hamlet\TestRunner\SimpleTestRunner;
+use Hamlet\TestRunner\SimpleTest\OutputReporterFacade;
+use Hamlet\TestRunner\SimpleTest\SimpleTestRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

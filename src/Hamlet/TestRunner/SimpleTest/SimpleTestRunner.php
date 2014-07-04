@@ -1,8 +1,9 @@
 <?php
 
-namespace Hamlet\TestRunner;
+namespace Hamlet\TestRunner\SimpleTest;
 
 use Exception;
+use Hamlet\TestRunner\TestRunnerInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RecursiveRegexIterator;

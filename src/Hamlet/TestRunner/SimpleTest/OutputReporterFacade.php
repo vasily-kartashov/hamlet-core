@@ -1,6 +1,6 @@
 <?php
 
-namespace Hamlet\TestRunner;
+namespace Hamlet\TestRunner\SimpleTest;
 
 use SimpleReporter;
 use Symfony\Component\Console\Output\OutputInterface;
