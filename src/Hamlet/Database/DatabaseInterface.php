@@ -1,6 +1,6 @@
 <?php
 
-namesapce Hamlet\Database;
+namespace Hamlet\Database;
 
 interface DatabaseInterface
 {
