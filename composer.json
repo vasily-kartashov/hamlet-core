@@ -14,8 +14,8 @@
         "twig/twig": ">=1.12"
     },
     "autoload": {
-        "classmap": [
-            "src/"
-        ]
+        "psr-4": {
+            "Hamlet\\": "src/"    
+        }
     }
 }
