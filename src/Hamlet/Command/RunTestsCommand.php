@@ -11,6 +11,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RunTestsCommand extends Command
 {
+    protected $rootDirectoryPath;
+
+    public function __construct($rootDirectoryPath)
+    {
+        parent::__construct();
+        $this->rootDirectoryPath = $rootDirectoryPath;
+    }
+
     protected function configure()
     {
         $this
@@ -21,14 +29,13 @@ class RunTestsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $rootDirectoryPath = realpath(__DIR__ . '/../../../test');
         $runner = new SimpleTestRunner(new OutputReporterFacade($output));
         $className = $input->getArgument('class');
         if ($className != null && !class_exists($className)) {
             $output->writeln('Cannot load class ' . $className);
             return 1;
         } else {
-            return $runner->execute($rootDirectoryPath, $className);
+            return $runner->execute($this->rootDirectoryPath, $className) ? 0 : 1;
         }
     }
 }
