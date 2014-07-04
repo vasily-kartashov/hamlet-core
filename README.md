@@ -1,2 +1,2 @@
-larix-core
-==========
+Hamlet Core
+================
