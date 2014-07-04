@@ -18,11 +18,12 @@ class OutputReporterFacade extends SimpleReporter
     }
 
     function paintHeader($test_name) {
+        $this->output->writeln(OutputReporterFacade::$DOUBLE_BAR);
         $this->output->writeln('- ' . $test_name);
     }
 
     function paintFooter($test_name) {
-        $this->output->writeln(OutputReporterFacade::$DOUBLE_BAR);
+        $this->output->writeln(OutputReporterFacade::$BAR);
         if ($this->getFailCount() + $this->getExceptionCount() == 0) {
             $this->output->writeln("[OK]");
         } else {
