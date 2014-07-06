@@ -6,7 +6,7 @@ use Hamlet\Cache\CacheInterface;
 use Hamlet\Entity\EntityInterface;
 use Hamlet\Request\RequestInterface;
 
-class OKORNotModifiedResponse extends AbstractResponse
+class OKOrNotModifiedResponse extends AbstractResponse
 {
     /**
      * @param \Hamlet\Entity\EntityInterface $entity
