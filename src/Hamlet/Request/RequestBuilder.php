@@ -42,6 +42,22 @@ class RequestBuilder
     }
 
     /**
+     * Add parameter to request
+     *
+     * @param string $name
+     * @param string $value
+     *
+     * @return \Hamlet\Request\RequestBuilder
+     */
+    public function setParameter($name, $value)
+    {
+        assert(is_string($name));
+        assert(is_string($value));
+        $this->parameters[(string) $name] = (string) $value;
+        return $this;
+    }
+
+    /**
      * Add parameters to request
      *
      * @param string[] $parameters
