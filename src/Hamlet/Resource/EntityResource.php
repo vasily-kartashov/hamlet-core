@@ -5,7 +5,7 @@ namespace Hamlet\Resource;
 use Hamlet\Entity\EntityInterface;
 use Hamlet\Request\RequestInterface;
 use Hamlet\Response\MethodNotAllowedResponse;
-use Hamlet\Response\OKORNotModifiedResponse;
+use Hamlet\Response\OKOrNotModifiedResponse;
 
 class EntityResource implements ResourceInterface
 {
