@@ -3,6 +3,8 @@
 namespace Hamlet\Command;
 
 use Google_Client;
+use Hamlet\GoogleDrive\GoogleDriveClientFactory;
+use Hamlet\GoogleDrive\GoogleDriveService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,16 +23,8 @@ class GoogleDriveAuthenticateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = new Google_Client();
-
-        global $apiConfig;
-        $apiConfig['use_objects'] = true;
-
-        $client->setClientId($input->getArgument('client-id'));
-        $client->setClientSecret($input->getArgument('client-secret'));
-        $client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
-        $client->setScopes(array('https://www.googleapis.com/auth/drive'));
-        $client->setAccessType('offline');
+        $factory = new GoogleDriveClientFactory();
+        $client = $factory->getClient($input->getArgument('client-id'), $input->getArgument('client-secret'));
 
         $url = $client->createAuthUrl();
         print('Visit the following URL' . PHP_EOL);
