@@ -12,6 +12,7 @@
     "require": {
         "php": ">=5.4.0",
         "twig/twig": "dev-master",
+        "smarty/smarty": "dev-trunk",
         "simpletest/simpletest": "dev-master",
         "symfony/console": "dev-master",
         "phpoffice/phpexcel": "dev-master",

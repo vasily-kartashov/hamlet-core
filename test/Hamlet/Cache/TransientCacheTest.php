@@ -24,10 +24,11 @@ class TransientCacheTest extends UnitTestCase
         $this->assertTrue($found);
 
         $cache->set('key3', 'value3', 2);
+        sleep(1);
         list($value, $found) = $cache->get('key3');
         $this->assertEqual($value, 'value3');
         $this->assertTrue($found);
-        sleep(3);
+        sleep(2);
         list($value, $found) = $cache->get('key3');
         $this->assertNull($value);
         $this->assertFalse($found);
