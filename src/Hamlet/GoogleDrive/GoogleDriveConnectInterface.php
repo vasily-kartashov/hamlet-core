@@ -5,6 +5,13 @@ namespace Hamlet\GoogleDrive;
 interface GoogleDriveConnectInterface
 {
     /**
+     * Get access token
+     *
+     * @return string
+     */
+    public function getAccessToken();
+
+    /**
      * Get the ids of image folders
      *
      * @return string[]

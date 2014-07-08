@@ -11,6 +11,7 @@ class GoogleDriveImportCommand extends Command
 
     public function __construct(GoogleDriveConnectInterface $googleDriveConnect)
     {
+        parent::__construct();
         $this->googleDriveConnect = $googleDriveConnect;
     }
 }
