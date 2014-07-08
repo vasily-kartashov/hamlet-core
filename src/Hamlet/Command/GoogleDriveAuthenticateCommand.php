@@ -2,9 +2,7 @@
 
 namespace Hamlet\Command;
 
-use Google_Client;
 use Hamlet\GoogleDrive\GoogleDriveClientFactory;
-use Hamlet\GoogleDrive\GoogleDriveService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
