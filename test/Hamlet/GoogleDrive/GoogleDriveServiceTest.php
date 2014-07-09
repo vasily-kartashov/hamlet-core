@@ -11,7 +11,7 @@ class GoogleDriveServiceTest extends UnitTestCase
 
     public function __construct()
     {
-        $path = realpath(__DIR__ . '/../../../.credentials/google.json');
+        $path = realpath('~/.hamlet/google.json');
         $credentials = json_decode(file_get_contents($path));
 
         $factory = new GoogleDriveClientFactory();
