@@ -11,15 +11,8 @@ class GoogleDriveServiceTest extends UnitTestCase
 
     public function __construct()
     {
-        $path = realpath(GoogleDriveClientFactory::getProfilesFilePath());
-        $credentials = json_decode(file_get_contents($path));
-
         $factory = new GoogleDriveClientFactory();
-        $clientId = $credentials->hamletCore->clientId;
-        $clientSecret = $credentials->hamletCore->clientSecret;
-        $accessToken = $credentials->hamletCore->accessToken;
-
-        $this->client = $factory->getClient($clientId, $clientSecret, $accessToken);
+        $this->client = $factory->getClientForProfile('hamletCore');
     }
 
     public function testGoogleDriveFileListing()
