@@ -7,6 +7,7 @@ use Google_Client;
 use Google_Http_Request;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
+use PHPExcel_Reader_Excel2007;
 
 class GoogleDriveService
 {
@@ -97,7 +98,7 @@ class GoogleDriveService
         $downloadUrl = $exportLinks['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
         $tempFile = $this->downloadToTempFile($file, $downloadUrl);
 
-        $reader = new \PHPExcel_Reader_Excel2007();
+        $reader = new PHPExcel_Reader_Excel2007();
         $excel = $reader->load($tempFile);
 
         $result = array();
