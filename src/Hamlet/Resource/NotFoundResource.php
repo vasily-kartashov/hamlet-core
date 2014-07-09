@@ -14,7 +14,7 @@ class NotFoundResource implements ResourceInterface
     /**
      * @param \Hamlet\Entity\EntityInterface $entity
      */
-    public function __construct(EntityInterface $entity)
+    public function __construct(EntityInterface $entity = null)
     {
         $this->entity = $entity;
     }
