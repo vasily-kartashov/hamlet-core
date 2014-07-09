@@ -11,7 +11,7 @@ class GoogleDriveClientFactory
      *
      * @param string $clientId
      * @param string $clientSecret
-     * @param string|null $accessToken
+     * @param mixed $accessToken
      *
      * @return \Google_Client
      */
@@ -29,7 +29,7 @@ class GoogleDriveClientFactory
         $client->setAccessType('offline');
 
         if ($accessToken != null) {
-            $client->setAccessToken($accessToken);
+            $client->setAccessToken(json_encode($accessToken));
         }
 
         return $client;

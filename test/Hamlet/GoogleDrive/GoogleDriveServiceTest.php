@@ -7,35 +7,32 @@ use UnitTestCase;
 class GoogleDriveServiceTest extends UnitTestCase
 {
     private $client;
-    private $settings;
+    private $testFolderId = '0B_2kJEFibcfiNUI4TVFXSXA4OTg';
 
     public function __construct()
     {
-        $credentialsDirectoryPath = realpath(__DIR__ . '/../../../.credentials');
-
-        $this->settings = parse_ini_file($credentialsDirectoryPath . '/settings');
-        $token = file_get_contents($credentialsDirectoryPath . '/token.json');
+        $path = realpath(__DIR__ . '/../../../.credentials/google.json');
+        $credentials = json_decode(file_get_contents($path));
 
         $factory = new GoogleDriveClientFactory();
-        $clientId = $this->settings['google.client-id'];
-        $clientSecret = $this->settings['google.client-secret'];
+        $clientId = $credentials->hamletCore->clientId;
+        $clientSecret = $credentials->hamletCore->clientSecret;
+        $accessToken = $credentials->hamletCore->accessToken;
 
-        $this->client = $factory->getClient($clientId, $clientSecret, $token);
+        $this->client = $factory->getClient($clientId, $clientSecret, $accessToken);
     }
 
     public function testGoogleDriveFileListing()
     {
         $service = new GoogleDriveService($this->client);
-        $testFolderId = $this->settings['google.test-folder'];
-        $files = $service->getFiles($testFolderId);
+        $files = $service->getFiles($this->testFolderId);
         $this->assertTrue(count($files) > 0);
     }
 
     public function testReadingBinaryContent()
     {
         $service = new GoogleDriveService($this->client);
-        $testFolderId = $this->settings['google.test-folder'];
-        $files = $service->getFiles($testFolderId);
+        $files = $service->getFiles($this->testFolderId);
         foreach ($files as $file) {
             if ($file->getTitle() == 'image.jpg') {
                 $content = $service->readBinaryContent($file);
@@ -47,8 +44,7 @@ class GoogleDriveServiceTest extends UnitTestCase
     public function testReadingSpreadsheetContent()
     {
         $service = new GoogleDriveService($this->client);
-        $testFolderId = $this->settings['google.test-folder'];
-        $files = $service->getFiles($testFolderId);
+        $files = $service->getFiles($this->testFolderId);
         foreach ($files as $file) {
             if ($file->getTitle() == 'spreadsheet') {
                 $content = $service->readSpreadsheetContent($file);
