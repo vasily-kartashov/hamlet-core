@@ -7,5 +7,6 @@ $application = new \Symfony\Component\Console\Application();
 
 $application->add(new \Hamlet\Command\RunTestsCommand(realpath(__DIR__ . '/test')));
 $application->add(new \Hamlet\Command\AddGoogleProfileCommand());
+$application->add(new \Hamlet\Command\ListGoogleProfilesCommand());
 
 $application->run();

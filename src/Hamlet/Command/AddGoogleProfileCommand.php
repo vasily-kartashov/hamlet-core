@@ -35,17 +35,17 @@ class AddGoogleProfileCommand extends Command
         }
 
         $factory = new GoogleDriveClientFactory();
-        print('Enter Google client ID: ');
+        $output->writeln('Enter Google client ID: ');
         $clientId = trim(fgets(STDIN));
-        print('Enter Google client secret: ');
+        $output->writeln('Enter Google client secret: ');
         $clientSecret = trim(fgets(STDIN));
 
         $client = $factory->getClient($clientId, $clientSecret);
 
         $url = $client->createAuthUrl();
-        print('Visit the following URL and copy the code' . PHP_EOL);
-        print($url . PHP_EOL);
-        print('Please enter the code: ');
+        $output->writeln('Visit the following URL and copy the code' . PHP_EOL);
+        $output->writeln($url . PHP_EOL);
+        $output->writeln('Please enter the code: ');
         $authCode = trim(fgets(STDIN));
 
         $profile = $input->getArgument('profile');
@@ -55,6 +55,6 @@ class AddGoogleProfileCommand extends Command
             'accessToken' => json_decode($client->authenticate($authCode)),
         ];
         file_put_contents($targetPath, json_encode($settings, JSON_PRETTY_PRINT));
-        print("Profile {$profile} added");
+        $output->writeln("Profile {$profile} added");
     }
 }
