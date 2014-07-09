@@ -7,7 +7,21 @@ use Google_Client;
 
 class GoogleDriveClientFactory
 {
-    const PROFILES_PATH = '~/.hamlet/google-profiles.json';
+    public static function getProfilesFilePath()
+    {
+        if (isset($_SERVER['HOME'])) {
+            $homePath = $_SERVER['HOME'];
+        } else {
+            $homePath = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+        }
+        if (substr($homePath, -1) == DIRECTORY_SEPARATOR) {
+            $separator = '';
+        } else {
+            $separator = DIRECTORY_SEPARATOR;
+        }
+        $suffix = ['.hamlet', 'google-profiles.json'];
+        return $homePath . $separator . join(DIRECTORY_SEPARATOR, $suffix);
+    }
 
     /**
      * Get client by client id and client secret
@@ -49,7 +63,7 @@ class GoogleDriveClientFactory
      */
     public function getClientForProfile($profileName)
     {
-        $path = GoogleDriveClientFactory::PROFILES_PATH;
+        $path = GoogleDriveClientFactory::getProfilesFilePath();
         $fullPath = realpath($path);
         if (!$fullPath) {
             throw new Exception("The configuration file '{$path}' is missing");

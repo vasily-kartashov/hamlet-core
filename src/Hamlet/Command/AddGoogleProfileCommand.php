@@ -4,6 +4,7 @@ namespace Hamlet\Command;
 
 use Exception;
 use Hamlet\GoogleDrive\GoogleDriveClientFactory;
+use stdClass;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,18 +23,15 @@ class AddGoogleProfileCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $targetPath = GoogleDriveClientFactory::PROFILES_PATH;
-        print_r(realpath('~'));
-        die();
-
-        $targetDirectoryPath = dirname(realpath($targetPath));
+        $targetPath = GoogleDriveClientFactory::getProfilesFilePath();
+        $targetDirectoryPath = dirname($targetPath);
         if (!file_exists($targetDirectoryPath)) {
             throw new Exception("Path does not exist '{$targetDirectoryPath}'");
         }
         if (file_exists($targetPath)) {
             $settings = json_decode(file_get_contents($targetPath));
         } else {
-            $settings = [];
+            $settings = new StdClass();
         }
 
         $factory = new GoogleDriveClientFactory();
@@ -45,7 +43,7 @@ class AddGoogleProfileCommand extends Command
         $client = $factory->getClient($clientId, $clientSecret);
 
         $url = $client->createAuthUrl();
-        print('Visit the following URL and enter the code' . PHP_EOL);
+        print('Visit the following URL and copy the code' . PHP_EOL);
         print($url . PHP_EOL);
         print('Please enter the code: ');
         $authCode = trim(fgets(STDIN));
@@ -56,6 +54,7 @@ class AddGoogleProfileCommand extends Command
             'clientSecret' => $clientSecret,
             'accessToken' => json_decode($client->authenticate($authCode)),
         ];
-        file_put_contents($targetPath, json_encode($settings));
+        file_put_contents($targetPath, json_encode($settings, JSON_PRETTY_PRINT));
+        print("Profile {$profile} added");
     }
 }
