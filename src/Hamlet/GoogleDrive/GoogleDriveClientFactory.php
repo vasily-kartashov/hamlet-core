@@ -2,10 +2,13 @@
 
 namespace Hamlet\GoogleDrive;
 
+use Exception;
 use Google_Client;
 
 class GoogleDriveClientFactory
 {
+    const PROFILES_PATH = '~/.hamlet/google-profiles.json';
+
     /**
      * Get client by client id and client secret
      *
@@ -33,5 +36,33 @@ class GoogleDriveClientFactory
         }
 
         return $client;
+    }
+
+    /**
+     * Get client for specified profile
+     *
+     * @param string $profileName
+     *
+     * @throws \Exception
+     *
+     * @return \Google_Client
+     */
+    public function getClientForProfile($profileName)
+    {
+        $path = GoogleDriveClientFactory::PROFILES_PATH;
+        $fullPath = realpath($path);
+        if (!$fullPath) {
+            throw new Exception("The configuration file '{$path}' is missing");
+        }
+        $settings = json_decode(file_get_contents($fullPath));
+        if (!isset($settings->{$profileName})) {
+            throw new Exception("Cannot find profile '{$profileName}'");
+        }
+        $section = $settings->{$profileName};
+        $clientId = $section->clientId;
+        $clientSecret = $section->clientSecret;
+        $accessToken = $section->accessToken;
+
+        return $this->getClient($clientId, $clientSecret, $accessToken);
     }
 }
