@@ -10,37 +10,25 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GoogleDriveAuthenticateCommand extends Command
+class AddGoogleProfileCommand extends Command
 {
-    private $currentDirectoryPath;
-
-    public function __construct($currentDirectoryPath)
-    {
-        parent::__construct();
-        assert(is_string($currentDirectoryPath) && is_dir($currentDirectoryPath));
-        $this->currentDirectoryPath = $currentDirectoryPath;
-    }
-
     protected function configure()
     {
         $this
-            ->setName('google-auth')
-            ->setDescription('Authenticate application for Google drive')
-            ->addArgument('profile', InputArgument::REQUIRED, 'Profile name')
-            ->addOption('target', null, InputOption::VALUE_REQUIRED, 'Target path');
+            ->setName('add-google-profile')
+            ->setDescription('Add new Google application profile')
+            ->addArgument('profile', InputArgument::REQUIRED, 'Profile name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $targetPath = $input->getOption('target');
-        if ($targetPath == null) {
-            $targetPath = $this->currentDirectoryPath . '/.credentials/google.json';
-        }
-        $targetDirectoryPath = dirname($targetPath);
+        $targetPath = GoogleDriveClientFactory::PROFILES_PATH;
+        print_r(realpath('~'));
+        die();
+
+        $targetDirectoryPath = dirname(realpath($targetPath));
         if (!file_exists($targetDirectoryPath)) {
-            if (!mkdir(dirname($targetDirectoryPath), 700, true)) {
-                throw new Exception("Cannot create directory '{$targetDirectoryPath}'");
-            }
+            throw new Exception("Path does not exist '{$targetDirectoryPath}'");
         }
         if (file_exists($targetPath)) {
             $settings = json_decode(file_get_contents($targetPath));
