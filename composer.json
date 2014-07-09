@@ -7,6 +7,10 @@
         {
             "name": "Vasily Kartashov",
             "email": "vasily@kartashov.com"
+        },
+        {
+            "name": "Danny Marsland",
+            "email": "danny.marsland@gmail.com"
         }
     ],
     "require": {
