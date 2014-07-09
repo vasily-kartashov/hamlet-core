@@ -2,27 +2,11 @@
 
 namespace Hamlet\GoogleDrive;
 
-use Exception;
 use Google_Client;
+use Hamlet\Profile\ProfileCollection;
 
 class GoogleDriveClientFactory
 {
-    public static function getProfilesFilePath()
-    {
-        if (isset($_SERVER['HOME'])) {
-            $homePath = $_SERVER['HOME'];
-        } else {
-            $homePath = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
-        }
-        if (substr($homePath, -1) == DIRECTORY_SEPARATOR) {
-            $separator = '';
-        } else {
-            $separator = DIRECTORY_SEPARATOR;
-        }
-        $suffix = ['.hamlet', 'google-profiles.json'];
-        return $homePath . $separator . join(DIRECTORY_SEPARATOR, $suffix);
-    }
-
     /**
      * Get client by client id and client secret
      *
@@ -63,19 +47,12 @@ class GoogleDriveClientFactory
      */
     public function getClientForProfile($profileName)
     {
-        $path = GoogleDriveClientFactory::getProfilesFilePath();
-        $fullPath = realpath($path);
-        if (!$fullPath) {
-            throw new Exception("The configuration file '{$path}' is missing");
-        }
-        $settings = json_decode(file_get_contents($fullPath));
-        if (!isset($settings->{$profileName})) {
-            throw new Exception("Cannot find profile '{$profileName}'");
-        }
-        $section = $settings->{$profileName};
-        $clientId = $section->clientId;
-        $clientSecret = $section->clientSecret;
-        $accessToken = $section->accessToken;
+        $collection = new ProfileCollection();
+        $settings = $collection->getProfile($profileName);
+
+        $clientId = $settings->google->clientId;
+        $clientSecret = $settings->google->clientSecret;
+        $accessToken = $settings->google->accessToken;
 
         return $this->getClient($clientId, $clientSecret, $accessToken);
     }
