@@ -1,1 +1,0 @@
-@php "%~dp0hamlet-core.php" %*
