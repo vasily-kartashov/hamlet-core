@@ -47,6 +47,6 @@ class AuthorizeGoogleApplicationCommand extends Command
             'accessToken' => json_decode($client->authenticate($authCode)),
         ];
         $collection->setProfile($profileName, $settings);
-        $output->writeln("Profile {$profileName} added");
+        $output->writeln("Profile {$profileName} updated");
     }
 }

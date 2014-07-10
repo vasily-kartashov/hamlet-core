@@ -21,6 +21,7 @@ class NotFoundResource implements ResourceInterface
 
     /**
      * @param \Hamlet\Request\RequestInterface $request
+     *
      * @return \Hamlet\Response\MethodNotAllowedResponse|\Hamlet\Response\NotFoundResponse
      */
     public function getResponse(RequestInterface $request)
