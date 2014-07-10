@@ -13,8 +13,10 @@ class ProfileCollection
     {
         if (isset($_SERVER['HOME'])) {
             $homePath = $_SERVER['HOME'];
-        } else {
+        } else if(isset($_SERVER['HOMEDRIVE'])) {
             $homePath = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+        } else {
+            $homePath = '/home/vagrant';
         }
         if (substr($homePath, -1) == DIRECTORY_SEPARATOR) {
             $separator = '';
