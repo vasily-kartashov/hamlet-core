@@ -27,7 +27,7 @@ class OutputReporterFacade extends SimpleReporter
         if ($this->getFailCount() + $this->getExceptionCount() == 0) {
             $this->output->writeln("[OK]");
         } else {
-            $this->output->writeln("[Failure]");
+            $this->output->writeln("<error>[Failure]</error>");
         }
         $this->output->writeln('Test cases run: ' . $this->getTestCaseProgress() . ' / ' . $this->getTestCaseCount());
         $this->output->writeln('- Passes:     ' . $this->getPassCount());
@@ -38,21 +38,21 @@ class OutputReporterFacade extends SimpleReporter
     function paintFail($message) {
         parent::paintFail($message);
         $this->output->writeln(OutputReporterFacade::$BAR);
-        $this->output->writeln("[Test failed]");
+        $this->output->writeln("<error>[Test failed]</error>");
         $this->output->writeln($message);
     }
 
     function paintError($message) {
         parent::paintError($message);
         $this->output->writeln(OutputReporterFacade::$BAR);
-        $this->output->writeln('[Error]');
+        $this->output->writeln('<error>[Error]</error>');
         $this->output->writeln($message);
     }
 
     function paintException($exception) {
         parent::paintError($exception);
         $this->output->writeln(OutputReporterFacade::$BAR);
-        $this->output->writeln('[Exception]');
+        $this->output->writeln('<error>[Exception]</error>');
         $this->output->writeln('- Code:    ' . $exception->getCode());
         $this->output->writeln('- Line:    ' . $exception->getLine());
         $this->output->writeln('- Message: ' . $exception->getMessage());
@@ -62,7 +62,7 @@ class OutputReporterFacade extends SimpleReporter
     function paintSkip($message) {
         parent::paintSkip($message);
         $this->output->writeln(OutputReporterFacade::$BAR);
-        $this->output->writeln('[Test skipped]');
+        $this->output->writeln('<info>[Test skipped]</info>');
         $this->output->writeln($message);
     }
 
