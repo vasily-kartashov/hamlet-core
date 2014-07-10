@@ -20,15 +20,27 @@ class GenerateLongLivedFacebookAccessTokenCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->write('<question>Enter Facebook app ID: </question>');
-        $appId = trim(fgets(STDIN));
-        $output->write('<question>Enter Facebook app secret: </question>');
-        $appSecret = trim(fgets(STDIN));
-        $output->write('<question>Enter comma separated list of permissions: </question>');
-        $scope = trim(fgets(STDIN));
-        $output->write('<question>Enter the URL of your application: </question>');
-        $appUrl = trim(fgets(STDIN));
+        $collection = new ProfileCollection();
+        $profileName = $input->getArgument('profile');
+        $settings = (array) $collection->getProfile($profileName);
 
+        if (!isset($settings['facebookApp'])) {
+            $output->write('<question>Enter Facebook app ID: </question>');
+            $appId = trim(fgets(STDIN));
+            $output->write('<question>Enter Facebook app secret: </question>');
+            $appSecret = trim(fgets(STDIN));
+            $output->write('<question>Enter comma separated list of permissions: </question>');
+            $scope = trim(fgets(STDIN));
+            $output->write('<question>Enter the application callback URL: </question>');
+            $appUrl = trim(fgets(STDIN));
+            $testAccessTokens = [];
+        } else {
+            $appId            = $settings['facebookApp']->appId;
+            $appSecret        = $settings['facebookApp']->appSecret;
+            $scope            = $settings['facebookApp']->scope;
+            $appUrl           = $settings['facebookApp']->appUrl;
+            $testAccessTokens = $settings['facebookApp']->testAccessTokens;
+        }
 
         $authorizationUrl = "https://www.facebook.com/dialog/oauth?client_id={$appId}&redirect_uri={$appUrl}&response_type=token&scope={$scope}";
         $output->writeln('Log in with Facebook and visit the following URL');
@@ -44,13 +56,14 @@ class GenerateLongLivedFacebookAccessTokenCommand extends Command
         $output->write('<question>Enter the long-lived token passed to you on the page: </question>');
         $longLivedToken = trim(fgets(STDIN));
 
-        $collection = new ProfileCollection();
-        $profileName = $input->getArgument('profile');
-        $settings = (array) $collection->getProfile($profileName);
-        $settings['facebook'] = [
+        $testAccessTokens[] = $longLivedToken;
+
+        $settings['facebookApp'] = [
             'appId' => $appId,
             'appSecret' => $appSecret,
-            'accessToken' => $longLivedToken,
+            'scope' => $scope,
+            'appUrl' => $appUrl,
+            'testAccessTokens' => $testAccessTokens,
         ];
         $collection->setProfile($profileName, $settings);
         $output->writeln("Profile {$profileName} updated");

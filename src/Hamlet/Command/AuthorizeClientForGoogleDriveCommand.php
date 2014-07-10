@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AuthorizeGoogleApplicationCommand extends Command
+class AuthorizeClientForGoogleDriveCommand extends Command
 {
     protected function configure()
     {
@@ -24,24 +24,33 @@ class AuthorizeGoogleApplicationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $factory = new GoogleDriveClientFactory();
-        $output->write('Enter Google client ID: ');
-        $clientId = trim(fgets(STDIN));
-        $output->write('Enter Google client secret: ');
-        $clientSecret = trim(fgets(STDIN));
+        $collection = new ProfileCollection();
+        $profileName = $input->getArgument('profile');
+        $settings = (array) $collection->getProfile($profileName);
 
+        if (!isset($settings['googleDrive'])) {
+            $output->write('<question>Enter Google client ID: </question>');
+            $clientId = trim(fgets(STDIN));
+            $output->write('<question>Enter Google client secret: </question>');
+            $clientSecret = trim(fgets(STDIN));
+        } else {
+            $clientId = $settings['googleDrive']->clientId;
+            $clientSecret = $settings['googleDrive']->clientSecret;
+        }
+
+        $factory = new GoogleDriveClientFactory();
         $client = $factory->getClient($clientId, $clientSecret);
 
         $url = $client->createAuthUrl();
-        $output->writeln('Visit the following URL and copy the code' . PHP_EOL);
+        $output->writeln('Visit the following URL and copy the code');
         $output->writeln($url . PHP_EOL);
-        $output->write('Please enter the code: ');
+        $output->write('<question>Please enter the code: <question>');
         $authCode = trim(fgets(STDIN));
 
         $collection = new ProfileCollection();
         $profileName = $input->getArgument('profile');
         $settings = (array) $collection->getProfile($profileName);
-        $settings['google'] = [
+        $settings['googleDrive'] = [
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
             'accessToken' => json_decode($client->authenticate($authCode)),
