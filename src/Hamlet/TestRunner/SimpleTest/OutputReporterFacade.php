@@ -9,7 +9,7 @@ class OutputReporterFacade extends SimpleReporter
 {
     protected $output;
     private static $BAR        = "--------------------------------------------------------------------------------";
-    private static $DOUBLE_BAR = "================================================================================";
+    private static $DOUBLE_BAR = "<info>================================================================================</info>";
 
     public function __construct(OutputInterface $output)
     {
