@@ -27,15 +27,16 @@ class AuthorizeClientForGoogleDriveCommand extends Command
         $collection = new ProfileCollection();
         $profileName = $input->getArgument('profile');
         $settings = (array) $collection->getProfile($profileName);
+        $key = GoogleDriveClientFactory::SETTINGS_KEY;
 
-        if (!isset($settings['googleDrive'])) {
+        if (!isset($settings[$key])) {
             $output->write('<question>Enter Google client ID: </question>');
             $clientId = trim(fgets(STDIN));
             $output->write('<question>Enter Google client secret: </question>');
             $clientSecret = trim(fgets(STDIN));
         } else {
-            $clientId = $settings['googleDrive']->clientId;
-            $clientSecret = $settings['googleDrive']->clientSecret;
+            $clientId = $settings[$key]->clientId;
+            $clientSecret = $settings[$key]->clientSecret;
         }
 
         $factory = new GoogleDriveClientFactory();
@@ -50,7 +51,7 @@ class AuthorizeClientForGoogleDriveCommand extends Command
         $collection = new ProfileCollection();
         $profileName = $input->getArgument('profile');
         $settings = (array) $collection->getProfile($profileName);
-        $settings['googleDrive'] = [
+        $settings[$key] = [
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
             'accessToken' => json_decode($client->authenticate($authCode)),

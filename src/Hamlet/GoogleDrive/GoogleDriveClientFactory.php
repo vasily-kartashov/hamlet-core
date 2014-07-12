@@ -7,6 +7,8 @@ use Hamlet\Profile\ProfileCollection;
 
 class GoogleDriveClientFactory
 {
+    const SETTINGS_KEY = 'googleApp';
+
     /**
      * Get client by client id and client secret
      *
@@ -48,11 +50,11 @@ class GoogleDriveClientFactory
     public function getClientForProfile($profileName)
     {
         $collection = new ProfileCollection();
-        $settings = $collection->getProfile($profileName);
+        $settings = $collection->getProfile($profileName)->{GoogleDriveClientFactory::SETTINGS_KEY};
 
-        $clientId = $settings->google->clientId;
-        $clientSecret = $settings->google->clientSecret;
-        $accessToken = $settings->google->accessToken;
+        $clientId = $settings->clientId;
+        $clientSecret = $settings->clientSecret;
+        $accessToken = $settings->accessToken;
 
         return $this->getClient($clientId, $clientSecret, $accessToken);
     }

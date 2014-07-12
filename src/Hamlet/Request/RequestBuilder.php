@@ -37,7 +37,14 @@ class RequestBuilder
      */
     public function setPath($path)
     {
-        $this->path = urldecode($path);
+        $questionMarkPosition = strpos($path, '?');
+        if ($questionMarkPosition === false) {
+            $this->path = urldecode($path);
+        } else {
+            $this->path = urldecode(substr($path, 0, $questionMarkPosition));
+            parse_str(substr($path, $questionMarkPosition + 1), $parameters);
+            $this->setParameters($parameters);
+        }
         return $this;
     }
 
