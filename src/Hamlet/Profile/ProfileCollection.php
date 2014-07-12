@@ -13,7 +13,7 @@ class ProfileCollection
     {
         if (isset($_SERVER['HOME'])) {
             $homePath = $_SERVER['HOME'];
-        } else if(isset($_SERVER['HOMEDRIVE'])) {
+        } elseif (isset($_SERVER['HOMEDRIVE']) && isset( $_SERVER['HOMEPATH'])) {
             $homePath = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
         } else {
             $homePath = '/home/vagrant';
