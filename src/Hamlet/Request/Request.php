@@ -147,18 +147,21 @@ class Request implements RequestInterface
         for ($i = 1; $i < count($patternTokens); $i++) {
             $pathToken = $pathTokens[$i];
             $patternToken = $patternTokens[$i];
+            if ($pathToken == '' && $patternToken != '') {
+                return false;
+            }
             if ($patternToken == '*') {
                 continue;
             }
-            if ($patternToken[0] == '{') {
-                $matches[substr($patternToken, 1, -1)] = $pathToken;
+            if (substr($patternToken, 0, 1) == '{') {
+                $matches[substr($patternToken, 1, -1)] = urldecode($pathToken);
             } else {
                 if (urldecode($pathToken) != $patternToken) {
                     return false;
                 }
             }
         }
-        return count($matches) == 0 ? true : array_map('urldecode', $matches);
+        return count($matches) == 0 ? true : $matches;
     }
 
     /**
