@@ -11,10 +11,11 @@ class ProfileCollection
 
     public function __construct()
     {
-        if (isset($_SERVER['HOME'])) {
-            $homePath = $_SERVER['HOME'];
-        } elseif (isset($_SERVER['HOMEDRIVE']) && isset( $_SERVER['HOMEPATH'])) {
-            $homePath = $_SERVER['HOMEDRIVE'] . $_SERVER['HOMEPATH'];
+        $config = $_SERVER + $_ENV;
+        if (isset($config['HOME'])) {
+            $homePath = $config['HOME'];
+        } elseif (isset($config['HOMEDRIVE']) && isset($config['HOMEPATH'])) {
+            $homePath = $config['HOMEDRIVE'] . $config['HOMEPATH'];
         } else {
             $homePath = '/home/vagrant';
         }
