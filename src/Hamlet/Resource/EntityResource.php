@@ -10,13 +10,16 @@ use Hamlet\Response\OKOrNotModifiedResponse;
 class EntityResource implements ResourceInterface
 {
     protected $entity;
+    protected $methods;
 
     /**
      * @param \Hamlet\Entity\EntityInterface $entity
+     * @param string[] $methods
      */
-    public function __construct(EntityInterface $entity)
+    public function __construct(EntityInterface $entity, $methods = ['GET'])
     {
         $this->entity = $entity;
+        $this->methods = $methods;
     }
 
     /**
@@ -25,11 +28,11 @@ class EntityResource implements ResourceInterface
      */
     public function getResponse(RequestInterface $request)
     {
-        if ($request->getMethod() == 'GET') {
+        if (in_array($request->getMethod(), $this->methods)) {
             $response = new OKOrNotModifiedResponse($this->entity, $request);
             return $response;
         }
-        return new MethodNotAllowedResponse(array('GET'));
+        return new MethodNotAllowedResponse($this->methods);
     }
 }
 

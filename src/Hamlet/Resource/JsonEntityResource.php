@@ -8,8 +8,9 @@ class JsonEntityResource extends EntityResource
 {
     /**
      * @param mixed $value
+     * @param string[] $methods
      */
-    public function __construct($value)
+    public function __construct($value, $methods = ['GET'])
     {
         parent::__construct(new JsonEntity($value));
     }
