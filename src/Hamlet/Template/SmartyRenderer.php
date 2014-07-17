@@ -16,14 +16,14 @@ class SmartyRenderer implements TemplateRendererInterface
 
     public function render($data, $path)
     {
-        $wrappedData = (is_array($data)) ? $data : array('content' => $data);
+        $wrappedData = (is_array($data)) ? $data : ['content' => $data];
         $smarty = new Smarty();
         $smarty->setCacheDir(sys_get_temp_dir());
         $smarty->setCompileDir(sys_get_temp_dir());
         if ($this->pluginDirectoryPath != null) {
             $smarty->addPluginsDir($this->pluginDirectoryPath);
         }
-        $smarty->assign($data);
+        $smarty->assign($wrappedData);
         return $smarty->fetch($path);
     }
 }
