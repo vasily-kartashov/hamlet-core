@@ -38,13 +38,12 @@ class WebRequest extends Request
 
     public function getSessionParameters()
     {
-
+        $this->startSession();
         return parent::getSessionParameters();
     }
 
     protected function startSession()
     {
-        $this->startSession();
         $this->sessionParameters = isset($_SESSION) ? $_SESSION : array();
     }
 
