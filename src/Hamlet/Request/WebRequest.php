@@ -32,10 +32,20 @@ class WebRequest extends Request
     public function getSessionParameter($name, $defaultValue = null)
     {
         assert(is_string($name));
-        if (!session_id()) {
-            session_start();
-            $this->session = isset($_SESSION) ? $_SESSION : array();
-        }
+        $this->startSession();
         return parent::getSessionParameter($name, $defaultValue);
     }
+
+    public function getSessionParameters()
+    {
+
+        return parent::getSessionParameters();
+    }
+
+    protected function startSession()
+    {
+        $this->startSession();
+        $this->sessionParameters = isset($_SESSION) ? $_SESSION : array();
+    }
+
 }
