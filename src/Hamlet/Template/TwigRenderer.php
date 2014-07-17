@@ -7,7 +7,6 @@ use Twig_Environment;
 
 class TwigRenderer implements TemplateRendererInterface
 {
-
     /**
      * @param mixed $data
      * @param string $path
@@ -17,10 +16,10 @@ class TwigRenderer implements TemplateRendererInterface
     {
         $loader = new Twig_Loader_Filesystem();
         $loader->addPath(dirname($path));
-        $environment = new Twig_Environment($loader, array(
+        $environment = new Twig_Environment($loader, [
             'cache' => sys_get_temp_dir(),
-        ));
-        $wrappedData = (is_array($data)) ? $data : array('content' => $data);
+        ]);
+        $wrappedData = (is_array($data)) ? $data : ['content' => $data];
         return $environment->render(basename($path), $wrappedData);
     }
 }

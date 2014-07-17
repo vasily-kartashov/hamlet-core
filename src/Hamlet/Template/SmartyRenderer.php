@@ -10,7 +10,7 @@ class SmartyRenderer implements TemplateRendererInterface
 
     public function __construct($pluginDirectoryPath = null)
     {
-        assert($pluginDirectoryPath == null || is_dir($pluginDirectoryPath));
+        assert($pluginDirectoryPath == null || is_string($pluginDirectoryPath) && is_dir($pluginDirectoryPath));
         $this->pluginDirectoryPath = $pluginDirectoryPath;
     }
 
