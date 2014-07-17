@@ -44,7 +44,10 @@ class WebRequest extends Request
 
     protected function startSession()
     {
-        $this->sessionParameters = isset($_SESSION) ? $_SESSION : array();
+        if (!session_id()) {
+            session_start();
+            $this->sessionParameters = isset($_SESSION) ? $_SESSION : array();
+        }
     }
 
 }
