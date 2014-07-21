@@ -48,6 +48,11 @@ interface RequestInterface
     public function getParameter($name, $defaultValue = null);
 
     /**
+     * @return string
+     */
+    public function getBody();
+
+    /**
      * @return string[]
      */
     public function getParameters();

@@ -274,4 +274,12 @@ class Request implements RequestInterface
     {
         return $this->ip;
     }
+
+    /**
+     * @return string
+     */
+    public function getBody()
+    {
+        return file_get_contents('php://input');
+    }
 }
