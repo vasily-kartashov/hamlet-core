@@ -20,6 +20,7 @@ class SmartyRenderer implements TemplateRendererInterface
         $smarty = new Smarty();
         $smarty->setCacheDir(sys_get_temp_dir());
         $smarty->setCompileDir(sys_get_temp_dir());
+        $smarty->inheritance_merge_compiled_includes = false;
         if ($this->pluginDirectoryPath != null) {
             $smarty->addPluginsDir($this->pluginDirectoryPath);
         }
