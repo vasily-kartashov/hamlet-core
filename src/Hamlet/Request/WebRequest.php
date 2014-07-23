@@ -8,10 +8,17 @@ class WebRequest extends Request
     {
         $this->environmentName = $_SERVER['SERVER_NAME'];
         $this->method = $_SERVER['REQUEST_METHOD'];
+        $body = file_get_contents('php://input');
+        if($body) {
+            $this->body = $body;
+        } else {
+            $this->body = null;
+        }
+
         if ($this->method == 'GET' or $this->method == 'POST') {
             $this->parameters = $_REQUEST;
         } else {
-            parse_str(file_get_contents('php://input'), $this->parameters);
+            parse_str($body, $this->parameters);
         }
 
         if (function_exists('getallheaders')) {

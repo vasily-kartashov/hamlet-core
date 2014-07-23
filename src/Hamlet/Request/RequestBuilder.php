@@ -29,6 +29,11 @@ class RequestBuilder
     protected $sessionParameters = [];
 
     /**
+     * @var string
+     */
+    protected $body = '';
+
+    /**
      * Set request path
      *
      * @param string $path
@@ -85,6 +90,44 @@ class RequestBuilder
     public function getRequest()
     {
         return new Request($this->method, $this->path, $this->environmentName, $this->ip, $this->headers,
-            $this->parameters, $this->sessionParameters, $this->cookies);
+            $this->parameters, $this->sessionParameters, $this->cookies, $this->body);
+    }
+
+    /**
+     * @param string $json
+     */
+    public function parseJSON($json)
+    {
+        $data = json_decode($json, true);
+
+        if(isset($data['body'])){
+            $this->body = $data['body'];
+        }
+        if(isset($data['cookies'])){
+            $this->cookies = $data['cookies'];
+        }
+        if(isset($data['environmentName'])){
+            $this->environmentName = $data['environmentName'];
+        }
+        if(isset($data['headers'])){
+            $this->headers = $data['headers'];
+        }
+        if(isset($data['ip'])){
+            $this->ip = $data['ip'];
+        }
+        if(isset($data['method'])){
+            $this->method = $data['method'];
+        }
+        if(isset($data['path'])){
+            $this->path = $data['path'];
+        }
+        if(isset($data['parameters'])){
+            $this->parameters = $data['parameters'];
+        }
+        if(isset($data['sessionParameters'])){
+            $this->sessionParameters = $data['sessionParameters'];
+        }
+
+        return $this;
     }
 }

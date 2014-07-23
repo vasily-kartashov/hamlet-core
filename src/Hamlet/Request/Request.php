@@ -4,7 +4,7 @@ namespace Hamlet\Request;
 
 use Hamlet\Cache\CacheInterface;
 use Hamlet\Entity\EntityInterface;
-
+use \JsonSerializable;
 class Request implements RequestInterface
 {
     /** @var string[]  */
@@ -31,8 +31,11 @@ class Request implements RequestInterface
     /** @var string[] */
     protected $sessionParameters;
 
+    /** @var string */
+    protected $body;
+
     public function __construct($method, $path, $environmentName, $ip, $headers, $parameters, $sessionParameters,
-                                $cookies)
+                                $cookies, $body = null)
     {
         assert(is_string($method));
         assert(is_string($path));
@@ -42,6 +45,9 @@ class Request implements RequestInterface
         assert(is_array($parameters));
         assert(is_array($sessionParameters));
         assert(is_array($cookies));
+        if(!is_null($body)){
+            assert(is_string($body));
+        }
 
         $this->method = $method;
         $this->path = $path;
@@ -51,6 +57,7 @@ class Request implements RequestInterface
         $this->parameters = $parameters;
         $this->sessionParameters = $sessionParameters;
         $this->cookies = $cookies;
+        $this->body = $body;
     }
 
     public function environmentNameEndsWith($suffix)
@@ -280,6 +287,28 @@ class Request implements RequestInterface
      */
     public function getBody()
     {
-        return file_get_contents('php://input');
+        return $this->body;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'body' => $this->body,
+            'cookies' => $this->cookies,
+            'environmentName' => $this->environmentName,
+            'headers' => $this->headers,
+            'ip' => $this->ip,
+            'method' => $this->method,
+            'path' => $this->path,
+            'parameters' => $this->parameters,
+            'sessionParameters' => $this->sessionParameters
+        ];
     }
 }
