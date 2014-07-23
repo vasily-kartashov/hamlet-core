@@ -58,10 +58,23 @@ class GoogleDriveService
     {
         $tempPath = sys_get_temp_dir() . '/' . md5($downloadUrl);
         if (!file_exists($tempPath) or $file->getMd5Checksum() != md5_file($tempPath)) {
-            $request = new Google_Http_Request($downloadUrl, 'GET', null, null);
-            $signedRequest = $this->client->getAuth()->sign($request);
-            /** @var \Google_Http_Request $updatedRequest */
-            $updatedRequest = $this->client->getIo()->makeRequest($signedRequest);
+            $tries = 3;
+            do {
+                $request = new Google_Http_Request($downloadUrl, 'GET', null, null);
+                $signedRequest = $this->client->getAuth()->sign($request);
+                /** @var \Google_Http_Request $updatedRequest */
+                $updatedRequest = $this->client->getIo()->makeRequest($signedRequest);
+
+                if ($updatedRequest->getResponseHttpCode() == 302) {
+                    $headers = $request->getResponseHeaders();
+                    $downloadUrl = $headers['location'];
+                    $tries--;
+                } else {
+                    break;
+                }
+
+            } while ($tries > 0);
+
             if ($updatedRequest->getResponseHttpCode() == 200) {
                 $content = $updatedRequest->getResponseBody();
                 file_put_contents($tempPath, $content);
