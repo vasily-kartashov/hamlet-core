@@ -26,7 +26,7 @@ class WebRequest extends Request
         }
         $this->cookies = $_COOKIE;
         $this->ip = isset($this->headers['X-Forwarded-For']) ? $this->headers['X-Forwarded-For'] : $_SERVER['REMOTE_ADDR'];
-
+        $this->host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null ;
         $completePath = urldecode($_SERVER['REQUEST_URI']);
         $questionMarkPosition = strpos($completePath, '?');
         if ($questionMarkPosition === false) {

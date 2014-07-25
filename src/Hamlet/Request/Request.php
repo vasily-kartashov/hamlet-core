@@ -34,8 +34,11 @@ class Request implements RequestInterface
     /** @var string */
     protected $body;
 
+    /** @var string */
+    protected $host;
+
     public function __construct($method, $path, $environmentName, $ip, $headers, $parameters, $sessionParameters,
-                                $cookies, $body = null)
+                                $cookies, $host = null, $body = null)
     {
         assert(is_string($method));
         assert(is_string($path));
@@ -45,6 +48,10 @@ class Request implements RequestInterface
         assert(is_array($parameters));
         assert(is_array($sessionParameters));
         assert(is_array($cookies));
+
+        if(!is_null($host)){
+            assert(is_string($host));
+        }
         if(!is_null($body)){
             assert(is_string($body));
         }
@@ -58,6 +65,7 @@ class Request implements RequestInterface
         $this->sessionParameters = $sessionParameters;
         $this->cookies = $cookies;
         $this->body = $body;
+        $this->host = $host;
     }
 
     public function environmentNameEndsWith($suffix)
@@ -291,6 +299,14 @@ class Request implements RequestInterface
     }
 
     /**
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
      * (PHP 5 &gt;= 5.4.0)<br/>
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -308,7 +324,8 @@ class Request implements RequestInterface
             'method' => $this->method,
             'path' => $this->path,
             'parameters' => $this->parameters,
-            'sessionParameters' => $this->sessionParameters
+            'sessionParameters' => $this->sessionParameters,
+            'host' => $this->host
         ];
     }
 }

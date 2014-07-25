@@ -33,6 +33,8 @@ class RequestBuilder
      */
     protected $body = '';
 
+    protected $host;
+
     /**
      * Set request path
      *
@@ -90,15 +92,24 @@ class RequestBuilder
     public function getRequest()
     {
         return new Request($this->method, $this->path, $this->environmentName, $this->ip, $this->headers,
-            $this->parameters, $this->sessionParameters, $this->cookies, $this->body);
+            $this->parameters, $this->sessionParameters, $this->cookies, $this->host, $this->body);
     }
 
     /**
      * @param string $json
+     * @return $this
      */
     public function parseJSON($json)
     {
         $data = json_decode($json, true);
+        return $this->parseData($data);
+    }
+
+    /**
+     * @param array $data
+     * @return $this
+     */
+    public function parseData(array $data) {
 
         if(isset($data['body'])){
             $this->body = $data['body'];
@@ -127,7 +138,9 @@ class RequestBuilder
         if(isset($data['sessionParameters'])){
             $this->sessionParameters = $data['sessionParameters'];
         }
-
+        if(isset($data['host'])){
+            $this->host = $data['host'];
+        }
         return $this;
     }
 }

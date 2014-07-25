@@ -52,6 +52,7 @@ class RequestBuilderTest extends AbstractRequestTest
             'sessionParameter2' => 'sessionParameter2data',
             'sessionParameter3' => 'sessionParameter3data'
         ];
+        $host = 'localhost';
 
         $data = [
             'body' => $body,
@@ -62,7 +63,8 @@ class RequestBuilderTest extends AbstractRequestTest
             'method' => $method,
             'path' => $path,
             'parameters' => $parameters,
-            'sessionParameters' => $sessionParameters
+            'sessionParameters' => $sessionParameters,
+            'host' => $host
         ];
         $json = json_encode($data);
         $request = $this->createRequestFromJSON($json);
