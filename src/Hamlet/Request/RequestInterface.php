@@ -53,6 +53,11 @@ interface RequestInterface extends JsonSerializable
     public function getBody();
 
     /**
+     * @return string
+     */
+    public function getPath();
+
+    /**
      * @return string[]
      */
     public function getParameters();
