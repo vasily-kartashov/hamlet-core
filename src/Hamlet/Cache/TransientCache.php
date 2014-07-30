@@ -4,6 +4,9 @@ namespace Hamlet\Cache;
 
 class TransientCache implements CacheInterface
 {
+    /**
+     * @var { mixed $value, int $expiry }[]
+     */
     private $entries = [];
 
     public function get($key, $defaultValue = null)

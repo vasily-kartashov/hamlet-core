@@ -6,18 +6,13 @@ use Memcached;
 
 class MemCache implements CacheInterface
 {
-    /** @var array {
-     *      string $host
-     *      int $port
-     * }
+    /**
+     * @var { string $host, int $port }[]
      */
     protected $endpoints;
 
     /**
-     * @param $endpoints array {
-     *      string $host
-     *      int $port
-     * }
+     * @param $endpoints { string $host, int $port }[]
      */
     public function __construct(array $endpoints)
     {
@@ -26,7 +21,6 @@ class MemCache implements CacheInterface
 
     /**
      * Get memcached client
-     *
      * @return \Memcached
      */
     private function getClient()
@@ -41,14 +35,6 @@ class MemCache implements CacheInterface
         return $client;
     }
 
-    /**
-     * Get value stored in cache
-     *
-     * @param string $key
-     * @param mixed $defaultValue
-     *
-     * @return array
-     */
     public function get($key, $defaultValue = null)
     {
         $client = $this->getClient();
@@ -61,14 +47,6 @@ class MemCache implements CacheInterface
         return [$value, $found];
     }
 
-    /**
-     * Store value in cache
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @param int $timeToLive
-     */
     public function set($key, $value, $timeToLive = 0)
     {
         $client = $this->getClient();

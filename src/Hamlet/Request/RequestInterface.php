@@ -3,8 +3,8 @@ namespace Hamlet\Request;
 
 use Hamlet\Cache\CacheInterface;
 use Hamlet\Entity\EntityInterface;
-
-interface RequestInterface
+use \JsonSerializable;
+interface RequestInterface extends JsonSerializable
 {
     /**
      * @param string $suffix
@@ -46,6 +46,16 @@ interface RequestInterface
      * @return string|null
      */
     public function getParameter($name, $defaultValue = null);
+
+    /**
+     * @return string
+     */
+    public function getBody();
+
+    /**
+     * @return string
+     */
+    public function getPath();
 
     /**
      * @return string[]
@@ -126,4 +136,5 @@ interface RequestInterface
      * @return bool
      */
     public function preconditionFulfilled(EntityInterface $entity, CacheInterface $cache);
+
 }

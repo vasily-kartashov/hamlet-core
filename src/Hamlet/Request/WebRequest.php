@@ -8,10 +8,17 @@ class WebRequest extends Request
     {
         $this->environmentName = $_SERVER['SERVER_NAME'];
         $this->method = $_SERVER['REQUEST_METHOD'];
+        $body = file_get_contents('php://input');
+        if($body) {
+            $this->body = $body;
+        } else {
+            $this->body = null;
+        }
+
         if ($this->method == 'GET' or $this->method == 'POST') {
             $this->parameters = $_REQUEST;
         } else {
-            parse_str(file_get_contents('php://input'), $this->parameters);
+            parse_str($body, $this->parameters);
         }
 
         if (function_exists('getallheaders')) {
@@ -19,7 +26,7 @@ class WebRequest extends Request
         }
         $this->cookies = $_COOKIE;
         $this->ip = isset($this->headers['X-Forwarded-For']) ? $this->headers['X-Forwarded-For'] : $_SERVER['REMOTE_ADDR'];
-
+        $this->host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null ;
         $completePath = urldecode($_SERVER['REQUEST_URI']);
         $questionMarkPosition = strpos($completePath, '?');
         if ($questionMarkPosition === false) {

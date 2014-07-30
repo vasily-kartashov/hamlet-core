@@ -4,7 +4,7 @@ namespace Hamlet\Request;
 
 use Hamlet\Cache\CacheInterface;
 use Hamlet\Entity\EntityInterface;
-
+use \JsonSerializable;
 class Request implements RequestInterface
 {
     /** @var string[]  */
@@ -31,8 +31,14 @@ class Request implements RequestInterface
     /** @var string[] */
     protected $sessionParameters;
 
+    /** @var string */
+    protected $body;
+
+    /** @var string */
+    protected $host;
+
     public function __construct($method, $path, $environmentName, $ip, $headers, $parameters, $sessionParameters,
-                                $cookies)
+                                $cookies, $host = null, $body = null)
     {
         assert(is_string($method));
         assert(is_string($path));
@@ -43,6 +49,13 @@ class Request implements RequestInterface
         assert(is_array($sessionParameters));
         assert(is_array($cookies));
 
+        if(!is_null($host)){
+            assert(is_string($host));
+        }
+        if(!is_null($body)){
+            assert(is_string($body));
+        }
+
         $this->method = $method;
         $this->path = $path;
         $this->environmentName = $environmentName;
@@ -51,6 +64,8 @@ class Request implements RequestInterface
         $this->parameters = $parameters;
         $this->sessionParameters = $sessionParameters;
         $this->cookies = $cookies;
+        $this->body = $body;
+        $this->host = $host;
     }
 
     public function environmentNameEndsWith($suffix)
@@ -273,5 +288,52 @@ class Request implements RequestInterface
     public function getRemoteIpAddress()
     {
         return $this->ip;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'body' => $this->body,
+            'cookies' => $this->cookies,
+            'environmentName' => $this->environmentName,
+            'headers' => $this->headers,
+            'ip' => $this->ip,
+            'method' => $this->method,
+            'path' => $this->path,
+            'parameters' => $this->parameters,
+            'sessionParameters' => $this->sessionParameters,
+            'host' => $this->host
+        ];
     }
 }

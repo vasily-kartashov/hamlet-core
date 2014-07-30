@@ -30,8 +30,7 @@ abstract class AbstractApplication
     }
 
     /**
-     * Return cache server location, for example
-     * array('localhost', 11211)
+     * Get object implementing cache interface
      * @param \Hamlet\Request\RequestInterface $request
      * @return \Hamlet\Cache\CacheInterface
      */
