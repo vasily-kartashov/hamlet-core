@@ -28,7 +28,10 @@ class GoogleDriveClientFactory
         $client->setClientId($clientId);
         $client->setClientSecret($clientSecret);
         $client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
-        $client->setScopes(array('https://www.googleapis.com/auth/drive'));
+        $client->setScopes([
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/youtube'
+        ]);
         $client->setAccessType('offline');
 
         if ($accessToken != null) {

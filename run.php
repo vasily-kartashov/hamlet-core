@@ -16,7 +16,7 @@ foreach ($paths as $path) {
 $application = new \Symfony\Component\Console\Application();
 
 $application->add(new \Hamlet\Command\RunTestsCommand(realpath(__DIR__ . '/test')));
-$application->add(new \Hamlet\Command\AuthorizeClientForGoogleDriveCommand());
+$application->add(new \Hamlet\Command\AuthorizeClientForGoogleServicesCommand());
 $application->add(new \Hamlet\Command\GenerateLongLivedFacebookAccessTokenCommand());
 
 $application->run();
