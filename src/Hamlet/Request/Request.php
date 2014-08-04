@@ -99,7 +99,11 @@ class Request implements RequestInterface
 
     public function getLanguageCodes()
     {
-        return $this->parseHeader($this->getHeader('Accept-Language'));
+        $languageHeader = $this->getHeader('Accept-Language');
+        if(!is_null($languageHeader)) {
+            return $this->parseHeader($languageHeader);
+        }
+        return [];
     }
 
     public function getMethod()
