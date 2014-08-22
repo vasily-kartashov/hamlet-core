@@ -38,7 +38,12 @@ class ProfileCollection
 
     private function readSettings()
     {
-        return json_decode(file_get_contents($this->path));
+        $json = json_decode(file_get_contents($this->path));
+        if (json_last_error() === JSON_ERROR_NONE) { 
+            return $json;
+        } else { 
+              throw new Exception("Couldn't parse JSON in ".$this->path);
+        } 
     }
 
     private function writeSettings($settings)
