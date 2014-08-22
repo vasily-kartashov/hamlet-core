@@ -13,8 +13,11 @@ namespace Hamlet\Response;
  */
 class UnauthorizedResponse extends AbstractResponse
 {
-    public function __construct()
+    public function __construct(EntityInterface $entity = null)
     {
         parent::__construct('401 Unauthorized');
+        if (!is_null($entity)) {
+            $this->setEntity($entity);
+        }
     }
 }
