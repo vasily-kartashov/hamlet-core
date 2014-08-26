@@ -1,7 +1,7 @@
 <?php
 
 namespace Hamlet\Response;
-
+use Hamlet\Entity\EntityInterface;
 /**
  * The request requires user authentication. The response MUST include a WWW-Authenticate header field containing a
  * challenge applicable to the requested resource. The client MAY repeat the request with a suitable Authorization
