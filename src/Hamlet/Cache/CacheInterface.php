@@ -18,4 +18,17 @@ interface CacheInterface
      * @param int $timeToLive
      */
     public function set($key, $value, $timeToLive = 0);
+
+    /**
+     * Delete an item from the cache
+     * @param string $key
+     */
+    public function delete($key);
+
+    /**
+     * Delete multiple items from the cache
+     * @param string[] $keys
+     */
+    public function deleteMultiple($keys);
+
 }

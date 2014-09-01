@@ -32,4 +32,26 @@ class TransientCache implements CacheInterface
             'expiry' => $expiry,
         ];
     }
+
+    /**
+     * Delete an item from the cache
+     * @param string $key
+     */
+    public function delete($key)
+    {
+        if (isset($this->entries[$key])) {
+           unset($this->entries[$key]);
+        }
+    }
+
+    /**
+     * Delete multiple items from the cache
+     * @param string[] $keys
+     */
+    public function deleteMultiple($keys)
+    {
+        foreach ($keys as $key) {
+            $this->delete($key);
+        }
+    }
 }

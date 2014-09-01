@@ -52,4 +52,16 @@ class MemCache implements CacheInterface
         $client = $this->getClient();
         $client->set($key, $value, $timeToLive);
     }
+
+    public function delete($key)
+    {
+        $client = $this->getClient();
+        $client->delete($key);
+    }
+
+    public function deleteMultiple($keys)
+    {
+        $client = $this->getClient();
+        $client->deleteMulti($keys);
+    }
 }
