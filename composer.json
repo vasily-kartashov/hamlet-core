@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.4.0",
         "twig/twig": "dev-master",
-        "smarty/smarty": "3.1.18",
+        "smarty/smarty": "~3.1",
         "simpletest/simpletest": "dev-master",
         "symfony/console": "dev-master",
         "phpoffice/phpexcel": "dev-master",
