@@ -18,7 +18,7 @@
         "twig/twig": "dev-master",
         "smarty/smarty": "3.1.21",
         "simpletest/simpletest": "dev-master",
-        "symfony/console": "dev-master",
+        "symfony/console": "2.6.0",
         "phpoffice/phpexcel": "dev-master",
         "google/apiclient": "1.0.*@dev"
     },
