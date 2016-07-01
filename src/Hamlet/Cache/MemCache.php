@@ -1,67 +1,45 @@
 <?php
 
-namespace Hamlet\Cache;
+namespace Hamlet\Cache {
 
-use Memcached;
+    use Memcached;
 
-class MemCache implements CacheInterface
-{
-    /**
-     * @var { string $host, int $port }[]
-     */
-    protected $endpoints;
+    class MemCache implements Cache {
 
-    /**
-     * @param $endpoints { string $host, int $port }[]
-     */
-    public function __construct(array $endpoints)
-    {
-        $this->endpoints = $endpoints;
-    }
+        protected $endpoints;
 
-    /**
-     * Get memcached client
-     * @return \Memcached
-     */
-    private function getClient()
-    {
-        static $client = null;
-        if ($client == null) {
-            $client = new Memcached();
-            foreach ($this->endpoints as $endpoint) {
-                $client->addServer($endpoint['host'], $endpoint['port']);
+        public function __construct(array $endpoints) {
+            $this->endpoints = $endpoints;
+        }
+
+        private function getClient() : Memcached {
+            static $client = null;
+            if ($client == null) {
+                $client = new Memcached();
+                foreach ($this->endpoints as $endpoint) {
+                    $client->addServer($endpoint['host'], $endpoint['port']);
+                }
             }
+            return $client;
         }
-        return $client;
-    }
 
-    public function get($key, $defaultValue = null)
-    {
-        $client = $this->getClient();
-        $found = true;
-        $value = $client->get($key);
-        if ($client->getResultCode() == Memcached::RES_NOTFOUND) {
-            $found = false;
-            $value = $defaultValue;
+        public function get(string $key, $defaultValue = null) {
+            $client = $this->getClient();
+            $found = true;
+            $value = $client->get($key);
+            if ($client->getResultCode() == Memcached::RES_NOTFOUND) {
+                $found = false;
+                $value = $defaultValue;
+            }
+            return [$value, $found];
         }
-        return [$value, $found];
-    }
 
-    public function set($key, $value, $timeToLive = 0)
-    {
-        $client = $this->getClient();
-        $client->set($key, $value, $timeToLive);
-    }
+        public function set(string $key, $value, int $timeToLive = 0) : void {
+            $this->getClient()->set($key, $value, $timeToLive);
+        }
 
-    public function delete($key)
-    {
-        $client = $this->getClient();
-        $client->delete($key);
-    }
-
-    public function deleteMultiple($keys)
-    {
-        $client = $this->getClient();
-        $client->deleteMulti($keys);
+        public function delete(string ...$keys) : void {
+            $this->getClient()->deleteMulti($keys);
+        }
     }
 }

@@ -1,17 +1,13 @@
 <?php
 
-namespace Hamlet\Resource;
+namespace Hamlet\Resource {
 
-use Hamlet\Entity\JsonEntity;
+    use Hamlet\Entity\JsonEntity;
 
-class JsonEntityResource extends EntityResource
-{
-    /**
-     * @param mixed $value
-     * @param string[] $methods
-     */
-    public function __construct($value, $methods = ['GET', 'POST'])
-    {
-        parent::__construct(new JsonEntity($value), $methods);
+    class JsonEntityResource extends EntityResource {
+        
+        public function __construct($value, array $methods = ['GET', 'POST']) {
+            parent::__construct(new JsonEntity($value), $methods);
+        }
     }
 }

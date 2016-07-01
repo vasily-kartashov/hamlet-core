@@ -1,29 +1,17 @@
 <?php
-namespace Hamlet\Entity;
 
-abstract class AbstractJsonEntity extends AbstractEntity
-{
-    /**
-     * Get entity data
-     * @return mixed
-     */
-    abstract protected function getData();
+namespace Hamlet\Entity {
 
-    /**
-     * Get entity content
-     * @return string
-     */
-    public function getContent()
-    {
-        return json_encode($this->getData());
-    }
+    abstract class AbstractJsonEntity extends AbstractEntity {
 
-    /**
-     * Get entity media type
-     * @return string
-     */
-    public function getMediaType()
-    {
-        return 'application/json;charset=UTF-8';
+        abstract protected function getData();
+
+        public function getContent() : string {
+            return json_encode($this->getData());
+        }
+
+        public function getMediaType() : string {
+            return 'application/json;charset=UTF-8';
+        }
     }
 }

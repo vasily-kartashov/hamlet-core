@@ -42,7 +42,7 @@ class ProfileCollection
         if (json_last_error() === JSON_ERROR_NONE) { 
             return $json;
         } else { 
-              throw new Exception("Couldn't parse JSON in ".$this->path);
+            throw new Exception("Couldn't parse JSON in ".$this->path);
         } 
     }
 
@@ -62,7 +62,7 @@ class ProfileCollection
         if (isset($settings->{$profileName})) {
             return $settings->{$profileName};
         } else {
-            return new StdClass();
+            return new stdClass();
         }
     }
 

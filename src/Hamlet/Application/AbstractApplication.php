@@ -1,49 +1,26 @@
 <?php
 
-namespace Hamlet\Application;
+namespace Hamlet\Application {
 
-use Hamlet\Request\RequestInterface;
-use Hamlet\Response\ResponseInterface;
+    use Hamlet\Cache\Cache;
+    use Hamlet\Request\Request;
+    use Hamlet\Resource\Resource;
+    use Hamlet\Response\Response;
 
-abstract class AbstractApplication
-{
-    /** @var \Memcached */
-    private $cache = null;
+    abstract class AbstractApplication {
 
-    /**
-     * Find requested resource
-     * @param \Hamlet\Request\RequestInterface $request
-     * @return \Hamlet\Resource\ResourceInterface
-     */
-    abstract protected function findResource(RequestInterface $request);
+        abstract protected function findResource(Request $request) : Resource;
 
-    /**
-     * Find response for the specified request
-     * @param \Hamlet\Request\RequestInterface $request
-     * @return \Hamlet\Response\ResponseInterface
-     */
-    public function run(RequestInterface $request)
-    {
-        $resource = $this->findResource($request);
-        $response = $resource->getResponse($request);
-        return $response;
-    }
+        public function run(Request $request) : Response {
+            $resource = $this->findResource($request);
+            $response = $resource->getResponse($request);
+            return $response;
+        }
 
-    /**
-     * Get object implementing cache interface
-     * @param \Hamlet\Request\RequestInterface $request
-     * @return \Hamlet\Cache\CacheInterface
-     */
-    abstract protected function getCache(RequestInterface $request);
+        abstract protected function getCache(Request $request) : Cache;
 
-    /**
-     * Output the response to the standard output stream
-     * @param \Hamlet\Request\RequestInterface $request
-     * @param \Hamlet\Response\ResponseInterface $response
-     * @return void
-     */
-    public function output(RequestInterface $request, ResponseInterface $response)
-    {
-        $response->output($request, $this->getCache($request));
+        public function output(Request $request, Response $response) : void {
+            $response->output($request, $this->getCache($request));
+        }
     }
 }

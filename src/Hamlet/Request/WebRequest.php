@@ -2,10 +2,10 @@
 
 namespace Hamlet\Request;
 
-class WebRequest extends Request
-{
-    public function __construct()
-    {
+class WebRequest extends BasicRequest {
+
+    public function __construct() {
+        parent::__construct(null, null, null, null, null, null, null, null);
         $this->environmentName = $_SERVER['SERVER_NAME'];
         $this->method = $_SERVER['REQUEST_METHOD'];
         $body = file_get_contents('php://input');
@@ -36,21 +36,18 @@ class WebRequest extends Request
         }
     }
 
-    public function getSessionParameter($name, $defaultValue = null)
-    {
+    public function getSessionParameter(string $name, $defaultValue = null) : string {
         assert(is_string($name));
         $this->startSession();
         return parent::getSessionParameter($name, $defaultValue);
     }
 
-    public function getSessionParameters()
-    {
+    public function getSessionParameters() : array {
         $this->startSession();
         return parent::getSessionParameters();
     }
 
-    protected function startSession()
-    {
+    protected function startSession() : void {
         if (!session_id()) {
             session_start();
             $this->sessionParameters = isset($_SESSION) ? $_SESSION : array();

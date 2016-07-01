@@ -1,35 +1,27 @@
 <?php
 
-namespace Hamlet\Response;
+namespace Hamlet\Response {
 
-use Hamlet\Cache\CacheInterface;
-use Hamlet\Entity\EntityInterface;
-use Hamlet\Request\RequestInterface;
+    use Hamlet\Cache\Cache;
+    use Hamlet\Entity\Entity;
+    use Hamlet\Request\Request;
 
-class OKOrNotModifiedResponse extends AbstractResponse
-{
-    /**
-     * @param \Hamlet\Entity\EntityInterface $entity
-     * @param \Hamlet\Request\RequestInterface $request
-     */
-    public function __construct(EntityInterface $entity, RequestInterface $request)
-    {
-        $this->setEntity($entity);
-    }
+    class OKOrNotModifiedResponse extends AbstractResponse {
 
-    /**
-     * @param \Hamlet\Request\RequestInterface $request
-     * @param \Hamlet\Cache\CacheInterface $cache
-     */
-    public function output(RequestInterface $request, CacheInterface $cache)
-    {
-        if ($request->preconditionFulfilled($this->entity, $cache)) {
-            $this->setStatus('200 OK');
-            $this->setEmbedEntity(true);
-        } else {
-            $this->setStatus('304 Not Modified');
-            $this->setEmbedEntity(false);
+        public function __construct(Entity $entity, Request $request) {
+            parent::__construct();
+            $this->setEntity($entity);
         }
-        parent::output($request, $cache);
+
+        public function output(Request $request, Cache $cache) : void {
+            if ($request->preconditionFulfilled($this->entity, $cache)) {
+                $this->setStatus('200 OK');
+                $this->setEmbedEntity(true);
+            } else {
+                $this->setStatus('304 Not Modified');
+                $this->setEmbedEntity(false);
+            }
+            parent::output($request, $cache);
+        }
     }
 }

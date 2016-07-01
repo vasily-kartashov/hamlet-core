@@ -4,22 +4,29 @@ namespace Hamlet\TestRunner\SimpleTest;
 
 use SimpleReporter;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 class OutputReporterFacade extends SimpleReporter
 {
     protected $output;
-    private static $BAR        = "--------------------------------------------------------------------------------";
+    private static $BAR        = "<secondary>--------------------------------------------------------------------------------</secondary>";
     private static $DOUBLE_BAR = "<info>================================================================================</info>";
 
-    public function __construct(OutputInterface $output)
-    {
+    public function __construct(OutputInterface $output) {
         parent::__construct();
         $this->output = $output;
+
+        $classStyle = new OutputFormatterStyle('yellow', null, ['bold']);
+        $secondary = new OutputFormatterStyle('white');
+
+        $output->getFormatter()->setStyle('class', $classStyle);
+        $output->getFormatter()->setStyle('secondary', $secondary);
+
     }
 
     function paintHeader($test_name) {
         $this->output->writeln(OutputReporterFacade::$DOUBLE_BAR);
-        $this->output->writeln('- ' . $test_name);
+        $this->output->writeln("<class>${test_name}</class>");
     }
 
     function paintFooter($test_name) {
@@ -30,9 +37,9 @@ class OutputReporterFacade extends SimpleReporter
             $this->output->writeln("<error>[Failure]</error>");
         }
         $this->output->writeln('Test cases run: ' . $this->getTestCaseProgress() . ' / ' . $this->getTestCaseCount());
-        $this->output->writeln('- Passes:     ' . $this->getPassCount());
-        $this->output->writeln('- Failures:   ' . $this->getFailCount());
-        $this->output->writeln('- Exceptions: ' . $this->getExceptionCount());
+        $this->output->writeln('  Passes:     ' . $this->getPassCount());
+        $this->output->writeln('  Failures:   ' . $this->getFailCount());
+        $this->output->writeln('  Exceptions: ' . $this->getExceptionCount());
     }
 
     function paintFail($message) {

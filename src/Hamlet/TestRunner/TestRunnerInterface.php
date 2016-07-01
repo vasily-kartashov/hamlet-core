@@ -6,11 +6,6 @@ interface TestRunnerInterface
 {
     /**
      * Execute tests and return true if successful
-     *
-     * @param string $rootDirectoryPath
-     * @param string $className
-     *
-     * @return bool
      */
-    public function execute($rootDirectoryPath, $className);
+    public function execute(string $rootDirectoryPath, string $className) : bool;
 }

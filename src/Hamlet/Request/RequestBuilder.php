@@ -35,15 +35,7 @@ class RequestBuilder
 
     protected $host;
 
-    /**
-     * Set request path
-     *
-     * @param string $path
-     *
-     * @return \Hamlet\Request\RequestBuilder
-     */
-    public function setPath($path)
-    {
+    public function setPath(string $path) : RequestBuilder {
         $questionMarkPosition = strpos($path, '?');
         if ($questionMarkPosition === false) {
             $this->path = urldecode($path);
@@ -55,90 +47,58 @@ class RequestBuilder
         return $this;
     }
 
-    /**
-     * Add parameter to request
-     *
-     * @param string $name
-     * @param string $value
-     *
-     * @return \Hamlet\Request\RequestBuilder
-     */
-    public function setParameter($name, $value)
-    {
+    public function setParameter(string $name, string $value) : RequestBuilder {
         assert(is_string($name));
         assert(is_string($value));
         $this->parameters[(string) $name] = (string) $value;
         return $this;
     }
 
-    /**
-     * Add parameters to request
-     *
-     * @param string[] $parameters
-     *
-     * @return \Hamlet\Request\RequestBuilder
-     */
-    public function setParameters($parameters)
-    {
+    public function setParameters(array $parameters) : RequestBuilder {
         $this->parameters += $parameters;
         return $this;
     }
 
-    /**
-     * Create request object
-     *
-     * @return \Hamlet\Request\RequestInterface
-     */
-    public function getRequest()
-    {
-        return new Request($this->method, $this->path, $this->environmentName, $this->ip, $this->headers,
-            $this->parameters, $this->sessionParameters, $this->cookies, $this->host, $this->body);
+    public function build() : Request {
+        return new BasicRequest($this->method, $this->path, $this->environmentName, $this->ip, $this->headers,
+                                $this->parameters, $this->sessionParameters, $this->cookies, $this->host, $this->body);
     }
 
-    /**
-     * @param string $json
-     * @return $this
-     */
-    public function parseJSON($json)
-    {
+    public function parseJSON(string $json) :RequestBuilder {
         $data = json_decode($json, true);
         return $this->parseData($data);
     }
 
-    /**
-     * @param array $data
-     * @return $this
-     */
-    public function parseData(array $data) {
+    public function parseData(array $data) : RequestBuilder {
 
-        if(isset($data['body'])){
+        if(isset($data['body'])) {
             $this->body = $data['body'];
         }
-        if(isset($data['cookies'])){
+        if(isset($data['cookies'])) {
             $this->cookies = $data['cookies'];
         }
-        if(isset($data['environmentName'])){
+        if(isset($data['environmentName'])) {
             $this->environmentName = $data['environmentName'];
         }
-        if(isset($data['headers'])){
+        if(isset($data['headers'])) {
             $this->headers = $data['headers'];
         }
-        if(isset($data['ip'])){
+        if(isset($data['ip'])) {
             $this->ip = $data['ip'];
         }
-        if(isset($data['method'])){
+        if(isset($data['method'])) {
             $this->method = $data['method'];
         }
-        if(isset($data['path'])){
+        if(isset($data['path'])) {
             $this->path = $data['path'];
         }
-        if(isset($data['parameters'])){
+        if(isset($data['parameters'])) {
             $this->parameters = $data['parameters'];
         }
-        if(isset($data['sessionParameters'])){
+        if(isset($data['sessionParameters'])) {
             $this->sessionParameters = $data['sessionParameters'];
         }
-        if(isset($data['host'])){
+        if(isset($data['host'])) {
             $this->host = $data['host'];
         }
         return $this;

@@ -1,25 +1,23 @@
 <?php
 
-namespace Hamlet\Entity;
+namespace Hamlet\Entity {
 
-class EntityLocationEnvelope
-{
-    protected $location;
-    protected $entity;
+    class EntityLocationEnvelope {
+        
+        protected $location;
+        protected $entity;
 
-    public function __construct($location, EntityInterface $entity)
-    {
-        $this->location = (string) $location;
-        $this->entity = $entity;
-    }
+        public function __construct(string $location, Entity $entity) {
+            $this->location = $location;
+            $this->entity = $entity;
+        }
 
-    public function getLocation()
-    {
-        return $this->location;
-    }
+        public function getLocation() : string {
+            return $this->location;
+        }
 
-    public function getEntity()
-    {
-        return $this->entity;
+        public function getEntity() : Entity {
+            return $this->entity;
+        }
     }
 }

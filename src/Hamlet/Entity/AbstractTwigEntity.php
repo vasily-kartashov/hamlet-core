@@ -1,18 +1,18 @@
 <?php
 
-namespace Hamlet\Entity;
+namespace Hamlet\Entity {
 
-use Hamlet\Template\TwigRenderer;
+    use Hamlet\Template\TemplateRenderer;
+    use Hamlet\Template\TwigRenderer;
 
-abstract class AbstractTwigEntity extends AbstractTemplateEntity
-{
-    public function getTemplateRenderer()
-    {
-        return new TwigRenderer();
-    }
+    abstract class AbstractTwigEntity extends AbstractTemplateEntity {
 
-    public function getMediaType()
-    {
-        return 'text/html;charset=UTF-8';
+        public function getTemplateRenderer() : TemplateRenderer {
+            return new TwigRenderer();
+        }
+
+        public function getMediaType() : string {
+            return 'text/html;charset=UTF-8';
+        }
     }
 }

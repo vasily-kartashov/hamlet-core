@@ -1,35 +1,28 @@
 <?php
 
-namespace Hamlet\Resource;
+namespace Hamlet\Resource {
 
-use Hamlet\Request\RequestInterface;
-use Hamlet\Response\MethodNotAllowedResponse;
-use Hamlet\Response\TemporaryRedirectResponse;
+    use Hamlet\Request\Request;
+    use Hamlet\Response\Response;
+    use Hamlet\Response\MethodNotAllowedResponse;
+    use Hamlet\Response\TemporaryRedirectResponse;
 
-class RedirectResource implements ResourceInterface
-{
-    protected $url;
+    class RedirectResource implements Resource {
+        
+        protected $url;
 
-    /**
-     * @param string $url
-     */
-    public function __construct($url)
-    {
-        assert(is_string($url));
-        $this->url = $url;
-    }
-
-    /**
-     * @param \Hamlet\Request\RequestInterface $request
-     * @return \Hamlet\Response\MethodNotAllowedResponse|\Hamlet\Response\TemporaryRedirectResponse
-     */
-    public function getResponse(RequestInterface $request)
-    {
-        if ($request->getMethod() == 'GET') {
-            $response = new TemporaryRedirectResponse($this->url);
-            $response->setHeader('Cache-Control', 'private');
-            return $response;
+        public function __construct(string $url) {
+            assert(is_string($url));
+            $this->url = $url;
         }
-        return new MethodNotAllowedResponse(['GET']);
+
+        public function getResponse(Request $request) : Response {
+            if ($request->getMethod() == 'GET') {
+                $response = new TemporaryRedirectResponse($this->url);
+                $response->setHeader('Cache-Control', 'private');
+                return $response;
+            }
+            return new MethodNotAllowedResponse(['GET']);
+        }
     }
 }

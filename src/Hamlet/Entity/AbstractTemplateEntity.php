@@ -1,31 +1,19 @@
 <?php
-namespace Hamlet\Entity;
 
-abstract class AbstractTemplateEntity extends AbstractEntity
-{
-    /**
-     * Get absolute path to entity template
-     * @return mixed
-     */
-    abstract protected function getTemplatePath();
+namespace Hamlet\Entity {
 
-    /**
-     * Get template data
-     * @return mixed
-     */
-    abstract protected function getTemplateData();
+    use Hamlet\Template\TemplateRenderer;
 
-    /**
-     * @return \Hamlet\Template\TemplateRendererInterface
-     */
-    abstract protected function getTemplateRenderer();
+    abstract class AbstractTemplateEntity extends AbstractEntity {
 
-    /**
-     * Get content
-     * @return string
-     */
-    public function getContent()
-    {
-        return $this->getTemplateRenderer()->render($this->getTemplateData(), $this->getTemplatePath());
+        abstract protected function getTemplatePath() : string;
+
+        abstract protected function getTemplateData();
+
+        abstract protected function getTemplateRenderer() : TemplateRenderer;
+
+        public function getContent() : string {
+            return $this->getTemplateRenderer()->render($this->getTemplateData(), $this->getTemplatePath());
+        }
     }
 }
