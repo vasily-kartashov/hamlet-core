@@ -9,7 +9,7 @@ namespace Hamlet\Database {
 
         protected $connection;
         protected $statement;
-        protected $parameters = array();
+        protected $parameters = [];
 
         public function __construct(mysqli $connection, string $query) {
             $this->connection = $connection;
@@ -36,11 +36,11 @@ namespace Hamlet\Database {
             while (true) {
                 $status = $this->statement->fetch();
                 if ($status === true) {
-                    $rowCopy = array();
+                    $rowCopy = [];
                     foreach ($row as $key => $value) {
                         $rowCopy[$key] = $value;
                     }
-                    call_user_func_array($callback, array($rowCopy));
+                    call_user_func_array($callback, [$rowCopy]);
                 } elseif (is_null($status)) {
                     break;
                 } else {
@@ -64,7 +64,7 @@ namespace Hamlet\Database {
         }
 
         public function fetchAll() : array {
-            $result = array();
+            $result = [];
             $this->fetch(function ($row) use (&$result) {
                 $result[] = $row;
             });
@@ -72,7 +72,7 @@ namespace Hamlet\Database {
         }
 
         public function fetchAllWithKey(string $keyField) : array {
-            $result = array();
+            $result = [];
             $this->fetch(function ($row) use ($keyField, &$result) {
                 $key = $row[$keyField];
                 unset($row[$keyField]);
@@ -83,28 +83,28 @@ namespace Hamlet\Database {
 
 
         public function bindString(string $value) {
-            $this->parameters[] = array('s', (string)$value);
+            $this->parameters[] = ['s', $value];
         }
 
         public function bindInteger(int $value) {
-            $this->parameters[] = array('i', (int)$value);
+            $this->parameters[] = ['i', $value];
         }
 
-        public function bindFloat(float $value) {
-            $this->parameters[] = array('d', (double)$value);
+        public function bindFloat(double $value) {
+            $this->parameters[] = ['d', $value];
         }
 
         public function bindBlob(string $value) {
-            $this->parameters[] = array('b', $value);
+            $this->parameters[] = ['b', $value];
         }
 
         private function bindParameters() {
             if (count($this->parameters) == 0) {
                 return;
             }
-            $callParameters = array();
+            $callParameters = [];
             $types = '';
-            $blobs = array();
+            $blobs = [];
             $callParameters[] = &$types;
             foreach ($this->parameters as $i => $parameter) {
                 $types .= $parameter[0];
@@ -118,7 +118,7 @@ namespace Hamlet\Database {
                     $callParameters[] = &$$name;
                 }
             }
-            $success = call_user_func_array(array($this->statement, 'bind_param'), $callParameters);
+            $success = call_user_func_array([$this->statement, 'bind_param'], $callParameters);
             if (!$success) {
                 throw new Exception($this->connection->error);
             }
@@ -154,12 +154,12 @@ namespace Hamlet\Database {
             if ($metaData === false) {
                 throw new Exception($this->connection->error);
             }
-            $row = array();
-            $boundParameters = array();
+            $row = [];
+            $boundParameters = [];
             while ($field = $metaData->fetch_field()) {
                 $boundParameters[] = &$row[$field->name];
             }
-            $success = call_user_func_array(array($this->statement, 'bind_result'), $boundParameters);
+            $success = call_user_func_array([$this->statement, 'bind_result'], $boundParameters);
             if (!$success) {
                 throw new Exception($this->connection->error);
             }

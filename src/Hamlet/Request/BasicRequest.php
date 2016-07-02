@@ -128,7 +128,7 @@ namespace Hamlet\Request {
          * @return array|bool
          */
         protected function matchTokens(array $pathTokens, array $patternTokens) {
-            $matches = array();
+            $matches = [];
             for ($i = 1; $i < count($patternTokens); $i++) {
                 $pathToken = $pathTokens[$i];
                 $patternToken = $patternTokens[$i];

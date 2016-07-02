@@ -50,8 +50,7 @@ class WebRequest extends BasicRequest {
     protected function startSession() : void {
         if (!session_id()) {
             session_start();
-            $this->sessionParameters = isset($_SESSION) ? $_SESSION : array();
+            $this->sessionParameters = isset($_SESSION) ? $_SESSION : [];
         }
     }
-
 }

@@ -16,7 +16,7 @@ namespace Hamlet\Response {
         protected $status;
 
         /** @var string[] */
-        protected $headers = array();
+        protected $headers = [];
 
         /** @var \Hamlet\Entity\Entity */
         protected $entity = null;
@@ -32,10 +32,10 @@ namespace Hamlet\Response {
          *      int $timeToLive
          * }
          */
-        protected $cookies = array();
+        protected $cookies = [];
 
         /** @var array */
-        protected $session = array();
+        protected $session = [];
 
         protected function __construct(string $status = '') {
             $this->status = $status;
@@ -106,12 +106,12 @@ namespace Hamlet\Response {
         }
 
         public function setCookie(string $name, string $value, string $path, int $timeToLive) {
-            $this->cookies[] = array(
+            $this->cookies[] = [
                 'name' => $name,
                 'value' => $value,
                 'path' => $path,
                 'timeToLive' => $timeToLive,
-            );
+            ];
         }
 
         public function setSessionParameter(string $name, $value) : void {

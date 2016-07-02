@@ -42,14 +42,14 @@ namespace Hamlet\Entity {
                 if (is_array($this->cacheEntry) and $tag == $this->cacheEntry['tag']) {
                     $this->cacheEntry['expires'] = $now + $this->getCachingTime();
                 } else {
-                    $this->cacheEntry = array(
+                    $this->cacheEntry = [
                         'content' => $content,
                         'tag' => $tag,
                         'digest' => base64_encode(pack('H*', md5($content))),
                         'length' => strlen($content),
                         'modified' => $now,
                         'expires' => $now + $this->getCachingTime(),
-                    );
+                    ];
                 }
                 $cache->set($key, $this->cacheEntry);
             }
