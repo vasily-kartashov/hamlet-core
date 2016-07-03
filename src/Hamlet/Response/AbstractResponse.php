@@ -107,9 +107,9 @@ namespace Hamlet\Response {
 
         public function setCookie(string $name, string $value, string $path, int $timeToLive) {
             $this->cookies[] = [
-                'name' => $name,
-                'value' => $value,
-                'path' => $path,
+                'name'       => $name,
+                'value'      => $value,
+                'path'       => $path,
                 'timeToLive' => $timeToLive,
             ];
         }

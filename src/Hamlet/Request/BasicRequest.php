@@ -4,7 +4,6 @@ namespace Hamlet\Request {
 
     use Hamlet\Cache\Cache;
     use Hamlet\Entity\Entity;
-    use \JsonSerializable;
 
     class BasicRequest implements Request {
 
@@ -57,10 +56,7 @@ namespace Hamlet\Request {
         }
 
         public function getCookie(string $name, $defaultValue = null) : string {
-            if (isset($this->cookies[$name])) {
-                return $this->cookies[$name];
-            }
-            return $defaultValue;
+            return $this->cookies[$name] ?? $defaultValue;
         }
 
         public function getEnvironmentName() : string {
@@ -68,19 +64,12 @@ namespace Hamlet\Request {
         }
 
         public function getHeader(string $name) : string {
-            assert(is_string($name));
-            if (isset($this->headers[$name])) {
-                return $this->headers[$name];
-            }
-            return null;
+            return $this->headers[$name] ?? null;
         }
 
         public function getLanguageCodes() : array {
             $languageHeader = $this->getHeader('Accept-Language');
-            if (!is_null($languageHeader)) {
-                return $this->parseHeader($languageHeader);
-            }
-            return [];
+            return $this->parseHeader($languageHeader) ?? [];
         }
 
         public function getMethod() : string {
@@ -88,11 +77,7 @@ namespace Hamlet\Request {
         }
 
         public function getParameter(string $name, $defaultValue = null) : string {
-            assert(is_string($name));
-            if (isset($this->parameters[$name])) {
-                return urldecode($this->parameters[$name]);
-            }
-            return $defaultValue;
+            return $this->parameters[$name] ?? $defaultValue;
         }
 
         public function getParameters() : array {
@@ -100,10 +85,7 @@ namespace Hamlet\Request {
         }
 
         public function getSessionParameter(string $name, $defaultValue = null) : string {
-            if (isset($this->sessionParameters[$name])) {
-                return $this->sessionParameters[$name];
-            }
-            return $defaultValue;
+            return $this->sessionParameters[$name] ?? $defaultValue;
         }
 
         public function getSessionParameters() : array {

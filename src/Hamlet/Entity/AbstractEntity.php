@@ -34,7 +34,7 @@ namespace Hamlet\Entity {
             $key = $this->getKey();
             list($this->cacheEntry, $found) = $cache->get($key);
             $now = time();
-            $expires = isset($this->cacheEntry['expires']) ? $this->cacheEntry['expires'] : 0;
+            $expires = $this->cacheEntry['expires'] ?? 0;
 
             if (!$found or $now >= $expires) {
                 $content = $this->getContent();
@@ -43,12 +43,12 @@ namespace Hamlet\Entity {
                     $this->cacheEntry['expires'] = $now + $this->getCachingTime();
                 } else {
                     $this->cacheEntry = [
-                        'content' => $content,
-                        'tag' => $tag,
-                        'digest' => base64_encode(pack('H*', md5($content))),
-                        'length' => strlen($content),
+                        'content'  => $content,
+                        'tag'      => $tag,
+                        'digest'   => base64_encode(pack('H*', md5($content))),
+                        'length'   => strlen($content),
                         'modified' => $now,
-                        'expires' => $now + $this->getCachingTime(),
+                        'expires'  => $now + $this->getCachingTime(),
                     ];
                 }
                 $cache->set($key, $this->cacheEntry);

@@ -1,18 +1,19 @@
 <?php
 
-namespace Hamlet\Template;
+namespace Hamlet\Template {
 
-use UnitTestCase;
+    use UnitTestCase;
 
-class TwigRendererTest extends UnitTestCase
-{
-    public function testVariableSubstitution()
+    class TwigRendererTest extends UnitTestCase
     {
-        $renderer = new TwigRenderer();
-        $data = [
-            "name" => "World"
-        ];
-        $path = realpath(__DIR__ . '/variable-substitution.twig');
-        $this->assertEqual($renderer->render($data, $path), "Hello, World!");
+        public function testVariableSubstitution()
+        {
+            $renderer = new TwigRenderer();
+            $data = [
+                "name" => "World"
+            ];
+            $path = realpath(__DIR__ . '/variable-substitution.twig');
+            $this->assertEqual($renderer->render($data, $path), "Hello, World!");
+        }
     }
 }

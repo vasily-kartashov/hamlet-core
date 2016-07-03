@@ -4,9 +4,7 @@ namespace Hamlet\Resource {
 
     use Hamlet\Entity\Entity;
     use Hamlet\Request\Request;
-    use Hamlet\Response\Response;
-    use Hamlet\Response\MethodNotAllowedResponse;
-    use Hamlet\Response\NotFoundResponse;
+    use Hamlet\Response\{MethodNotAllowedResponse, NotFoundResponse, Response};
 
     class NotFoundResource implements Resource {
 

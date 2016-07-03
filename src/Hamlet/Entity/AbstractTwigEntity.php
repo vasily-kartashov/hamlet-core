@@ -2,8 +2,7 @@
 
 namespace Hamlet\Entity {
 
-    use Hamlet\Template\TemplateRenderer;
-    use Hamlet\Template\TwigRenderer;
+    use Hamlet\Template\{TemplateRenderer, TwigRenderer};
 
     abstract class AbstractTwigEntity extends AbstractTemplateEntity {
 

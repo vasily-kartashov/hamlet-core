@@ -3,9 +3,7 @@
 namespace Hamlet\Resource {
 
     use Hamlet\Request\Request;
-    use Hamlet\Response\Response;
-    use Hamlet\Response\MethodNotAllowedResponse;
-    use Hamlet\Response\TemporaryRedirectResponse;
+    use Hamlet\Response\{MethodNotAllowedResponse, Response, TemporaryRedirectResponse};
 
     class RedirectResource implements Resource {
         
