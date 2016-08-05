@@ -6,7 +6,7 @@ namespace Hamlet\Resource {
     use Hamlet\Response\Response;
 
     interface Resource {
-        
+
         public function getResponse(Request $request) : Response;
     }
 }

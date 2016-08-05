@@ -10,9 +10,9 @@ namespace Hamlet\Request {
             }
             $oldValue = $_SERVER;
             $_SERVER = [
-                'REQUEST_URI' => $path,
-                'SERVER_NAME' => 'localhost',
-                'REMOTE_ADDR' => '127.0.0.1',
+                'REQUEST_URI'    => $path,
+                'SERVER_NAME'    => 'localhost',
+                'REMOTE_ADDR'    => '127.0.0.1',
                 'REQUEST_METHOD' => 'GET',
             ];
             $request = new WebRequest();

@@ -8,6 +8,6 @@ namespace Hamlet\Cache {
 
         public function set(string $key, $value, int $timeToLive = 0);
 
-        public function delete(string ...$keys);
+        public function delete(string... $keys);
     }
 }

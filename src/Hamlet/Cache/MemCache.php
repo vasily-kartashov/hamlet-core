@@ -9,25 +9,25 @@ namespace Hamlet\Cache {
         protected $endpoints;
 
         public function __construct(array $endpoints) {
-            $this->endpoints = $endpoints;
+            $this -> endpoints = $endpoints;
         }
 
         private function getClient() : Memcached {
             static $client = null;
             if ($client == null) {
                 $client = new Memcached();
-                foreach ($this->endpoints as $endpoint) {
-                    $client->addServer($endpoint['host'], $endpoint['port']);
+                foreach ($this -> endpoints as $endpoint) {
+                    $client -> addServer($endpoint['host'], $endpoint['port']);
                 }
             }
             return $client;
         }
 
         public function get(string $key, $defaultValue = null) {
-            $client = $this->getClient();
+            $client = $this -> getClient();
             $found = true;
-            $value = $client->get($key);
-            if ($client->getResultCode() == Memcached::RES_NOTFOUND) {
+            $value = $client -> get($key);
+            if ($client -> getResultCode() == Memcached::RES_NOTFOUND) {
                 $found = false;
                 $value = $defaultValue;
             }
@@ -35,11 +35,11 @@ namespace Hamlet\Cache {
         }
 
         public function set(string $key, $value, int $timeToLive = 0) : void {
-            $this->getClient()->set($key, $value, $timeToLive);
+            $this -> getClient() -> set($key, $value, $timeToLive);
         }
 
-        public function delete(string ...$keys) : void {
-            $this->getClient()->deleteMulti($keys);
+        public function delete(string... $keys) : void {
+            $this -> getClient() -> deleteMulti($keys);
         }
     }
 }

@@ -12,16 +12,16 @@ namespace Hamlet\Resource {
         protected $methods;
 
         public function __construct(Entity $entity, array $methods = ['GET']) {
-            $this->entity = $entity;
-            $this->methods = $methods;
+            $this -> entity = $entity;
+            $this -> methods = $methods;
         }
 
         public function getResponse(Request $request) : Response {
-            if (in_array($request->getMethod(), $this->methods)) {
-                $response = new OKOrNotModifiedResponse($this->entity, $request);
+            if (in_array($request -> getMethod(), $this -> methods)) {
+                $response = new OKOrNotModifiedResponse($this -> entity, $request);
                 return $response;
             }
-            return new MethodNotAllowedResponse($this->methods);
+            return new MethodNotAllowedResponse($this -> methods);
         }
     }
 }

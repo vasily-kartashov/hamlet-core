@@ -23,7 +23,7 @@ namespace Hamlet\Response {
         public function __construct($url) {
             assert(is_string($url));
             parent::__construct('301 Moved Permanently');
-            $this->setHeader('Location', $url);
+            $this -> setHeader('Location', $url);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Hamlet\Entity {
         abstract protected function getData();
 
         public function getContent() : string {
-            return json_encode($this->getData());
+            return json_encode($this -> getData());
         }
 
         public function getMediaType() : string {

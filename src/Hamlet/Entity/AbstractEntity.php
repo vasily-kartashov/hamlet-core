@@ -26,35 +26,35 @@ namespace Hamlet\Entity {
             return null;
         }
 
-        public function load(Cache $cache) {
-            if (!is_null($this->cacheEntry)) {
-                return $this->cacheEntry;
+        public function load(Cache $cache) : array {
+            if (!is_null($this -> cacheEntry)) {
+                return $this -> cacheEntry;
             }
 
-            $key = $this->getKey();
-            list($this->cacheEntry, $found) = $cache->get($key);
+            $key = $this -> getKey();
+            list($this -> cacheEntry, $found) = $cache -> get($key);
             $now = time();
-            $expires = $this->cacheEntry['expires'] ?? 0;
+            $expires = $this -> cacheEntry['expires'] ?? 0;
 
             if (!$found or $now >= $expires) {
-                $content = $this->getContent();
+                $content = $this -> getContent();
                 $tag = md5($content);
-                if (is_array($this->cacheEntry) and $tag == $this->cacheEntry['tag']) {
-                    $this->cacheEntry['expires'] = $now + $this->getCachingTime();
+                if (is_array($this -> cacheEntry) and $tag == $this -> cacheEntry['tag']) {
+                    $this -> cacheEntry['expires'] = $now + $this -> getCachingTime();
                 } else {
-                    $this->cacheEntry = [
+                    $this -> cacheEntry = [
                         'content'  => $content,
                         'tag'      => $tag,
                         'digest'   => base64_encode(pack('H*', md5($content))),
                         'length'   => strlen($content),
                         'modified' => $now,
-                        'expires'  => $now + $this->getCachingTime(),
+                        'expires'  => $now + $this -> getCachingTime(),
                     ];
                 }
-                $cache->set($key, $this->cacheEntry);
+                $cache -> set($key, $this -> cacheEntry);
             }
 
-            return $this->cacheEntry;
+            return $this -> cacheEntry;
         }
     }
 }

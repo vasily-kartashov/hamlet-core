@@ -11,9 +11,8 @@ namespace Hamlet\Response {
     class TemporaryRedirectResponse extends AbstractResponse {
 
         public function __construct(string $url) {
-            assert(is_string($url));
             parent::__construct('307 Temporary Redirect');
-            $this->setHeader('Location', $url);
+            $this -> setHeader('Location', $url);
         }
     }
 }

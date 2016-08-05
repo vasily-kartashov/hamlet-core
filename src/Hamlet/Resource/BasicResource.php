@@ -10,11 +10,11 @@ namespace Hamlet\Resource {
         protected $response;
 
         public function __construct(Response $response) {
-            $this->response = $response;
+            $this -> response = $response;
         }
 
         public function getResponse(Request $request) : Response {
-            return $this->response;
+            return $this -> response;
         }
     }
 }

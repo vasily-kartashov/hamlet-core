@@ -19,11 +19,10 @@ namespace Hamlet\Response {
     class CreatedResponse extends AbstractResponse {
 
         public function __construct(string $url, Entity $entity = null) {
-            assert(is_string($url));
             parent::__construct('201 Created');
-            $this->setHeader('Location', $url);
+            $this -> setHeader('Location', $url);
             if (!is_null($entity)) {
-                $this->setEntity($entity);
+                $this -> setEntity($entity);
             }
         }
     }

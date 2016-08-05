@@ -18,7 +18,6 @@ namespace Hamlet\Response {
     class SeeOtherResponse extends AbstractResponse {
 
         public function __construct(string $url) {
-            assert(is_string($url));
             parent::__construct('303 See Other');
             $this->setHeader('Location', $url);
         }

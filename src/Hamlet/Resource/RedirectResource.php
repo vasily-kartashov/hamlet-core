@@ -11,13 +11,13 @@ namespace Hamlet\Resource {
 
         public function __construct(string $url) {
             assert(is_string($url));
-            $this->url = $url;
+            $this -> url = $url;
         }
 
         public function getResponse(Request $request) : Response {
-            if ($request->getMethod() == 'GET') {
-                $response = new TemporaryRedirectResponse($this->url);
-                $response->setHeader('Cache-Control', 'private');
+            if ($request -> getMethod() == 'GET') {
+                $response = new TemporaryRedirectResponse($this -> url);
+                $response -> setHeader('Cache-Control', 'private');
                 return $response;
             }
             return new MethodNotAllowedResponse(['GET']);

@@ -12,29 +12,29 @@ namespace Hamlet\Database {
         protected $parameters = [];
 
         public function __construct(mysqli $connection, string $query) {
-            $this->connection = $connection;
-            $this->statement = $connection->prepare($query);
-            if (!$this->statement) {
-                throw new Exception($this->connection->error);
+            $this -> connection = $connection;
+            $this -> statement = $connection -> prepare($query);
+            if (!$this -> statement) {
+                throw new Exception($this -> connection -> error);
             }
         }
 
         public function execute() {
-            $this->bindParameters();
-            $success = $this->statement->execute();
+            $this -> bindParameters();
+            $success = $this -> statement -> execute();
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
-            $success = $this->statement->close();
+            $success = $this -> statement -> close();
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
         }
 
         public function fetch(callable $callback) {
-            $row = &$this->initFetching();
+            $row = &$this -> initFetching();
             while (true) {
-                $status = $this->statement->fetch();
+                $status = $this -> statement -> fetch();
                 if ($status === true) {
                     $rowCopy = [];
                     foreach ($row as $key => $value) {
@@ -44,7 +44,7 @@ namespace Hamlet\Database {
                 } elseif (is_null($status)) {
                     break;
                 } else {
-                    throw new Exception($this->connection->error);
+                    throw new Exception($this -> connection -> error);
                 }
             }
             $this->finalizeFetching();
@@ -99,14 +99,14 @@ namespace Hamlet\Database {
         }
 
         private function bindParameters() {
-            if (count($this->parameters) == 0) {
+            if (count($this -> parameters) == 0) {
                 return;
             }
             $callParameters = [];
             $types = '';
             $blobs = [];
             $callParameters[] = &$types;
-            foreach ($this->parameters as $i => $parameter) {
+            foreach ($this -> parameters as $i => $parameter) {
                 $types .= $parameter[0];
                 if ($parameter[0] == 'b') {
                     $nothing = null;
@@ -118,14 +118,14 @@ namespace Hamlet\Database {
                     $callParameters[] = &$$name;
                 }
             }
-            $success = call_user_func_array([$this->statement, 'bind_param'], $callParameters);
+            $success = call_user_func_array([$this -> statement, 'bind_param'], $callParameters);
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
             foreach ($blobs as $i => $data) {
-                $success = $this->statement->send_long_data($i, $data);
+                $success = $this -> statement->send_long_data($i, $data);
                 if (!$success) {
-                    throw new Exception($this->connection->error);
+                    throw new Exception($this -> connection -> error);
                 }
             }
         }

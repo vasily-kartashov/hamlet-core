@@ -12,25 +12,24 @@ namespace Hamlet\Command {
         protected $rootDirectoryPath;
 
         public function __construct(string $rootDirectoryPath) {
-
             parent::__construct();
-            $this->rootDirectoryPath = $rootDirectoryPath;
+            $this -> rootDirectoryPath = $rootDirectoryPath;
         }
 
         protected function configure() {
-            $this->setName('test')
-                 ->setDescription('Run tests')
-                 ->addArgument('class', InputArgument::OPTIONAL, 'Test class name to run');
+            $this -> setName('test')
+                  -> setDescription('Run tests')
+                  -> addArgument('class', InputArgument::OPTIONAL, 'Test class name to run');
         }
 
         protected function execute(InputInterface $input, OutputInterface $output) : int {
             $runner = new SimpleTestRunner(new OutputReporterFacade($output));
-            $className = $input->getArgument('class');
+            $className = $input -> getArgument('class');
             if ($className != null && !class_exists($className)) {
-                $output->writeln('Cannot load class ' . $className);
+                $output -> writeln('Cannot load class ' . $className);
                 return 1;
             } else {
-                return $runner->execute($this->rootDirectoryPath, $className) ? 0 : 1;
+                return $runner -> execute($this -> rootDirectoryPath, $className) ? 0 : 1;
             }
         }
     }

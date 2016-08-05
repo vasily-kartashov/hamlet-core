@@ -19,7 +19,7 @@ namespace Hamlet\Response {
         public function __construct(Entity $entity = null) {
             parent::__construct('200 OK');
             if (!is_null($entity)) {
-                $this->setEntity($entity);
+                $this -> setEntity($entity);
             }
         }
     }

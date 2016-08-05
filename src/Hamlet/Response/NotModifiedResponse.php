@@ -13,7 +13,7 @@ namespace Hamlet\Response {
 
         public function __construct(Entity $entity) {
             parent::__construct('304 Not Modified');
-            $this->setEntity($entity);
+            $this -> setEntity($entity);
         }
     }
 }

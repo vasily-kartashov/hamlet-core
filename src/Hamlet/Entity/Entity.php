@@ -3,8 +3,8 @@ namespace Hamlet\Entity {
 
     use Hamlet\Cache\Cache;
 
-    interface Entity
-    {
+    interface Entity {
+
         /**
          * Get caching time in seconds. Default caching time is 0
          */

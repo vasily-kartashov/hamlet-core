@@ -16,7 +16,7 @@ namespace Hamlet\TestRunner\SimpleTest {
         protected $reporter;
 
         public function __construct(SimpleReporter $reporter) {
-            $this->reporter = $reporter;
+            $this -> reporter = $reporter;
         }
 
         public function execute(string $rootDirectoryPath, string $className = null) : bool {
@@ -32,12 +32,12 @@ namespace Hamlet\TestRunner\SimpleTest {
                 }
                 try {
                     $reflectionClass = new ReflectionClass($name);
-                    if (!$reflectionClass->isAbstract() and $reflectionClass->isSubclassOf('UnitTestCase')) {
-                        $object = $reflectionClass->newInstance();
-                        $success = $object->run($this->reporter) and $success;
+                    if (!$reflectionClass -> isAbstract() and $reflectionClass -> isSubclassOf('UnitTestCase')) {
+                        $object = $reflectionClass -> newInstance();
+                        $success = $object -> run($this -> reporter) and $success;
                     }
                 } catch (Exception $e) {
-                    $this->reporter->paintException($e);
+                    $this -> reporter -> paintException($e);
                     $success = false;
                 }
             }

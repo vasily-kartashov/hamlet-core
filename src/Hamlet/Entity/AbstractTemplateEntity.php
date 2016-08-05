@@ -13,7 +13,8 @@ namespace Hamlet\Entity {
         abstract protected function getTemplateRenderer() : TemplateRenderer;
 
         public function getContent() : string {
-            return $this->getTemplateRenderer()->render($this->getTemplateData(), $this->getTemplatePath());
+            return $this -> getTemplateRenderer()
+                         -> render($this -> getTemplateData(), $this -> getTemplatePath());
         }
     }
 }

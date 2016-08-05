@@ -16,7 +16,7 @@ namespace Hamlet\Response {
         public function __construct(Entity $entity = null) {
             parent::__construct('500 Internal Server Error');
             if (!is_null($entity)) {
-                $this->setEntity($entity);
+                $this -> setEntity($entity);
             }
         }
     }
