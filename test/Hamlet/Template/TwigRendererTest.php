@@ -1,6 +1,6 @@
 <?php
 
-namespace Hamlet\Template {
+namespace Hamlet\Templating {
 
     use UnitTestCase;
 

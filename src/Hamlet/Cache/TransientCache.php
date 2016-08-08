@@ -3,7 +3,7 @@
 namespace Hamlet\Cache {
 
     class TransientCache implements Cache {
-        
+
         private $entries = [];
 
         public function get(string $key, $defaultValue = null) {
