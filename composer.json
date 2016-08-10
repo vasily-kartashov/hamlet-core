@@ -18,7 +18,8 @@
         "twig/twig": "dev-master",
         "simpletest/simpletest": "dev-master",
         "symfony/console": "dev-master",
-        "monolog/monolog": "dev-master"
+        "monolog/monolog": "dev-master",
+        "cboden/ratchet": "dev-master"
     },
     "autoload": {
         "classmap": [

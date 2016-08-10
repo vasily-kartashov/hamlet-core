@@ -1,6 +1,6 @@
 <?php
 
-namespace Hamlet\Command {
+namespace Hamlet\Commands {
 
     use Hamlet\TestRunners\SimpleTest\{OutputReporterFacade, SimpleTestRunner};
     use Symfony\Component\Console\Command\Command;

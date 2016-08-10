@@ -34,21 +34,18 @@ namespace Hamlet\Requests {
             }
         }
 
-        public function getSessionParameter(string $name, $defaultValue = null) : string
-        {
+        public function getSessionParameter(string $name, $defaultValue = null) : string {
             assert(is_string($name));
             $this -> startSession();
             return parent::getSessionParameter($name, $defaultValue);
         }
 
-        public function getSessionParameters() : array
-        {
+        public function getSessionParameters() : array {
             $this -> startSession();
             return parent::getSessionParameters();
         }
 
-        protected function startSession() : void
-        {
+        protected function startSession() : void {
             if (!session_id()) {
                 session_start();
                 $this -> sessionParameters = $_SESSION ?? [];

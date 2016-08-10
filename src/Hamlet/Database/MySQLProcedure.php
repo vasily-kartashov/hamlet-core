@@ -51,13 +51,13 @@ namespace Hamlet\Database {
         }
 
         public function fetchOne() : array {
-            $row = &$this->initFetching();
-            $status = $this->statement->fetch();
+            $row = &$this -> initFetching();
+            $status = $this -> statement -> fetch();
             $value = null;
             if ($status === true) {
                 $value = $row;
             } elseif ($status === false) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
             $this->finalizeFetching();
             return $value;
@@ -65,7 +65,7 @@ namespace Hamlet\Database {
 
         public function fetchAll() : array {
             $result = [];
-            $this->fetch(function ($row) use (&$result) {
+            $this -> fetch(function ($row) use (&$result) {
                 $result[] = $row;
             });
             return $result;
@@ -73,7 +73,7 @@ namespace Hamlet\Database {
 
         public function fetchAllWithKey(string $keyField) : array {
             $result = [];
-            $this->fetch(function ($row) use ($keyField, &$result) {
+            $this -> fetch(function ($row) use ($keyField, &$result) {
                 $key = $row[$keyField];
                 unset($row[$keyField]);
                 $result[$key] = $row;
@@ -123,7 +123,7 @@ namespace Hamlet\Database {
                 throw new Exception($this -> connection -> error);
             }
             foreach ($blobs as $i => $data) {
-                $success = $this -> statement->send_long_data($i, $data);
+                $success = $this -> statement -> send_long_data($i, $data);
                 if (!$success) {
                     throw new Exception($this -> connection -> error);
                 }
@@ -131,37 +131,37 @@ namespace Hamlet\Database {
         }
 
         private function initFetching() {
-            $this->bindParameters();
-            $row = &$this->bindResult();
-            $success = $this->statement->execute();
+            $this -> bindParameters();
+            $row = &$this -> bindResult();
+            $success = $this -> statement -> execute();
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
-            $this->statement->store_result();
+            $this -> statement -> store_result();
             return $row;
         }
 
         private function finalizeFetching() {
-            $this->statement->free_result();
-            $success = $this->statement->close();
+            $this -> statement -> free_result();
+            $success = $this -> statement -> close();
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
         }
 
         private function bindResult() {
-            $metaData = $this->statement->result_metadata();
+            $metaData = $this -> statement -> result_metadata();
             if ($metaData === false) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
             $row = [];
             $boundParameters = [];
-            while ($field = $metaData->fetch_field()) {
-                $boundParameters[] = &$row[$field->name];
+            while ($field = $metaData -> fetch_field()) {
+                $boundParameters[] = &$row[$field -> name];
             }
-            $success = call_user_func_array([$this->statement, 'bind_result'], $boundParameters);
+            $success = call_user_func_array([$this -> statement, 'bind_result'], $boundParameters);
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new Exception($this -> connection -> error);
             }
             return $row;
         }

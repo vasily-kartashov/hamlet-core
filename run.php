@@ -14,5 +14,5 @@ foreach ($paths as $path) {
 }
 
 $application = new \Symfony\Component\Console\Application();
-$application->add(new \Hamlet\Command\RunTestsCommand(realpath(__DIR__ . '/test')));
-$application->run();
+$application -> add(new \Hamlet\Commands\RunTestsCommand(realpath(__DIR__ . '/test')));
+$application -> run();

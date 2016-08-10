@@ -19,7 +19,7 @@ namespace Hamlet\Responses {
 
         public function __construct(string $url) {
             parent::__construct('303 See Other');
-            $this->setHeader('Location', $url);
+            $this -> setHeader('Location', $url);
         }
     }
 }

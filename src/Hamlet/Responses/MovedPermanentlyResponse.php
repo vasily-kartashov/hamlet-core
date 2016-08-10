@@ -20,8 +20,7 @@ namespace Hamlet\Responses {
      */
     class MovedPermanentlyResponse extends AbstractResponse {
 
-        public function __construct($url) {
-            assert(is_string($url));
+        public function __construct(string $url) {
             parent::__construct('301 Moved Permanently');
             $this -> setHeader('Location', $url);
         }
