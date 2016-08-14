@@ -10,6 +10,7 @@ namespace Hamlet\Applications {
     abstract class AbstractApplication {
 
         public function run(Request $request) : Response {
+            /** @var \Hamlet\Resources\Resource $resource */
             $resource = $this -> findResource($request);
             $response = $resource -> getResponse($request);
             return $response;

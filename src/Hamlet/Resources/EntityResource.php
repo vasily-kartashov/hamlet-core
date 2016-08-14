@@ -9,6 +9,7 @@ namespace Hamlet\Resources {
     class EntityResource implements Resource {
 
         protected $entity;
+        /** @var string[] */
         protected $methods;
 
         public function __construct(Entity $entity, array $methods = ['GET']) {

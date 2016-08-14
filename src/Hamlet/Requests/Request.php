@@ -1,4 +1,5 @@
 <?php
+
 namespace Hamlet\Requests {
 
     use Hamlet\Cache\Cache;

@@ -10,7 +10,6 @@ namespace Hamlet\Resources {
         protected $url;
 
         public function __construct(string $url) {
-            assert(is_string($url));
             $this -> url = $url;
         }
 

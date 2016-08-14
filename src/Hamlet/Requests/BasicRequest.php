@@ -136,8 +136,7 @@ namespace Hamlet\Requests {
          *
          * @return string[]
          */
-        protected function parseHeader($headerString) : array {
-            assert(is_string($headerString));
+        protected function parseHeader(string $headerString) : array {
             $ranges = explode(',', trim(strtolower($headerString)));
             foreach ($ranges as $i => $range) {
                 $tokens = explode(';', trim($range), 2);

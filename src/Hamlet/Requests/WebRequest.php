@@ -35,7 +35,6 @@ namespace Hamlet\Requests {
         }
 
         public function getSessionParameter(string $name, $defaultValue = null) : string {
-            assert(is_string($name));
             $this -> startSession();
             return parent::getSessionParameter($name, $defaultValue);
         }
