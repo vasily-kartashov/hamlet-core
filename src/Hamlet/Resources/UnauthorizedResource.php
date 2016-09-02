@@ -3,11 +3,11 @@
 namespace Hamlet\Resources {
 
     use Hamlet\Requests\Request;
-    use Hamlet\Responses\UnauthorizedResponse;
+    use Hamlet\Responses\{Response, UnauthorizedResponse};
 
-    class UnauthorizedResource implements Resource {
+    class UnauthorizedResource implements WebResource {
 
-        public function getResponse(Request $request) : UnauthorizedResponse {
+        public function getResponse(Request $request) : Response {
             return new UnauthorizedResponse();
         }
     }

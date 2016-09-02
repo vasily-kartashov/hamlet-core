@@ -6,7 +6,7 @@ namespace Hamlet\Resources {
     use Hamlet\Requests\Request;
     use Hamlet\Responses\{MethodNotAllowedResponse, OKOrNotModifiedResponse, Response};
 
-    class EntityResource implements Resource {
+    class EntityResource implements WebResource {
 
         protected $entity;
         /** @var string[] */

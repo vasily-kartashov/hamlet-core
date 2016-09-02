@@ -5,7 +5,7 @@ namespace Hamlet\Resources {
     use Hamlet\Requests\Request;
     use Hamlet\Responses\Response;
 
-    class BasicResource implements Resource {
+    class BasicResource implements WebResource {
 
         protected $response;
 

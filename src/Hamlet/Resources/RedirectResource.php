@@ -5,7 +5,7 @@ namespace Hamlet\Resources {
     use Hamlet\Requests\Request;
     use Hamlet\Responses\{MethodNotAllowedResponse, Response, TemporaryRedirectResponse};
 
-    class RedirectResource implements Resource {
+    class RedirectResource implements WebResource {
 
         protected $url;
 

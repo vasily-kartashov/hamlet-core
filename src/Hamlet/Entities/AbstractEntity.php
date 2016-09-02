@@ -18,11 +18,11 @@ namespace Hamlet\Entities {
          */
         private $cacheEntry = null;
 
-        public function getCachingTime() {
+        public function getCachingTime() : int {
             return 0;
         }
 
-        public function getContentLanguage() {
+        public function getContentLanguage() : string {
             return null;
         }
 

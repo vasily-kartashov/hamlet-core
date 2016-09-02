@@ -6,7 +6,7 @@ namespace Hamlet\Resources {
     use Hamlet\Requests\Request;
     use Hamlet\Responses\{MethodNotAllowedResponse, NotFoundResponse, Response};
 
-    class NotFoundResource implements Resource {
+    class NotFoundResource implements WebResource {
 
         protected $entity;
 

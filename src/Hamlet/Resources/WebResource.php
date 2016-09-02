@@ -5,7 +5,7 @@ namespace Hamlet\Resources {
     use Hamlet\Requests\Request;
     use Hamlet\Responses\Response;
 
-    interface Resource {
+    interface WebResource {
 
         public function getResponse(Request $request) : Response;
     }
