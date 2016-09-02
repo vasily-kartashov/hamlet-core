@@ -16,15 +16,8 @@ namespace Hamlet\Database {
 
         public function fetch(callable $callback);
 
-        /**
-         * @return array[]
-         */
         public function fetchAll() : array;
 
-        /**
-         * @param string $keyField
-         * @return array[]
-         */
         public function fetchAllWithKey(string $keyField) : array;
 
         public function fetchOne() : array;

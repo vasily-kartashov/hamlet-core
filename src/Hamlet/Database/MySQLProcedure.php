@@ -19,7 +19,7 @@ namespace Hamlet\Database {
             }
         }
 
-        public function execute() {
+        public function execute() : void {
             $this -> bindParameters();
             $success = $this -> statement -> execute();
             if (!$success) {
