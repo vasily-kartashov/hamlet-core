@@ -26,7 +26,7 @@ namespace Hamlet\Database {
             return new Database($connection, 'sqlite');
         }
 
-        public function procedure($query) {
+        public function prepare($query) {
             switch ($this -> type) {
                 case 'mysql':
                     return new MySQLProcedure($this -> connection, $query);
