@@ -15,11 +15,9 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "twig/twig": "dev-master",
-        "simpletest/simpletest": "dev-master",
-        "symfony/console": "dev-master",
-        "monolog/monolog": "dev-master",
-        "cboden/ratchet": "dev-master"
+        "twig/twig": "1.*",
+        "simpletest/simpletest": "1.*",
+        "symfony/console": "3.*"
     },
     "autoload": {
         "classmap": [
