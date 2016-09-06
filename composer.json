@@ -3,6 +3,7 @@
     "type": "library",
     "description": "hamlet framework",
     "keywords": ["framework"],
+    "version": "2.0.1",
     "authors": [
         {
             "name": "Vasily Kartashov",
