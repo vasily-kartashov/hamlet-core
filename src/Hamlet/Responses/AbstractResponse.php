@@ -57,7 +57,7 @@ namespace Hamlet\Responses {
             $this -> embedEntity = $embedEntity;
         }
 
-        public function output(Request $request, Cache $cache) : void {
+        public function output(Request $request, Cache $cache) {
             if (count($this -> session) > 0) {
                 if (!session_id()) {
                     session_start();
@@ -114,7 +114,7 @@ namespace Hamlet\Responses {
             ];
         }
 
-        public function setSessionParameter(string $name, $value) : void {
+        public function setSessionParameter(string $name, $value) {
             $this -> session[$name] = $value;
         }
 

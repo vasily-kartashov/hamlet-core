@@ -12,7 +12,7 @@ namespace Hamlet\Database {
 
         public function bindString(string $value);
 
-        public function execute() : void;
+        public function execute();
 
         public function fetch(callable $callback);
 

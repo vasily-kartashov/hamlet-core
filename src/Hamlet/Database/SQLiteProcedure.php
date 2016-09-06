@@ -37,7 +37,7 @@ namespace Hamlet\Database {
             }
         }
 
-        public function execute() : void {
+        public function execute() {
             $this -> bindParameters();
             $this -> statement -> execute();
         }

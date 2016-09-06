@@ -13,7 +13,7 @@ namespace Hamlet\Responses {
             $this -> setEntity($entity);
         }
 
-        public function output(Request $request, Cache $cache) : void {
+        public function output(Request $request, Cache $cache) {
             if ($request -> preconditionFulfilled($this -> entity, $cache)) {
                 $this -> setStatus('200 OK');
                 $this -> setEmbedEntity(true);

@@ -44,7 +44,7 @@ namespace Hamlet\Requests {
             return parent::getSessionParameters();
         }
 
-        protected function startSession() : void {
+        protected function startSession() {
             if (!session_id()) {
                 session_start();
                 $this -> sessionParameters = $_SESSION ?? [];

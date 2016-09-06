@@ -7,6 +7,6 @@ namespace Hamlet\Responses {
 
     interface Response {
 
-        public function output(Request $request, Cache $cache) : void;
+        public function output(Request $request, Cache $cache);
     }
 }

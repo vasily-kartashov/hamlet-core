@@ -19,7 +19,7 @@ namespace Hamlet\Applications {
 
         abstract protected function getCache(Request $request) : Cache;
 
-        public function output(Request $request, Response $response) : void {
+        public function output(Request $request, Response $response) {
             $response->output($request, $this -> getCache($request));
         }
     }

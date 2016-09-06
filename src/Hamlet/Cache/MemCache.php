@@ -34,11 +34,11 @@ namespace Hamlet\Cache {
             return [$value, $found];
         }
 
-        public function set(string $key, $value, int $timeToLive = 0) : void {
+        public function set(string $key, $value, int $timeToLive = 0) {
             $this -> getClient() -> set($key, $value, $timeToLive);
         }
 
-        public function delete(string... $keys) : void {
+        public function delete(string... $keys) {
             $this -> getClient() -> deleteMulti($keys);
         }
     }
