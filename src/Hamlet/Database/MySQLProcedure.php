@@ -90,7 +90,7 @@ namespace Hamlet\Database {
             $this->parameters[] = ['i', $value];
         }
 
-        public function bindFloat(double $value) {
+        public function bindFloat(float $value) {
             $this->parameters[] = ['d', $value];
         }
 
