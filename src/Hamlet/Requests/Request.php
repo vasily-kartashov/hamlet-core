@@ -14,7 +14,7 @@ namespace Hamlet\Requests {
 
         public function getEnvironmentName() : string;
 
-        public function getHeader(string $headerName) : string;
+        public function getHeader(string $headerName);
 
         /**
          * @return string[]

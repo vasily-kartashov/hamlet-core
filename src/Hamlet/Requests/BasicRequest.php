@@ -63,7 +63,7 @@ namespace Hamlet\Requests {
             return $this -> environmentName;
         }
 
-        public function getHeader(string $name) : string {
+        public function getHeader(string $name) {
             return $this -> headers[$name] ?? null;
         }
 
