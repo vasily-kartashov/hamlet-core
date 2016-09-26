@@ -57,6 +57,11 @@ namespace Hamlet\Requests {
             return $this;
         }
 
+        public function setHeader($header, $value) : RequestBuilder {
+            $this -> headers[$header] = $value;
+            return $this;
+        }
+
         public function build() : Request {
             return new BasicRequest(
                 $this -> method,
