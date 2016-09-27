@@ -32,7 +32,7 @@ namespace Hamlet\Database {
         }
 
         public function fetch(callable $callback) {
-            $row = &$this -> initFetching();
+            $row = $this -> initFetching();
             while (true) {
                 $status = $this -> statement -> fetch();
                 if ($status === true) {
@@ -51,7 +51,7 @@ namespace Hamlet\Database {
         }
 
         public function fetchOne() : array {
-            $row = &$this -> initFetching();
+            $row = $this -> initFetching();
             $status = $this -> statement -> fetch();
             $value = null;
             if ($status === true) {
@@ -132,7 +132,7 @@ namespace Hamlet\Database {
 
         private function initFetching() {
             $this -> bindParameters();
-            $row = &$this -> bindResult();
+            $row = $this -> bindResult();
             $success = $this -> statement -> execute();
             if (!$success) {
                 throw new Exception($this -> connection -> error);
