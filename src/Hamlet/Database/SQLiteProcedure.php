@@ -72,7 +72,7 @@ namespace Hamlet\Database {
             return $data;
         }
 
-        public function fetchOne() : array {
+        public function fetchOne() {
             $this -> bindParameters();
             $result = $this -> statement -> execute();
             return $result -> fetchArray(SQLITE3_ASSOC);

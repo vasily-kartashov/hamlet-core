@@ -50,7 +50,7 @@ namespace Hamlet\Database {
             $this->finalizeFetching();
         }
 
-        public function fetchOne() : array {
+        public function fetchOne() {
             $row = $this -> initFetching();
             $status = $this -> statement -> fetch();
             $value = null;
