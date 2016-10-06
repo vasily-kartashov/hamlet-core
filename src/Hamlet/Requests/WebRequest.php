@@ -47,6 +47,8 @@ namespace Hamlet\Requests {
         protected function startSession() {
             if (!session_id()) {
                 session_start();
+            }
+            if (!isset($this -> sessionParameters)) {
                 $this -> sessionParameters = $_SESSION ?? [];
             }
         }
