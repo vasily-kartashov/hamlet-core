@@ -23,7 +23,7 @@ namespace Hamlet\Requests {
 
         public function getMethod() : string;
 
-        public function getParameter(string $name, $defaultValue = null) : string;
+        public function getParameter(string $name, $defaultValue = null);
 
         public function getBody() : string;
 
@@ -44,7 +44,7 @@ namespace Hamlet\Requests {
          * @param string $defaultValue
          * @return string|null
          */
-        public function getSessionParameter(string $name, $defaultValue = null) : string;
+        public function getSessionParameter(string $name, $defaultValue = null);
 
         public function getSessionParameters() : array;
 

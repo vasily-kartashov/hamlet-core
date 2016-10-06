@@ -76,7 +76,7 @@ namespace Hamlet\Requests {
             return $this -> method;
         }
 
-        public function getParameter(string $name, $defaultValue = null) : string {
+        public function getParameter(string $name, $defaultValue = null) {
             return $this -> parameters[$name] ?? $defaultValue;
         }
 
@@ -84,7 +84,7 @@ namespace Hamlet\Requests {
             return $this -> parameters;
         }
 
-        public function getSessionParameter(string $name, $defaultValue = null) : string {
+        public function getSessionParameter(string $name, $defaultValue = null) {
             return $this -> sessionParameters[$name] ?? $defaultValue;
         }
 
