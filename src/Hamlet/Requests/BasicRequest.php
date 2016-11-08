@@ -2,6 +2,7 @@
 
 namespace Hamlet\Requests {
 
+    use DateTime;
     use Hamlet\Cache\Cache;
     use Hamlet\Entities\Entity;
 
@@ -242,6 +243,15 @@ namespace Hamlet\Requests {
 
         public function getPath() : string {
             return $this -> path;
+        }
+
+        public function getDate() : int {
+            if (!isset($this -> headers['Date'])) {
+                return -1;
+            }
+            $format = 'D M d Y H:i:s O+';
+            $dateTime = DateTime::createFromFormat($format, $this -> headers['Date']);
+            return $dateTime -> getTimestamp();
         }
 
         public function jsonSerialize() {

@@ -92,5 +92,7 @@ namespace Hamlet\Requests {
          * @return bool true if precondition is fulfilled, as in ETag doesn't match, or entity is expired
          */
         public function preconditionFulfilled(Entity $entity, Cache $cache) : bool;
+
+        public function getDate() : int;
     }
 }
