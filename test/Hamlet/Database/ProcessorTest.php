@@ -21,11 +21,9 @@ namespace Hamlet\Database {
                     'phone' => '12333'
                 ]
             ];
-            $collection = Processor::with($rows)->group('phones', function($row) {
-                $phone = $row['phone'];
-                unset($row['phone']);
-                return [$phone, $row];
-            })->collect();
+            $collection = Processor::with($rows)
+                ->group('phones', Processor::fieldExtractor('phone'))
+                ->collect();
             print_r($collection);
             $this->assertEqual(2, count($collection));
         }

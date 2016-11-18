@@ -32,6 +32,14 @@ namespace Hamlet\Database {
             return Processor::with($processedRows);
         }
 
+        public static function fieldExtractor($field) {
+            return function($row) use ($field) {
+                $value = $row[$field];
+                unset($row[$field]);
+                return [$value, $row];
+            };
+        }
+
         public function collect() {
             return $this->rows;
         }
