@@ -66,7 +66,6 @@ namespace Hamlet\Database {
             $data = [];
             while (($row = $result -> fetchArray(SQLITE3_ASSOC)) !== false) {
                 $key = $row[$keyField];
-                unset($row[$keyField]);
                 $data[$key] = $row;
             }
             return $data;

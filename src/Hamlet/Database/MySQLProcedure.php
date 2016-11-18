@@ -75,7 +75,6 @@ namespace Hamlet\Database {
             $result = [];
             $this -> fetch(function ($row) use ($keyField, &$result) {
                 $key = $row[$keyField];
-                unset($row[$keyField]);
                 $result[$key] = $row;
             });
             return $result;
