@@ -6,8 +6,8 @@ namespace Hamlet\Database {
 
     class ProcessorTest extends UnitTestCase {
 
-        public function testGroup() {
-            $rows = [
+        private function phones() {
+            return [
                 [
                     'name' => 'John',
                     'phone' => '123'
@@ -21,8 +21,21 @@ namespace Hamlet\Database {
                     'phone' => '12333'
                 ]
             ];
-            $collection = Processor::with($rows)
+        }
+
+        public function testFieldExtractor() {
+            $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::fieldExtractor('phone'))
+                ->collect();
+            print_r($collection);
+            $this->assertEqual(2, count($collection));
+        }
+
+        public function testFieldMapper() {
+            $collection = Processor::with($this -> phones())
+                ->group('phones', Processor::fieldMapper([
+                    'phone' => 'phoneNumber'
+                ]))
                 ->collect();
             print_r($collection);
             $this->assertEqual(2, count($collection));

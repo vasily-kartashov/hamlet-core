@@ -33,9 +33,20 @@ namespace Hamlet\Database {
         }
 
         public static function fieldExtractor($field) {
-            return function($row) use ($field) {
+            return function ($row) use ($field) {
                 $value = $row[$field];
                 unset($row[$field]);
+                return [$value, $row];
+            };
+        }
+
+        public static function fieldMapper(array $map) {
+            return function ($row) use ($map) {
+                $value = [];
+                foreach ($map as $field => $alias) {
+                    $value[$alias] = $row[$field];
+                    unset($row[$field]);
+                }
                 return [$value, $row];
             };
         }
