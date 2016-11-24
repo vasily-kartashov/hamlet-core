@@ -33,9 +33,17 @@ namespace Hamlet\Database {
 
         public function testFieldMapper() {
             $collection = Processor::with($this -> phones())
-                ->group('phones', Processor::fieldMapper([
+                ->group('phones', Processor::tailMapper([
                     'phone' => 'phoneNumber'
                 ]))
+                ->collect();
+            print_r($collection);
+            $this->assertEqual(2, count($collection));
+        }
+
+        public function testGroupFieldsExtractor() {
+            $collection = Processor::with($this -> phones())
+                ->group('phones', Processor::groupFieldsExtractor('name'))
                 ->collect();
             print_r($collection);
             $this->assertEqual(2, count($collection));

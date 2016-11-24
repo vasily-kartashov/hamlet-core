@@ -29,7 +29,7 @@ namespace Hamlet\Database {
             foreach (array_keys($processedRows) as $key) {
                 $processedRows[$key][$title] = $groups[$key];
             }
-            return Processor::with($processedRows);
+            return Processor::with(array_values($processedRows));
         }
 
         public static function fieldExtractor($field) {
@@ -40,7 +40,7 @@ namespace Hamlet\Database {
             };
         }
 
-        public static function fieldMapper(array $map) {
+        public static function tailMapper(array $map) {
             return function ($row) use ($map) {
                 $value = [];
                 foreach ($map as $field => $alias) {
@@ -48,6 +48,17 @@ namespace Hamlet\Database {
                     unset($row[$field]);
                 }
                 return [$value, $row];
+            };
+        }
+
+        public static function groupFieldsExtractor(... $fields) {
+            return function ($row) use ($fields) {
+                $head = [];
+                foreach ($fields as $field) {
+                    $head[$field] = $row[$field];
+                    unset($row[$field]);
+                }
+                return [$row, $head];
             };
         }
 
