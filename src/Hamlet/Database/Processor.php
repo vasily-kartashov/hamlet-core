@@ -65,5 +65,13 @@ namespace Hamlet\Database {
         public function collect() {
             return $this->rows;
         }
+
+        public function collectToMap($keyField, $valueField) {
+            $map = [];
+            foreach ($this->rows as $row) {
+                $map[$row[$keyField]] = $row[$valueField];
+            }
+            return $map;
+        }
     }
 }

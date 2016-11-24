@@ -48,5 +48,13 @@ namespace Hamlet\Database {
             print_r($collection);
             $this->assertEqual(2, count($collection));
         }
+
+        public function testCollectToMap() {
+            $collection = Processor::with($this -> phones())
+                ->group('phones', Processor::fieldExtractor('phone'))
+                ->collectToMap('name', 'phones');
+            print_r($collection);
+            $this->assertEqual(2, count($collection));
+        }
     }
 }
