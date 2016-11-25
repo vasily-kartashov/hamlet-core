@@ -171,15 +171,18 @@ namespace Hamlet\Database {
             $blobs = [];
             $callParameters[] = &$types;
             foreach ($this -> parameters as $i => $parameter) {
-                $types .= $parameter[0];
-                if ($parameter[0] == 'b') {
-                    $nothing = null;
-                    $callParameters[] = &$nothing;
-                    $blobs[$i] = $parameter[1];
-                } else {
-                    $name = "value{$i}";
-                    $$name = $parameter[1];
-                    $callParameters[] = &$$name;
+                $values = is_array($parameter[1]) ? $parameter[1] : [$parameter[1]];
+                foreach ($values as $value) {
+                    $types .= $parameter[0];
+                    if ($parameter[0] == 'b') {
+                        $nothing = null;
+                        $callParameters[] = &$nothing;
+                        $blobs[$i] = $value;
+                    } else {
+                        $name = "value{$i}";
+                        $$name = $value;
+                        $callParameters[] = &$$name;
+                    }
                 }
             }
             $success = call_user_func_array([$statement, 'bind_param'], $callParameters);
