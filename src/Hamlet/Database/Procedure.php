@@ -12,6 +12,20 @@ namespace Hamlet\Database {
 
         public function bindString(string $value);
 
+        public function bindNullableBlob($value);
+
+        public function bindNullableFloat($value);
+
+        public function bindNullableInteger($value);
+
+        public function bindNullableString($value);
+
+        public function bindFloatList(array $values);
+
+        public function bindIntegerList(array $values);
+
+        public function bindStringList(array $values);
+
         public function execute();
 
         public function fetch(callable $callback);

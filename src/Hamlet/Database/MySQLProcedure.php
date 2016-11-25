@@ -4,37 +4,36 @@ namespace Hamlet\Database {
 
     use Exception;
     use mysqli;
+    use mysqli_stmt;
 
     class MySQLProcedure implements Procedure {
 
         protected $connection;
-        protected $statement;
+        protected $query;
         protected $parameters = [];
 
         public function __construct(mysqli $connection, string $query) {
             $this -> connection = $connection;
-            $this -> statement = $connection -> prepare($query);
-            if (!$this -> statement) {
-                throw new Exception($this -> connection -> error);
-            }
+            $this -> query = $query;
         }
 
         public function execute() {
-            $this -> bindParameters();
-            $success = $this -> statement -> execute();
+            $statement = $this -> bindParameters();
+            $success = $statement -> execute();
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
-            $success = $this -> statement -> close();
+            $success = $statement -> close();
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
         }
 
         public function fetch(callable $callback) {
-            $row = $this -> initFetching();
+            /** @var mysqli_stmt $statement */
+            list($row, $statement) = $this -> initFetching();
             while (true) {
-                $status = $this -> statement -> fetch();
+                $status = $statement -> fetch();
                 if ($status === true) {
                     $rowCopy = [];
                     foreach ($row as $key => $value) {
@@ -47,19 +46,20 @@ namespace Hamlet\Database {
                     throw new Exception($this -> connection -> error);
                 }
             }
-            $this->finalizeFetching();
+            $this->finalizeFetching($statement);
         }
 
         public function fetchOne() {
-            $row = $this -> initFetching();
-            $status = $this -> statement -> fetch();
+            /** @var mysqli_stmt $statement */
+            list($row, $statement) = $this -> initFetching();
+            $status = $statement -> fetch();
             $value = null;
             if ($status === true) {
                 $value = $row;
             } elseif ($status === false) {
                 throw new Exception($this -> connection -> error);
             }
-            $this->finalizeFetching();
+            $this->finalizeFetching($statement);
             return $value;
         }
 
@@ -80,26 +80,91 @@ namespace Hamlet\Database {
             return $result;
         }
 
-
-        public function bindString(string $value) {
-            $this->parameters[] = ['s', $value];
-        }
-
-        public function bindInteger(int $value) {
-            $this->parameters[] = ['i', $value];
+        public function bindBlob(string $value) {
+            $this -> parameters[] = ['b', $value];
         }
 
         public function bindFloat(float $value) {
-            $this->parameters[] = ['d', $value];
+            $this -> parameters[] = ['d', $value];
         }
 
-        public function bindBlob(string $value) {
-            $this->parameters[] = ['b', $value];
+        public function bindInteger(int $value) {
+            $this -> parameters[] = ['i', $value];
         }
 
-        private function bindParameters() {
+        public function bindString(string $value) {
+            $this -> parameters[] = ['s', $value];
+        }
+
+        public function bindNullableBlob($value) {
+            assert(is_null($value) || is_string($value));
+            $this -> parameters[] = ['b', $value];
+        }
+
+        public function bindNullableFloat($value) {
+            assert(is_null($value) || is_float($value));
+            $this -> parameters[] = ['d', $value];
+        }
+
+        public function bindNullableInteger($value) {
+            assert(is_null($value) || is_int($value));
+            $this -> parameters[] = ['i', $value];
+        }
+
+        public function bindNullableString($value) {
+            assert(is_null($value) || is_string($value));
+            $this -> parameters[] = ['s', $value];
+        }
+
+        public function bindFloatList(array $values) {
+            foreach ($values as $value) {
+                assert(is_float($value));
+            }
+            $this -> parameters[] = ['d', $values];
+        }
+
+        public function bindIntegerList(array $values) {
+            foreach ($values as $value) {
+                assert(is_int($value));
+            }
+            $this -> parameters[] = ['i', $values];
+        }
+
+        public function bindStringList(array $values) {
+            foreach ($values as $value) {
+                assert(is_string($value));
+            }
+            $this -> parameters[] = ['s', $values];
+        }
+
+        private function bindParameters() : mysqli_stmt {
+            $query = $this -> query;
+
+            // expand list parameters
+            if (!empty($this -> parameters)) {
+                $position = 0;
+                $counter = 0;
+                while (true) {
+                    $position = strpos($query, '?', $position);
+                    if ($position === false) {
+                        break;
+                    }
+                    $value = $this->parameters[$counter++][1];
+                    if (is_array($value)) {
+                        $in = '(' . join(', ', array_fill(0, count($value), '?')) . ')';
+                        $query = substr($query, 0, $position) . $in . substr($query, $position + 1);
+                        $position += strlen($in);
+                    } else {
+                        $position++;
+                    }
+                }
+            }
+            $statement = $this -> connection -> prepare($query);
+            if (!$statement) {
+                throw new Exception($this -> connection -> error);
+            }
             if (count($this -> parameters) == 0) {
-                return;
+                return $statement;
             }
             $callParameters = [];
             $types = '';
@@ -117,39 +182,40 @@ namespace Hamlet\Database {
                     $callParameters[] = &$$name;
                 }
             }
-            $success = call_user_func_array([$this -> statement, 'bind_param'], $callParameters);
+            $success = call_user_func_array([$statement, 'bind_param'], $callParameters);
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
             foreach ($blobs as $i => $data) {
-                $success = $this -> statement -> send_long_data($i, $data);
+                $success = $statement -> send_long_data($i, $data);
                 if (!$success) {
                     throw new Exception($this -> connection -> error);
                 }
             }
+            return $statement;
         }
 
-        private function initFetching() {
-            $this -> bindParameters();
-            $row = $this -> bindResult();
-            $success = $this -> statement -> execute();
+        private function initFetching() : array {
+            $statement = $this -> bindParameters();
+            $row = $this -> bindResult($statement);
+            $success = $statement -> execute();
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
-            $this -> statement -> store_result();
-            return $row;
+            $statement -> store_result();
+            return [$row, $statement];
         }
 
-        private function finalizeFetching() {
-            $this -> statement -> free_result();
-            $success = $this -> statement -> close();
+        private function finalizeFetching(mysqli_stmt $statement) {
+            $statement -> free_result();
+            $success = $statement -> close();
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
         }
 
-        private function bindResult() {
-            $metaData = $this -> statement -> result_metadata();
+        private function bindResult(mysqli_stmt $statement) : array {
+            $metaData = $statement -> result_metadata();
             if ($metaData === false) {
                 throw new Exception($this -> connection -> error);
             }
@@ -158,7 +224,7 @@ namespace Hamlet\Database {
             while ($field = $metaData -> fetch_field()) {
                 $boundParameters[] = &$row[$field -> name];
             }
-            $success = call_user_func_array([$this -> statement, 'bind_result'], $boundParameters);
+            $success = call_user_func_array([$statement, 'bind_result'], $boundParameters);
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
