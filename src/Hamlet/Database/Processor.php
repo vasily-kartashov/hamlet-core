@@ -18,7 +18,7 @@ namespace Hamlet\Database {
             $processedRows = [];
             $groups = [];
             foreach ($this -> rows as $row) {
-                list($item, $reducedRow) = $splitter($row);
+                list($reducedRow, $item) = $splitter($row);
                 $key = md5(serialize($reducedRow));
                 if (!isset($groups[$key])) {
                     $groups[$key] = [];
@@ -32,41 +32,59 @@ namespace Hamlet\Database {
             return Processor::with(array_values($processedRows));
         }
 
-        public static function fieldExtractor($field) {
+        public static function commonExtractor(array $map) : callable {
+            return function ($row) use ($map) {
+                $common = [];
+                foreach ($map as $field => $alias) {
+                    if (is_int($field)) {
+                        $common[$alias] = $row[$alias];
+                        unset($row[$alias]);
+                    } else {
+                        $common[$alias] = $row[$field];
+                        unset($row[$field]);
+                    }
+                }
+                return [$common, $row];
+            };
+        }
+
+        public static function varyingAtomicExtractor(string $field) : callable {
             return function ($row) use ($field) {
                 $value = $row[$field];
                 unset($row[$field]);
-                return [$value, $row];
+                return [$row, $value];
             };
         }
 
-        public static function tailMapper(array $map) {
+        public static function varyingExtractor(array $map) : callable {
             return function ($row) use ($map) {
                 $value = [];
                 foreach ($map as $field => $alias) {
-                    $value[$alias] = $row[$field];
-                    unset($row[$field]);
+                    if (is_int($field)) {
+                        $value[$alias] = $row[$alias];
+                        unset($row[$alias]);
+                    } else {
+                        $value[$alias] = $row[$field];
+                        unset($row[$field]);
+                    }
                 }
-                return [$value, $row];
+                return [$row, $value];
             };
         }
 
-        public static function groupFieldsExtractor(... $fields) {
-            return function ($row) use ($fields) {
-                $head = [];
-                foreach ($fields as $field) {
-                    $head[$field] = $row[$field];
-                    unset($row[$field]);
-                }
-                return [$row, $head];
-            };
-        }
-
-        public function collect() {
+        public function collectToList() : array {
             return $this->rows;
         }
 
-        public function collectToMap($keyField, $valueField) {
+        public function collectToAssoc(string $keyField) : array {
+            $assoc = [];
+            foreach ($this -> rows as $row) {
+                $assoc[$row[$keyField]] = $row;
+            }
+            return $assoc;
+        }
+
+        public function collectToMap(string $keyField, string $valueField) : array {
             $map = [];
             foreach ($this->rows as $row) {
                 $map[$row[$keyField]] = $row[$valueField];

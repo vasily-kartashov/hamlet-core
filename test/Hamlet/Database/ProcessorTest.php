@@ -25,33 +25,33 @@ namespace Hamlet\Database {
 
         public function testFieldExtractor() {
             $collection = Processor::with($this -> phones())
-                ->group('phones', Processor::fieldExtractor('phone'))
-                ->collect();
+                ->group('phones', Processor::varyingAtomicExtractor('phone'))
+                ->collectToList();
             print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
         public function testFieldMapper() {
             $collection = Processor::with($this -> phones())
-                ->group('phones', Processor::tailMapper([
+                ->group('phones', Processor::varyingExtractor([
                     'phone' => 'phoneNumber'
                 ]))
-                ->collect();
+                ->collectToList();
             print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
         public function testGroupFieldsExtractor() {
             $collection = Processor::with($this -> phones())
-                ->group('phones', Processor::groupFieldsExtractor('name'))
-                ->collect();
+                ->group('phones', Processor::commonExtractor(['name']))
+                ->collectToList();
             print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
         public function testCollectToMap() {
             $collection = Processor::with($this -> phones())
-                ->group('phones', Processor::fieldExtractor('phone'))
+                ->group('phones', Processor::varyingAtomicExtractor('phone'))
                 ->collectToMap('name', 'phones');
             print_r($collection);
             $this->assertEqual(2, count($collection));
