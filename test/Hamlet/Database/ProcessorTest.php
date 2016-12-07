@@ -23,6 +23,21 @@ namespace Hamlet\Database {
             ];
         }
 
+        private function addresses() {
+            return [
+                [
+                    'name' => 'John',
+                    'address_street' => 'Lenin Street',
+                    'address_number' => 1917
+                ],
+                [
+                    'name' => 'John',
+                    'address_street' => 'Pushkin Square',
+                    'address_number' => 1
+                ]
+            ];
+        }
+
         public function testFieldExtractor() {
             $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::varyingAtomicExtractor('phone'))
@@ -55,6 +70,15 @@ namespace Hamlet\Database {
                 ->collectToMap('name', 'phones');
             print_r($collection);
             $this->assertEqual(2, count($collection));
+        }
+
+        public function testPrefixExtractor() {
+            $collection = Processor::with($this -> addresses())
+                ->group('addresses', Processor::varyingExtractorByPrefix('address_'))
+                ->collectToMap('name', 'addresses');
+            print_r($collection);
+            $this->assertEqual(1, count($collection));
+            $this->assertEqual(2, count($collection['John']));
         }
     }
 }

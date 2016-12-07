@@ -72,6 +72,20 @@ namespace Hamlet\Database {
             };
         }
 
+        public static function varyingExtractorByPrefix(string $prefix) : callable {
+            $prefixLength = strlen($prefix);
+            return function ($row) use ($prefix, $prefixLength) {
+                $sub = [];
+                foreach ($row as $key => $value) {
+                    if (substr($key, 0, $prefixLength) == $prefix) {
+                        $sub[substr($key, $prefixLength)] = $value;
+                        unset($row[$key]);
+                    }
+                }
+                return [$row, $sub];
+            };
+        }
+
         public function collectToList() : array {
             return $this->rows;
         }
