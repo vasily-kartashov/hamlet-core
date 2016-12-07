@@ -35,7 +35,7 @@ namespace Hamlet\Database {
             $procedure = $database -> prepare($query);
             $procedure -> bindStringList(['john', 'bill']);
             $procedure -> bindString('herman');
-            print_r($procedure -> fetchAll());
+            // print_r($procedure -> fetchAll());
         }
     }
 }
