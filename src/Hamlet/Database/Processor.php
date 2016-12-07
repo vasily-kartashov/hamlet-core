@@ -23,7 +23,9 @@ namespace Hamlet\Database {
                 if (!isset($groups[$key])) {
                     $groups[$key] = [];
                 }
-                $groups[$key][] = $item;
+                if (!$this->isNull($item)) {
+                    $groups[$key][] = $item;
+                }
                 $processedRows[$key] = $reducedRow;
             }
             foreach (array_keys($processedRows) as $key) {
@@ -104,6 +106,19 @@ namespace Hamlet\Database {
                 $map[$row[$keyField]] = $row[$valueField];
             }
             return $map;
+        }
+
+        private function isNull($item) : bool {
+            if (is_array($item)) {
+                foreach ($item as $value) {
+                    if (!is_null($value)) {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                return is_null($item);
+            }
         }
     }
 }

@@ -34,6 +34,11 @@ namespace Hamlet\Database {
                     'name' => 'John',
                     'address_street' => 'Pushkin Square',
                     'address_number' => 1
+                ],
+                [
+                    'name' => 'John',
+                    'address_street' => null,
+                    'address_number' => null
                 ]
             ];
         }
