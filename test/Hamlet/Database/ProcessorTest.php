@@ -47,7 +47,7 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::varyingAtomicExtractor('phone'))
                 ->collectToList();
-            print_r($collection);
+            // print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
@@ -57,7 +57,7 @@ namespace Hamlet\Database {
                     'phone' => 'phoneNumber'
                 ]))
                 ->collectToList();
-            print_r($collection);
+            // print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
@@ -65,7 +65,7 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::commonExtractor(['name']))
                 ->collectToList();
-            print_r($collection);
+            // print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
@@ -73,7 +73,7 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::varyingAtomicExtractor('phone'))
                 ->collectToMap('name', 'phones');
-            print_r($collection);
+            // print_r($collection);
             $this->assertEqual(2, count($collection));
         }
 
@@ -81,7 +81,7 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> addresses())
                 ->group('addresses', Processor::varyingExtractorByPrefix('address_'))
                 ->collectToMap('name', 'addresses');
-            print_r($collection);
+            // print_r($collection);
             $this->assertEqual(1, count($collection));
             $this->assertEqual(2, count($collection['John']));
         }
