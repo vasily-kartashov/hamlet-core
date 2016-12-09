@@ -8,6 +8,10 @@ namespace Hamlet\Database {
 
         private function __construct() {}
 
+        public static function withOne(array $row) : Processor {
+            return Processor::with([$row]);
+        }
+
         public static function with(array $rows) : Processor {
             $processor = new Processor();
             $processor->rows = $rows;
@@ -32,6 +36,16 @@ namespace Hamlet\Database {
                 $processedRows[$key][$title] = $groups[$key];
             }
             return Processor::with(array_values($processedRows));
+        }
+
+        public function wrap(string $title, callable $splitter) {
+            $processedRows = [];
+            foreach ($this -> rows as $row) {
+                list($reducedRow, $embeddedObject) = $splitter($row);
+                $reducedRow[$title] = $embeddedObject;
+                $processedRows[] = $reducedRow;
+            }
+            return Processor::with($processedRows);
         }
 
         public static function commonExtractor(array $map) : callable {

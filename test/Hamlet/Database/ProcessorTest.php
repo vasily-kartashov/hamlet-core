@@ -85,5 +85,12 @@ namespace Hamlet\Database {
             $this->assertEqual(1, count($collection));
             $this->assertEqual(2, count($collection['John']));
         }
+
+        public function testWrapper() {
+            $collection = Processor::with($this -> addresses())
+                ->wrap('address', Processor::varyingExtractorByPrefix('address_'))
+                ->collectToList();
+            print_r($collection);
+        }
     }
 }
