@@ -90,6 +90,13 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> addresses())
                 ->wrap('address', Processor::varyingExtractorByPrefix('address_'))
                 ->collectToList();
+            //print_r($collection);
+        }
+
+        public function testMap() {
+            $collection = Processor::with($this -> addresses())
+                ->map('address_street', 'strtoupper')
+                ->collectToList();
             print_r($collection);
         }
     }

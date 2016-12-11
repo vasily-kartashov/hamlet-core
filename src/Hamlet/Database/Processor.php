@@ -8,8 +8,8 @@ namespace Hamlet\Database {
 
         private function __construct() {}
 
-        public static function withOne(array $row) : Processor {
-            return Processor::with([$row]);
+        public static function withOne($row) : Processor {
+            return Processor::with(is_null($row) ? [] : [$row]);
         }
 
         public static function with(array $rows) : Processor {
@@ -44,6 +44,15 @@ namespace Hamlet\Database {
                 list($reducedRow, $embeddedObject) = $splitter($row);
                 $reducedRow[$title] = $embeddedObject;
                 $processedRows[] = $reducedRow;
+            }
+            return Processor::with($processedRows);
+        }
+
+        public function map(string $property, callable $converter) {
+            $processedRows = [];
+            foreach ($this -> rows as $row) {
+                $row[$property] = $converter($row[$property]);
+                $processedRows[] = $row;
             }
             return Processor::with($processedRows);
         }
@@ -104,6 +113,10 @@ namespace Hamlet\Database {
 
         public function collectToList() : array {
             return $this->rows;
+        }
+
+        public function collectHead() : array {
+            return $this -> rows[0] ?? null;
         }
 
         public function collectToAssoc(string $keyField) : array {
