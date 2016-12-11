@@ -22,13 +22,17 @@ namespace Hamlet\Database {
             $processedRows = [];
             $groups = [];
             foreach ($this -> rows as $row) {
-                list($reducedRow, $item) = $splitter($row);
+                list($reducedRow, $item, $map) = $splitter($row);
                 $key = md5(serialize($reducedRow));
                 if (!isset($groups[$key])) {
                     $groups[$key] = [];
                 }
                 if (!$this->isNull($item)) {
-                    $groups[$key][] = $item;
+                    if ($map) {
+                        $groups[$key] += $item;
+                    } else {
+                        $groups[$key][] = $item;
+                    }
                 }
                 $processedRows[$key] = $reducedRow;
             }
@@ -69,7 +73,18 @@ namespace Hamlet\Database {
                         unset($row[$field]);
                     }
                 }
-                return [$common, $row];
+                return [$common, $row, false];
+            };
+        }
+
+        public static function mapExtractor(string $keyField, string $valueField) : callable {
+            return function ($row) use ($keyField, $valueField) {
+                $value = [
+                    $row[$keyField] => $row[$valueField]
+                ];
+                unset($row[$keyField]);
+                unset($row[$valueField]);
+                return [$row, $value, true];
             };
         }
 
@@ -77,7 +92,7 @@ namespace Hamlet\Database {
             return function ($row) use ($field) {
                 $value = $row[$field];
                 unset($row[$field]);
-                return [$row, $value];
+                return [$row, $value, false];
             };
         }
 
@@ -93,7 +108,7 @@ namespace Hamlet\Database {
                         unset($row[$field]);
                     }
                 }
-                return [$row, $value];
+                return [$row, $value, false];
             };
         }
 
@@ -107,7 +122,7 @@ namespace Hamlet\Database {
                         unset($row[$key]);
                     }
                 }
-                return [$row, $sub];
+                return [$row, $sub, false];
             };
         }
 

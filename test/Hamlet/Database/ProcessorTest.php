@@ -43,6 +43,31 @@ namespace Hamlet\Database {
             ];
         }
 
+        private function cities() {
+            return [
+                [
+                    'country' => 'Australia',
+                    'state' => 'Victoria',
+                    'city' => 'Geelong'
+                ],
+                [
+                    'country' => 'Australia',
+                    'state' => 'Victoria',
+                    'city' => 'Melbourne'
+                ],
+                [
+                    'country' => 'Russia',
+                    'state' => 'Saratovskaya Oblast',
+                    'city' => 'Balakovo'
+                ],
+                [
+                    'country' => 'Russia',
+                    'state' => 'Saratovskaya Oblast',
+                    'city' => 'Saratov'
+                ]
+            ];
+        }
+
         public function testFieldExtractor() {
             $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::varyingAtomicExtractor('phone'))
@@ -97,7 +122,16 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> addresses())
                 ->map('address_street', 'strtoupper')
                 ->collectToList();
+            //print_r($collection);
+        }
+
+        public function testNestedGroups() {
+            $collection = Processor:: with($this -> cities())
+                ->group('cities', Processor::varyingAtomicExtractor('city'))
+                ->group('states', Processor::mapExtractor('state', 'cities'))
+                ->collectToMap('country', 'states');
             print_r($collection);
+            $this->assertEqual('Balakovo', $collection['Russia']['Saratovskaya Oblast'][0]);
         }
     }
 }
