@@ -117,6 +117,7 @@ namespace Hamlet\Database {
         }
 
         public function bindFloatList(array $values) {
+            assert(!empty($values));
             foreach ($values as $value) {
                 assert(is_float($value));
             }
@@ -124,6 +125,7 @@ namespace Hamlet\Database {
         }
 
         public function bindIntegerList(array $values) {
+            assert(!empty($values));
             foreach ($values as $value) {
                 assert(is_int($value));
             }
@@ -131,6 +133,7 @@ namespace Hamlet\Database {
         }
 
         public function bindStringList(array $values) {
+            assert(!empty($values));
             foreach ($values as $value) {
                 assert(is_string($value));
             }
