@@ -122,7 +122,8 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> addresses())
                 ->map('address_street', 'strtoupper')
                 ->collectToList();
-            //print_r($collection);
+            // print_r($collection);
+            $this->assertEqual('LENIN STREET', $collection[0]['address_street']);
         }
 
         public function testNestedGroups() {
@@ -130,7 +131,7 @@ namespace Hamlet\Database {
                 ->group('cities', Processor::varyingAtomicExtractor('city'))
                 ->group('states', Processor::mapExtractor('state', 'cities'))
                 ->collectToMap('country', 'states');
-            print_r($collection);
+            // print_r($collection);
             $this->assertEqual('Balakovo', $collection['Russia']['Saratovskaya Oblast'][0]);
         }
     }

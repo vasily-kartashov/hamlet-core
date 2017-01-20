@@ -35,5 +35,7 @@ namespace Hamlet\Database {
         public function fetchAllWithKey(string $keyField) : array;
 
         public function fetchOne();
+
+        public function affectedRows() : int;
     }
 }

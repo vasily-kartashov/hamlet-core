@@ -146,5 +146,9 @@ namespace Hamlet\Database {
             $result = $this -> bindParameters() -> execute();
             return $result -> fetchArray(SQLITE3_ASSOC);
         }
+
+        public function affectedRows(): int {
+            return $this -> connection -> changes();
+        }
     }
 }

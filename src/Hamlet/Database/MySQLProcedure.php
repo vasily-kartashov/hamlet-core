@@ -140,6 +140,10 @@ namespace Hamlet\Database {
             $this -> parameters[] = ['s', $values];
         }
 
+        public function affectedRows(): int {
+            return $this -> connection -> affected_rows;
+        }
+
         private function bindParameters() : mysqli_stmt {
             $query = $this -> query;
 
