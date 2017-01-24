@@ -130,7 +130,10 @@ namespace Hamlet\Database {
             return $this->rows;
         }
 
-        public function collectHead() : array {
+        /**
+         * @return array|null
+         */
+        public function collectHead() {
             return $this -> rows[0] ?? null;
         }
 
