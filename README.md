@@ -1,11 +1,8 @@
 Hamlet Core
-s===
+===
 
 To Do:
 
-* Add array binding for Procedure
-* Add nullables options to Procedure
-* Refactor Processor, and add tests
 * Support for PostgreSQL
 * Support for Redis as Cache backup: http://qpleple.com/install-phpredis-on-amazon-beanstalk/
 * Support for WebSockets

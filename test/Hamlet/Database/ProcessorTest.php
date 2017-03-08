@@ -4,6 +4,24 @@ namespace Hamlet\Database {
 
     use UnitTestCase;
 
+    class Phone {
+        public $name, $phone;
+    }
+
+    class Address {
+        /** @var string */
+        public $street;
+        /** @var int */
+        public $number;
+    }
+
+    class AddressBookEntry {
+        /** @var string */
+        public $name;
+        /** @var Address[] */
+        public $addresses;
+    }
+
     class ProcessorTest extends UnitTestCase {
 
         private function phones() {
@@ -39,6 +57,11 @@ namespace Hamlet\Database {
                     'name' => 'John',
                     'address_street' => null,
                     'address_number' => null
+                ],
+                [
+                    'name' => 'Anatoly',
+                    'address_street' => 'Tolstoy lane',
+                    'address_number' => 1812
                 ]
             ];
         }
@@ -107,7 +130,7 @@ namespace Hamlet\Database {
                 ->group('addresses', Processor::varyingExtractorByPrefix('address_'))
                 ->collectToMap('name', 'addresses');
             // print_r($collection);
-            $this->assertEqual(1, count($collection));
+            $this->assertEqual(2, count($collection));
             $this->assertEqual(2, count($collection['John']));
         }
 
@@ -133,6 +156,23 @@ namespace Hamlet\Database {
                 ->collectToMap('country', 'states');
             // print_r($collection);
             $this->assertEqual('Balakovo', $collection['Russia']['Saratovskaya Oblast'][0]);
+        }
+
+        public function testCollectTypedList() {
+            /** @var Phone[] $collection */
+            $collection = Processor::with($this -> phones())
+                ->collectToList(Phone::class);
+            $this->assertIsA($collection[0], Phone::class);
+        }
+
+        public function testCollectNestedTypedList() {
+            /** @var AddressBookEntry[] $collection */
+            $collection = Processor::with($this -> addresses())
+                ->wrap('address', Processor::varyingExtractorByPrefix('address_'), Address::class)
+                ->group('addresses', Processor::varyingAtomicExtractor('address'))
+                ->collectToList(AddressBookEntry::class);
+            $this->assertIsA($collection[0], AddressBookEntry::class);
+            $this->assertIsA($collection[0]->addresses[1], Address::class);
         }
     }
 }

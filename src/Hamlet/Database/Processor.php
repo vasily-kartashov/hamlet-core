@@ -42,11 +42,11 @@ namespace Hamlet\Database {
             return Processor::with(array_values($processedRows));
         }
 
-        public function wrap(string $title, callable $splitter) {
+        public function wrap(string $title, callable $splitter, $type = null) {
             $processedRows = [];
             foreach ($this -> rows as $row) {
                 list($reducedRow, $embeddedObject) = $splitter($row);
-                $reducedRow[$title] = $embeddedObject;
+                $reducedRow[$title] = $this -> cast($embeddedObject, $type);
                 $processedRows[] = $reducedRow;
             }
             return Processor::with($processedRows);
@@ -126,21 +126,26 @@ namespace Hamlet\Database {
             };
         }
 
-        public function collectToList() : array {
-            return $this->rows;
+        public function collectToList($type = null) : array {
+            $result = [];
+            foreach ($this -> rows as $row) {
+                $result[] = $this -> cast($row, $type);
+            }
+            return $result;
         }
 
         /**
-         * @return array|null
+         * @param null $type
+         * @return array|null|object
          */
-        public function collectHead() {
-            return $this -> rows[0] ?? null;
+        public function collectHead($type = null) {
+            return $this->cast($this -> rows[0], $type);
         }
 
-        public function collectToAssoc(string $keyField) : array {
+        public function collectToAssoc(string $keyField, $type = null) : array {
             $assoc = [];
             foreach ($this -> rows as $row) {
-                $assoc[$row[$keyField]] = $row;
+                $assoc[$row[$keyField]] = $this -> cast($row, $type);
             }
             return $assoc;
         }
@@ -164,6 +169,20 @@ namespace Hamlet\Database {
             } else {
                 return is_null($item);
             }
+        }
+
+        private function cast($row, $type) {
+            if ($this -> isNull($row)) {
+                return null;
+            }
+            if (is_null($type)) {
+                return $row;
+            }
+            $object = new $type;
+            foreach ($row as $key => $value) {
+                $object -> $key = $value;
+            }
+            return $object;
         }
     }
 }
