@@ -29,6 +29,11 @@ namespace Hamlet\Database {
             }
         }
 
+        public function insert() : int {
+            $this -> execute();
+            return $this -> connection -> insert_id;
+        }
+
         public function fetch(callable $callback) {
             /** @var mysqli_stmt $statement */
             list($row, $statement) = $this -> initFetching();

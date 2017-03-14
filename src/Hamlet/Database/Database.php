@@ -6,35 +6,22 @@ namespace Hamlet\Database {
     use mysqli;
     use SQLite3;
 
-    class Database {
+    abstract class Database {
 
-        private $connection;
-        private $type;
-
-        private function __construct($connection, $type) {
-            $this -> connection = $connection;
-            $this -> type = $type;
-        }
-
-        public static function mysql($host, $user, $password, $database = null) {
+        public static function mysql($host, $user, $password, $database = null) : Database {
             $connection = new mysqli($host, $user, $password, $database);
-            return new Database($connection, 'mysql');
+            return new MySQLDatabase($connection);
         }
 
-        public static function sqlite($path) {
+        public static function sqlite($path) : Database {
             $connection = new SQLite3($path);
-            return new Database($connection, 'sqlite');
+            return new SQLiteDatabase($connection);
         }
 
-        public function prepare($query) {
-            switch ($this -> type) {
-                case 'mysql':
-                    return new MySQLProcedure($this -> connection, $query);
-                case 'sqlite':
-                    return new SQLiteProcedure($this -> connection, $query);
-                default:
-                    throw new Exception("Unsupported database type {$this -> type}");
-            }
-        }
+        public abstract function prepare($query);
+
+        public abstract function startTransaction();
+
+        public abstract function commit();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Hamlet\Database {
 
+    use Exception;
     use UnitTestCase;
 
     class SQLiteProcedureTest extends UnitTestCase {
@@ -36,6 +37,30 @@ namespace Hamlet\Database {
             $procedure -> bindStringList(['john', 'bill']);
             $procedure -> bindString('herman');
             // print_r($procedure -> fetchAll());
+        }
+
+        public function testTransaction() {
+            $database = $this -> initDatabase();
+            $query = "
+                INSERT INTO users 
+                            (name)
+                     VALUES ('mikhail')     
+            ";
+            $procedure = $database -> prepare($query);
+            $procedure -> bindStringList(['john', 'bill']);
+            $procedure -> bindString('herman');
+
+            try {
+                $database -> startTransaction();
+                $procedure -> execute();
+                throw new Exception();
+                $database -> commit();
+            } catch (Exception $e) {
+                $database -> rollback();
+            }
+
+            $rows = $database -> prepare("SELECT * FROM users") -> fetchAll();
+            $this->assertEqual(3, count($rows));
         }
     }
 }

@@ -37,5 +37,7 @@ namespace Hamlet\Database {
         public function fetchOne();
 
         public function affectedRows() : int;
+
+        public function insert();
     }
 }

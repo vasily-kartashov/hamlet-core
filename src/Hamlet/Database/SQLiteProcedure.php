@@ -116,6 +116,11 @@ namespace Hamlet\Database {
             $this -> bindParameters() -> execute();
         }
 
+        public function insert() {
+            $this -> execute();
+            return $this -> connection -> lastInsertRowID();
+        }
+
         public function fetch(callable $callback) {
             $result = $this -> bindParameters() -> execute();
             while (($row = $result -> fetchArray(SQLITE3_ASSOC)) !== false) {
