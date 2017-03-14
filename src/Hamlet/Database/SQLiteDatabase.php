@@ -13,7 +13,7 @@ namespace Hamlet\Database {
             $this -> connection = $connection;
         }
 
-        public function prepare($query) {
+        public function prepare(string $query) : Procedure {
             return new SQLiteProcedure($this -> connection, $query);
         }
 
