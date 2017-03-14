@@ -47,8 +47,6 @@ namespace Hamlet\Database {
                      VALUES ('mikhail')     
             ";
             $procedure = $database -> prepare($query);
-            $procedure -> bindStringList(['john', 'bill']);
-            $procedure -> bindString('herman');
 
             try {
                 $database -> startTransaction();
