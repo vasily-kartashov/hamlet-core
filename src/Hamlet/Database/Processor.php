@@ -139,7 +139,7 @@ namespace Hamlet\Database {
          * @return array|null|object
          */
         public function collectHead($type = null) {
-            return $this->cast($this -> rows[0], $type);
+            return $this->cast($this -> rows[0] ?? null, $type);
         }
 
         public function collectToAssoc(string $keyField, $type = null) : array {
