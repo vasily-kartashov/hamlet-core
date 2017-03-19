@@ -30,6 +30,7 @@ namespace Hamlet\Database {
 
         public function commit() {
             $success = $this -> connection -> commit();
+            $success = $this -> connection -> autocommit(true) && $success;
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
@@ -37,6 +38,7 @@ namespace Hamlet\Database {
 
         public function rollback() {
             $success = $this -> connection -> rollback();
+            $success = $this -> connection -> autocommit(true) && $success;
             if (!$success) {
                 throw new Exception($this -> connection -> error);
             }
