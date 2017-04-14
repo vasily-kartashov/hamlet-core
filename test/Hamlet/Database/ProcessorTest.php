@@ -22,6 +22,19 @@ namespace Hamlet\Database {
         public $addresses;
     }
 
+    class PhoneEntity extends MappedEntity {
+
+        private $name, $phone;
+
+        public function name() : string {
+            return $this->name;
+        }
+
+        public function phone() : string {
+            return $this->phone;
+        }
+    }
+
     class ProcessorTest extends UnitTestCase {
 
         private function phones() {
@@ -163,6 +176,13 @@ namespace Hamlet\Database {
             $collection = Processor::with($this -> phones())
                 ->collectToList(Phone::class);
             $this->assertIsA($collection[0], Phone::class);
+        }
+
+        public function testCollectTypedListOfMappedEntities() {
+            /** @var Phone[] $collection */
+            $collection = Processor::with($this -> phones())
+                ->collectToList(PhoneEntity::class);
+            $this->assertIsA($collection[0], PhoneEntity::class);
         }
 
         public function testCollectNestedTypedList() {

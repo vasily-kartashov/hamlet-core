@@ -178,11 +178,15 @@ namespace Hamlet\Database {
             if (is_null($type)) {
                 return $row;
             }
-            $object = new $type;
-            foreach ($row as $key => $value) {
-                $object -> $key = $value;
+            if (is_subclass_of($type, MappedEntity::class)) {
+                return call_user_func([$type, 'from'], $row);
+            } else {
+                $object = new $type;
+                foreach ($row as $key => $value) {
+                    $object -> $key = $value;
+                }
+                return $object;
             }
-            return $object;
         }
     }
 }
