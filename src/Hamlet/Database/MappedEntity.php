@@ -26,7 +26,7 @@ namespace Hamlet\Database {
                 $property->setValue($object, $value);
             }
             foreach ($type->getProperties(ReflectionProperty::IS_PRIVATE) as $property) {
-                if (!isset($data[$property->getName()])) {
+                if (!array_key_exists($property->getName(), $data)) {
                     throw new Exception('Property ' . $type->getName() . '::' . $property->getName()
                         . ' not set in ' . json_encode($data));
                 }
