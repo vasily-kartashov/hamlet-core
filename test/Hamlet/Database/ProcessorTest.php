@@ -188,8 +188,7 @@ namespace Hamlet\Database {
         public function testCollectNestedTypedList() {
             /** @var AddressBookEntry[] $collection */
             $collection = Processor::with($this -> addresses())
-                ->wrap('address', Processor::varyingExtractorByPrefix('address_'), Address::class)
-                ->group('addresses', Processor::varyingAtomicExtractor('address'))
+                ->group('addresses', Processor::varyingExtractorByPrefix('address_'), Address::class)
                 ->collectToList(AddressBookEntry::class);
             $this->assertIsA($collection[0], AddressBookEntry::class);
             $this->assertIsA($collection[0]->addresses[1], Address::class);

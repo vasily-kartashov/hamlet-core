@@ -18,7 +18,7 @@ namespace Hamlet\Database {
             return $processor;
         }
 
-        public function group(string $title, callable $splitter) {
+        public function group(string $title, callable $splitter, $type = null) {
             $processedRows = [];
             $groups = [];
             foreach ($this -> rows as $row) {
@@ -29,9 +29,9 @@ namespace Hamlet\Database {
                 }
                 if (!$this->isNull($item)) {
                     if ($map) {
-                        $groups[$key] += $item;
+                        $groups[$key] += $this -> cast($item, $type);
                     } else {
-                        $groups[$key][] = $item;
+                        $groups[$key][] = $this -> cast($item, $type);
                     }
                 }
                 $processedRows[$key] = $reducedRow;
