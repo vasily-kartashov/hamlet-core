@@ -134,10 +134,6 @@ namespace Hamlet\Database {
             return $result;
         }
 
-        /**
-         * @param null $type
-         * @return array|null|object
-         */
         public function collectHead($type = null) {
             return $this->cast($this -> rows[0] ?? null, $type);
         }
