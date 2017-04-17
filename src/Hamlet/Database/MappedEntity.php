@@ -4,7 +4,6 @@ namespace Hamlet\Database {
 
     use Exception;
     use ReflectionClass;
-    use ReflectionProperty;
 
     abstract class MappedEntity {
 
@@ -25,7 +24,7 @@ namespace Hamlet\Database {
                 $property->setAccessible(true);
                 $property->setValue($object, $value);
             }
-            foreach ($type->getProperties(ReflectionProperty::IS_PRIVATE) as $property) {
+            foreach ($type->getProperties() as $property) {
                 if (!array_key_exists($property->getName(), $data)) {
                     throw new Exception('Property ' . $type->getName() . '::' . $property->getName()
                         . ' not set in ' . json_encode($data));
