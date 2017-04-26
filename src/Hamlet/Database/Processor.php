@@ -65,7 +65,7 @@ namespace Hamlet\Database {
             $processedRows = [];
             foreach ($this -> rows as $row) {
                 foreach ($row as $field => $value) {
-                    if ($row[$field]) {
+                    if ($row[$field] !== null) {
                         $processedRows[] = $value;
                         continue 2;
                     }
@@ -136,6 +136,22 @@ namespace Hamlet\Database {
                     }
                 }
                 return [$row, $sub, false];
+            };
+        }
+
+        public static function collator(string... $fields) : callable {
+            return function (array $row) use ($fields) {
+                $value = null;
+                foreach ($fields as $field) {
+                    if ($row[$field] != null) {
+                        $value = $row[$field];
+                        break;
+                    }
+                }
+                foreach ($fields as $field) {
+                    unset($row[$field]);
+                }
+                return [$row, $value, false];
             };
         }
 

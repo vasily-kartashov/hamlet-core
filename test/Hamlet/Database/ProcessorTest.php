@@ -228,5 +228,13 @@ namespace Hamlet\Database {
             $this->assertEqual('Russia', $collection[2]);
             $this->assertEqual('Saratov', $collection[3]);
         }
+
+        public function testCollator()
+        {
+            $collection = Processor::with($this -> locations())
+                ->wrap('details', Processor::collator('state', 'city'))
+                ->collectToMap('country', 'details');
+            $this->assertEqual('Saratovskaya Oblast', $collection['Russia']);
+        }
     }
 }
