@@ -61,6 +61,19 @@ namespace Hamlet\Database {
             return Processor::with($processedRows);
         }
 
+        public function collate() {
+            $processedRows = [];
+            foreach ($this -> rows as $row) {
+                foreach ($row as $field => $value) {
+                    if ($row[$field]) {
+                        $processedRows[] = $value;
+                        continue 2;
+                    }
+                }
+            }
+            return Processor::with($processedRows);
+        }
+
         public static function commonExtractor(array $map) : callable {
             return function ($row) use ($map) {
                 $common = [];

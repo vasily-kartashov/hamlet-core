@@ -104,6 +104,31 @@ namespace Hamlet\Database {
             ];
         }
 
+        private function locations() {
+            return [
+                [
+                    'country' => null,
+                    'state' => 'Victoria',
+                    'city' => 'Geelong'
+                ],
+                [
+                    'country' => 'Australia',
+                    'state' => 'Victoria',
+                    'city' => 'Melbourne'
+                ],
+                [
+                    'country' => 'Russia',
+                    'state' => 'Saratovskaya Oblast',
+                    'city' => 'Balakovo'
+                ],
+                [
+                    'country' => null,
+                    'state' => null,
+                    'city' => 'Saratov'
+                ]
+            ];
+        }
+
         public function testFieldExtractor() {
             $collection = Processor::with($this -> phones())
                 ->group('phones', Processor::varyingAtomicExtractor('phone'))
@@ -192,6 +217,16 @@ namespace Hamlet\Database {
                 ->collectToList(AddressBookEntry::class);
             $this->assertIsA($collection[0], AddressBookEntry::class);
             $this->assertIsA($collection[0]->addresses[1], Address::class);
+        }
+
+        public function testCollate() {
+            $collection = Processor::with($this -> locations())
+                ->collate()
+                ->collectToList();
+            $this->assertEqual('Victoria', $collection[0]);
+            $this->assertEqual('Australia', $collection[1]);
+            $this->assertEqual('Russia', $collection[2]);
+            $this->assertEqual('Saratov', $collection[3]);
         }
     }
 }
