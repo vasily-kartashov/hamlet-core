@@ -17,8 +17,9 @@ namespace Hamlet\Entities {
 
         /**
          * Get content language
+         * @return string|null
          */
-        public function getContentLanguage() : string;
+        public function getContentLanguage();
 
         /**
          * Get cache key of the entity

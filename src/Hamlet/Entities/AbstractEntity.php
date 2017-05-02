@@ -22,7 +22,7 @@ namespace Hamlet\Entities {
             return 0;
         }
 
-        public function getContentLanguage() : string {
+        public function getContentLanguage() {
             return null;
         }
 
