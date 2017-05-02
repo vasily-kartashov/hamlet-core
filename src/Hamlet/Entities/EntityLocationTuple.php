@@ -1,23 +1,25 @@
 <?php
 
-namespace Hamlet\Entities {
+namespace Hamlet\Entities;
 
-    class EntityLocationTuple {
+class EntityLocationTuple
+{
+    protected $location;
+    protected $entity;
 
-        protected $location;
-        protected $entity;
+    public function __construct(string $location, Entity $entity)
+    {
+        $this->location = $location;
+        $this->entity = $entity;
+    }
 
-        public function __construct(string $location, Entity $entity) {
-            $this -> location = $location;
-            $this -> entity = $entity;
-        }
+    public function getLocation(): string
+    {
+        return $this->location;
+    }
 
-        public function getLocation() : string {
-            return $this -> location;
-        }
-
-        public function getEntity() : Entity {
-            return $this -> entity;
-        }
+    public function getEntity(): Entity
+    {
+        return $this->entity;
     }
 }

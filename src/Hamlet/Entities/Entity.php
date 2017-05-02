@@ -1,48 +1,49 @@
 <?php
-namespace Hamlet\Entities {
 
-    use Hamlet\Cache\Cache;
+namespace Hamlet\Entities;
 
-    interface Entity {
+use Hamlet\Cache\Cache;
 
-        /**
-         * Get caching time in seconds. Default caching time is 0
-         */
-        public function getCachingTime() : int;
+interface Entity
+{
 
-        /**
-         * Get string representation of the entity
-         */
-        public function getContent() : string;
+    /**
+     * Get caching time in seconds. Default caching time is 0
+     */
+    public function getCachingTime(): int;
 
-        /**
-         * Get content language
-         * @return string|null
-         */
-        public function getContentLanguage();
+    /**
+     * Get string representation of the entity
+     */
+    public function getContent(): string;
 
-        /**
-         * Get cache key of the entity
-         */
-        public function getKey() : string;
+    /**
+     * Get content language
+     * @return string|null
+     */
+    public function getContentLanguage();
 
-        /**
-         * Get media type
-         */
-        public function getMediaType() : string;
+    /**
+     * Get cache key of the entity
+     */
+    public function getKey(): string;
 
-        /**
-         * Load entity from cache or generate it
-         * @param \Hamlet\Cache\Cache $cache
-         * @return array {
-         *      mixed $content
-         *      string $tag
-         *      string $digest
-         *      int $length
-         *      int $modified
-         *      int $expires
-         * }
-         */
-        public function load(Cache $cache);
-    }
+    /**
+     * Get media type
+     */
+    public function getMediaType(): string;
+
+    /**
+     * Load entity from cache or generate it
+     * @param \Hamlet\Cache\Cache $cache
+     * @return array {
+     *      mixed $content
+     *      string $tag
+     *      string $digest
+     *      int $length
+     *      int $modified
+     *      int $expires
+     * }
+     */
+    public function load(Cache $cache);
 }

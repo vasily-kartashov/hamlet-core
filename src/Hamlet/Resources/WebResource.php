@@ -1,12 +1,11 @@
 <?php
 
-namespace Hamlet\Resources {
+namespace Hamlet\Resources;
 
-    use Hamlet\Requests\Request;
-    use Hamlet\Responses\Response;
+use Hamlet\Requests\Request;
+use Hamlet\Responses\Response;
 
-    interface WebResource {
-
-        public function getResponse(Request $request) : Response;
-    }
+interface WebResource
+{
+    public function getResponse(Request $request): Response;
 }

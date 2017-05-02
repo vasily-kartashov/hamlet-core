@@ -1,9 +1,8 @@
 <?php
 
-namespace Hamlet\Templating {
+namespace Hamlet\Templating;
 
-    interface TemplateRenderer {
-
-        public function render($data, string $path);
-    }
+interface TemplateRenderer
+{
+    public function render($data, string $path);
 }

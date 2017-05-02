@@ -1,25 +1,29 @@
 <?php
 
-namespace Hamlet\Resources {
+namespace Hamlet\Resources;
 
-    use Hamlet\Requests\Request;
-    use Hamlet\Responses\{MethodNotAllowedResponse, Response, TemporaryRedirectResponse};
+use Hamlet\Requests\Request;
+use Hamlet\Responses\MethodNotAllowedResponse;
+use Hamlet\Responses\Response;
+use Hamlet\Responses\TemporaryRedirectResponse;
 
-    class RedirectResource implements WebResource {
+class RedirectResource implements WebResource
+{
 
-        protected $url;
+    protected $url;
 
-        public function __construct(string $url) {
-            $this -> url = $url;
+    public function __construct(string $url)
+    {
+        $this->url = $url;
+    }
+
+    public function getResponse(Request $request): Response
+    {
+        if ($request->getMethod() == 'GET') {
+            $response = new TemporaryRedirectResponse($this->url);
+            $response->setHeader('Cache-Control', 'private');
+            return $response;
         }
-
-        public function getResponse(Request $request) : Response {
-            if ($request -> getMethod() == 'GET') {
-                $response = new TemporaryRedirectResponse($this -> url);
-                $response -> setHeader('Cache-Control', 'private');
-                return $response;
-            }
-            return new MethodNotAllowedResponse(['GET']);
-        }
+        return new MethodNotAllowedResponse(['GET']);
     }
 }

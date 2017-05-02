@@ -1,9 +1,8 @@
 <?php
 
-namespace Hamlet\TestRunners {
+namespace Hamlet\TestRunners;
 
-    interface TestRunner {
-
-        public function execute(string $rootDirectoryPath, string $className) : bool;
-    }
+interface TestRunner
+{
+    public function execute(string $rootDirectoryPath, string $className): bool;
 }

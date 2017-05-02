@@ -17,10 +17,10 @@
   ],
   "require": {
     "php": ">=7.0.0",
-    "twig/twig": "1.*",
+    "guzzlehttp/psr7": "1.*",
     "simpletest/simpletest": "1.*",
-    "symfony/console": "3.*",
-    "apache/log4php": "2.*"
+    "symfony/console": "3.*"
+    "twig/twig": "1.*",
   },
   "autoload": {
     "classmap": [

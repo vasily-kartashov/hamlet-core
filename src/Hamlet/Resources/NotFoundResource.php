@@ -1,26 +1,29 @@
 <?php
 
-namespace Hamlet\Resources {
+namespace Hamlet\Resources;
 
-    use Hamlet\Entities\Entity;
-    use Hamlet\Requests\Request;
-    use Hamlet\Responses\{MethodNotAllowedResponse, NotFoundResponse, Response};
+use Hamlet\Entities\Entity;
+use Hamlet\Requests\Request;
+use Hamlet\Responses\MethodNotAllowedResponse;
+use Hamlet\Responses\NotFoundResponse;
+use Hamlet\Responses\Response;
 
-    class NotFoundResource implements WebResource {
+class NotFoundResource implements WebResource
+{
+    protected $entity;
 
-        protected $entity;
+    public function __construct(Entity $entity = null)
+    {
+        $this->entity = $entity;
+    }
 
-        public function __construct(Entity $entity = null) {
-            $this -> entity = $entity;
+    public function getResponse(Request $request): Response
+    {
+        if ($request->getMethod() == 'GET') {
+            $response = new NotFoundResponse($this->entity);
+            $response->setHeader('Cache-Control', 'private');
+            return $response;
         }
-
-        public function getResponse(Request $request) : Response {
-            if ($request -> getMethod() == 'GET') {
-                $response = new NotFoundResponse($this -> entity);
-                $response -> setHeader('Cache-Control', 'private');
-                return $response;
-            }
-            return new MethodNotAllowedResponse(['GET']);
-        }
+        return new MethodNotAllowedResponse(['GET']);
     }
 }

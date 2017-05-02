@@ -1,16 +1,16 @@
 <?php
 
-namespace Hamlet\Responses {
+namespace Hamlet\Responses;
 
-    use Hamlet\Entities\Entity;
+use Hamlet\Entities\Entity;
 
-    class PreconditionFailedResponse extends AbstractResponse {
-
-        public function __construct(Entity $entity = null) {
-            parent::__construct('412 Precondition Failed');
-            if (!is_null($entity)) {
-                $this -> setEntity($entity);
-            }
+class PreconditionFailedResponse extends Response
+{
+    public function __construct(Entity $entity = null)
+    {
+        parent::__construct(412);
+        if (!is_null($entity)) {
+            $this->setEntity($entity);
         }
     }
 }
