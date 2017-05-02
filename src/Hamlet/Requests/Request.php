@@ -107,12 +107,12 @@ class Request extends ServerRequest
 
     public function pathMatches(string $path): bool
     {
-        return $this->getUri() == $path;
+        return $this->getUri()->getPath() == $path;
     }
 
     public function pathMatchesPattern(string $pattern)
     {
-        $pathTokens = explode('/', $this->getUri());
+        $pathTokens = explode('/', $this->getUri()->getPath());
         $patternTokens = explode('/', $pattern);
         if (count($pathTokens) != count($patternTokens)) {
             return false;
@@ -123,12 +123,12 @@ class Request extends ServerRequest
     public function pathStartsWith(string $prefix): bool
     {
         $length = strlen($prefix);
-        return substr($this->getUri(), 0, $length) == $prefix;
+        return substr($this->getUri()->getPath(), 0, $length) == $prefix;
     }
 
     public function pathStartsWithPattern(string $pattern)
     {
-        $pathTokens = explode('/', $this->getUri());
+        $pathTokens = explode('/', $this->getUri()->getPath());
         $patternTokens = explode('/', $pattern);
         return $this->matchTokens($pathTokens, $patternTokens);
     }
