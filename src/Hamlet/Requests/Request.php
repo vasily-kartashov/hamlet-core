@@ -45,6 +45,15 @@ class Request extends ServerRequest
         return $this->parseHeader($languageHeader) ?? [];
     }
 
+    public function getParameter(string $name, $defaultValue = null)
+    {
+        static $parameters;
+        if (!isset($parameters)) {
+            $parameters = $this->getQueryParams() + $this->getParsedBody();
+        }
+        return $parameters[$name] ?? $defaultValue;
+    }
+
     /**
      * Compare path tokens side by side. Returns false if no match, true if match without capture,
      * and array with matched tokens if used with capturing pattern

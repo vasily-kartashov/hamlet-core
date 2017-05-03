@@ -13,6 +13,7 @@ use Psr\Http\Message\StreamInterface;
  * Responses classes should be treated as immutable although they are clearly not. The current design makes it
  * developer's responsibility to make sure that the response objects are always well-formed.
  */
+// @todo make class imutable and create a way to convert from and to response interface. they are way too different
 class Response implements ResponseInterface
 {
     /** @var string */
