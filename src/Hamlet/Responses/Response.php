@@ -49,8 +49,14 @@ class Response implements ResponseInterface
     /** @var array */
     protected $session = [];
 
-    protected function __construct(int $statusCode = 0) {
+    protected function __construct(int $statusCode = 0)
+    {
         $this->statusCode = $statusCode;
+    }
+
+    public static function createEmpty(): Response
+    {
+        return new Response();
     }
 
     public function getStatusCode(): int
@@ -128,9 +134,9 @@ class Response implements ResponseInterface
     public function setCookie(string $name, string $value, string $path, int $timeToLive)
     {
         $this->cookies[] = [
-            'name'       => $name,
-            'value'      => $value,
-            'path'       => $path,
+            'name' => $name,
+            'value' => $value,
+            'path' => $path,
             'timeToLive' => $timeToLive,
         ];
     }
