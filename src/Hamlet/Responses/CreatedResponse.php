@@ -21,9 +21,9 @@ class CreatedResponse extends Response
     public function __construct(string $url, Entity $entity = null)
     {
         parent::__construct(201);
-        $this->setHeader('Location', $url);
-        if (!is_null($entity)) {
-            $this->setEntity($entity);
+        $this->withHeader('Location', $url);
+        if ($entity) {
+            $this->withEntity($entity);
         }
     }
 }

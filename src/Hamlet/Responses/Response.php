@@ -2,77 +2,69 @@
 
 namespace Hamlet\Responses;
 
-use GuzzleHttp\Psr7\BufferStream;
-use Hamlet\Cache\Cache;
 use Hamlet\Entities\Entity;
+use Hamlet\Entities\StreamEntity;
 use Hamlet\Requests\Request;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Responses classes should be treated as immutable although they are clearly not. The current design makes it
  * developer's responsibility to make sure that the response objects are always well-formed.
  */
-// @todo make class imutable and create a way to convert from and to response interface. they are way too different
-class Response implements ResponseInterface
+class Response
 {
-    /** @var string */
-    protected $protocolVersion = '1.1';
-
     /** @var int */
     protected $statusCode = 0;
 
-    /** @var string */
-    protected $reasonPhrase = '';
-
-    /** @var string[][] */
+    /** @var string[] */
     protected $headers = [];
 
     /** @var Entity */
-    protected $entity = null;
-
-    /** @var StreamInterface */
-    protected $body = null;
+    protected $entity;
 
     /** @var bool */
     protected $embedEntity = true;
 
-    /**
-     * @var array {
-     *      string $name
-     *      string $value
-     *      string $path
-     *      int $timeToLive
-     * }
-     */
+    /** @var Cookie[]  */
     protected $cookies = [];
 
-    /** @var array */
+    /** @var string[] */
     protected $session = [];
 
-    protected function __construct(int $statusCode = 0)
-    {
-        $this->statusCode = $statusCode;
+    protected function __construct(
+        int $statusCode = 0,
+        $entity = null,
+        $embedEntity = true,
+        array $headers = [],
+        array $cookies = [],
+        array $session = []
+    ) {
+        $this->statusCode      = $statusCode;
+        $this->entity          = $entity;
+        $this->embedEntity     = $embedEntity;
+        $this->headers         = $headers;
+        $this->cookies         = $cookies;
+        $this->session         = $session;
     }
 
-    public static function createEmpty(): Response
+    public static function fromPsrResponse(ResponseInterface $response): Response
     {
-        return new Response();
+        $headers = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $headers[$name] = join(', ', $values);
+        }
+        $entity = new StreamEntity($response->getBody(), $response->getHeader('Content-Type'));
+
+        return new Response(
+            $response->getStatusCode(),
+            $entity,
+            true,
+            $headers
+        );
     }
 
-    public function getStatusCode(): int
-    {
-        return $this->statusCode;
-    }
-
-    protected function setStatus(int $statusCode, string $reasonPhrase = '')
-    {
-        $this->statusCode = $statusCode;
-        $this->reasonPhrase = $reasonPhrase;
-    }
-
-    public function output(Request $request, Cache $cache)
-    {
+    public function output(Request $request, CacheItemPoolInterface $cache) {
         if (count($this->session) > 0) {
             if (!session_id()) {
                 session_start();
@@ -83,42 +75,38 @@ class Response implements ResponseInterface
         }
 
         header($this->getStatusLine());
-        foreach ($this->headers as $name => $values) {
-            foreach ($values as $value) {
-                header($name . ': ' . $value);
-            }
+        foreach ($this->headers as $name => $value) {
+            header($name . ': ' . $value);
         }
 
         foreach ($this->cookies as $cookie) {
-            setcookie($cookie['name'], $cookie['value'], time() + $cookie['timeToLive'], $cookie['path']);
+            setcookie($cookie->name(), $cookie->value(), time() + $cookie->timeToLive(), $cookie->path());
         }
 
         if ($this->entity) {
-            $cacheEntry = $this->entity->load($cache);
+            $cacheValue = $this->entity->load($cache);
             $now = time();
-            $maxAge = max(0, $cacheEntry['expires'] - $now);
+            $maxAge = max(0, $cacheValue->expiry() - $now);
 
-            header('ETag: ' . $cacheEntry['tag']);
-            header('Last-Modified: ' . $this->formatTimestamp($cacheEntry['modified']));
+            header('ETag: ' . $cacheValue->tag());
+            header('Last-Modified: ' . $this->formatTimestamp($cacheValue->modified()));
             header('Cache-Control: public, max-age=' . $maxAge);
             header('Expires: ' . $this->formatTimestamp($now + $maxAge));
 
             if ($this->embedEntity) {
-                header('Content-Type: ' . $this->entity->getMediaType());
-                header('Content-Length: ' . $cacheEntry['length']);
-                header('Content-MD5: ' . $cacheEntry['digest']);
+                header('Content-Length: ' . $cacheValue->length());
+                header('Content-MD5: ' . $cacheValue->digest());
                 $language = $this->entity->getContentLanguage();
                 if ($language) {
                     header('Content-Language: ' . $language);
                 }
-                echo $cacheEntry['content'];
+                $mediaType = $this->entity->getMediaType();
+                if ($mediaType) {
+                    header('Content-Type: ' . $mediaType);
+                }
+                echo $cacheValue->content();
             }
-        } elseif ($this->body) {
-            $payload = $this->body->getContents();
-            header('Content-Length: ' . strlen($payload));
-            echo $payload;
         }
-
         exit;
     }
 
@@ -127,144 +115,40 @@ class Response implements ResponseInterface
         return gmdate('D, d M Y H:i:s', $timestamp) . ' GMT';
     }
 
-    public function setHeader(string $name, string $value)
+    protected function withCookie(Cookie $cookie): Response
     {
-        $this->headers[$name][] = $value;
+        $this->cookies[] = $cookie;
+        return $this;
     }
 
-    public function setCookie(string $name, string $value, string $path, int $timeToLive)
+    protected function withHeader(string $name, string $value): Response
     {
-        $this->cookies[] = [
-            'name' => $name,
-            'value' => $value,
-            'path' => $path,
-            'timeToLive' => $timeToLive,
-        ];
+        $this->headers[$name] = $value;
+        return $this;
     }
 
-    public function setSessionParameter(string $name, $value)
+    protected function withSessionParameter(string $name, string $value): Response
     {
         $this->session[$name] = $value;
+        return $this;
     }
 
-    public function getEntity(): Entity
-    {
-        return $this->entity;
-    }
-
-    protected function setEntity(Entity $entity)
+    protected function withEntity(Entity $entity): Response
     {
         $this->entity = $entity;
+        return $this;
     }
 
-    protected function setEmbedEntity(bool $embedEntity)
+    protected function withStatusCode(int $code): Response
     {
-        $this->embedEntity = $embedEntity;
+        $this->statusCode = $code;
+        return $this;
     }
 
-    public function getProtocolVersion()
+    protected function withEmbedEntity(bool $embed): Response
     {
-        return $this->protocolVersion;
-    }
-
-    public function withProtocolVersion($version)
-    {
-        $copy = clone $this;
-        $copy->setProtocolVersion($version);
-        return $copy;
-    }
-
-    protected function setProtocolVersion($version)
-    {
-        $this->protocolVersion = $version;
-    }
-
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    public function hasHeader($name)
-    {
-        return isset($this->headers[$name]);
-    }
-
-    public function getHeader($name)
-    {
-        return $this->headers[$name] ?? [];
-    }
-
-    public function getHeaderLine($name)
-    {
-        $values = $this->headers[$name] ?? [];
-        return join(', ', $values);
-    }
-
-    public function withHeader($name, $value)
-    {
-        $copy = clone $this;
-        $headers = $this->headers;
-        $headers[$name] = is_array($value) ? $value : [$value];
-        $copy->setHeaders($headers);
-        return $copy;
-    }
-
-    protected function setHeaders(array $headers)
-    {
-        $this->headers = $headers;
-    }
-
-    public function withAddedHeader($name, $value)
-    {
-        $headers = $this->headers;
-        if (!isset($header[$name])) {
-            $headers[$name] = [];
-        }
-        $headers[$name] += is_array($value) ? $value : [$value];
-        $copy = clone $this;
-        $copy->setHeaders($headers);
-        return $copy;
-    }
-
-    public function withoutHeader($name)
-    {
-        $headers = $this->headers;
-        unset($headers[$name]);
-        $copy = clone $this;
-        $copy->setHeaders($headers);
-        return $copy;
-    }
-
-    public function getBody()
-    {
-        if (!isset($this->body)) {
-            $this->body = new BufferStream();
-        }
-        return $this->body;
-    }
-
-    public function withBody(StreamInterface $body)
-    {
-        $copy = clone $this;
-        $copy->setBody($body);
-        return $copy;
-    }
-
-    protected function setBody(StreamInterface $body)
-    {
-        $this->body = $body;
-    }
-
-    public function withStatus($statusCode, $reasonPhrase = '')
-    {
-        $copy = clone $this;
-        $copy->setStatus($statusCode, $reasonPhrase);
-        return $copy;
-    }
-
-    public function getReasonPhrase()
-    {
-        return $this->reasonPhrase;
+        $this->embedEntity = $embed;
+        return $this;
     }
 
     private function getStatusLine()
@@ -329,7 +213,7 @@ class Response implements ResponseInterface
             508 => 'Loop Detected',
             511 => 'Network Authentication Required',
         ];
-        $reasonPhrase = $this->reasonPhrase ?? $phrases[$this->statusCode] ?? '';
-        return 'HTTP/' . $this->protocolVersion . ' ' . $this->statusCode . ' ' . $reasonPhrase;
+        $reasonPhrase = $phrases[$this->statusCode] ?? '';
+        return 'HTTP/1.1 ' . $this->statusCode . ' ' . $reasonPhrase;
     }
 }

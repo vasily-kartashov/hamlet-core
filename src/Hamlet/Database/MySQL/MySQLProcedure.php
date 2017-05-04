@@ -1,18 +1,19 @@
 <?php
 
-namespace Hamlet\Database;
+namespace Hamlet\Database\MySQL;
 
 use Exception;
+use Hamlet\Database\AbstractProcedure;
 use mysqli;
 use mysqli_stmt;
+use Psr\Log\LoggerInterface;
 
-class MySQLProcedure implements Procedure
+class MySQLProcedure extends AbstractProcedure
 {
     protected $connection;
     protected $query;
-    protected $parameters = [];
 
-    public function __construct(mysqli $connection, string $query)
+    public function __construct(mysqli $connection, string $query, LoggerInterface $logger)
     {
         $this->connection = $connection;
         $this->query = $query;
@@ -80,87 +81,6 @@ class MySQLProcedure implements Procedure
             $result[] = $row;
         });
         return $result;
-    }
-
-    public function fetchAllWithKey(string $keyField): array
-    {
-        $result = [];
-        $this->fetch(function ($row) use ($keyField, &$result) {
-            $key = $row[$keyField];
-            $result[$key] = $row;
-        });
-        return $result;
-    }
-
-    public function bindBlob(string $value)
-    {
-        $this->parameters[] = ['b', $value];
-    }
-
-    public function bindFloat(float $value)
-    {
-        $this->parameters[] = ['d', $value];
-    }
-
-    public function bindInteger(int $value)
-    {
-        $this->parameters[] = ['i', $value];
-    }
-
-    public function bindString(string $value)
-    {
-        $this->parameters[] = ['s', $value];
-    }
-
-    public function bindNullableBlob($value)
-    {
-        assert(is_null($value) || is_string($value));
-        $this->parameters[] = ['b', $value];
-    }
-
-    public function bindNullableFloat($value)
-    {
-        assert(is_null($value) || is_float($value));
-        $this->parameters[] = ['d', $value];
-    }
-
-    public function bindNullableInteger($value)
-    {
-        assert(is_null($value) || is_int($value));
-        $this->parameters[] = ['i', $value];
-    }
-
-    public function bindNullableString($value)
-    {
-        assert(is_null($value) || is_string($value));
-        $this->parameters[] = ['s', $value];
-    }
-
-    public function bindFloatList(array $values)
-    {
-        assert(!empty($values));
-        foreach ($values as $value) {
-            assert(is_float($value));
-        }
-        $this->parameters[] = ['d', $values];
-    }
-
-    public function bindIntegerList(array $values)
-    {
-        assert(!empty($values));
-        foreach ($values as $value) {
-            assert(is_int($value));
-        }
-        $this->parameters[] = ['i', $values];
-    }
-
-    public function bindStringList(array $values)
-    {
-        assert(!empty($values));
-        foreach ($values as $value) {
-            assert(is_string($value));
-        }
-        $this->parameters[] = ['s', $values];
     }
 
     public function affectedRows(): int

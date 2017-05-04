@@ -13,6 +13,7 @@ class TemporaryRedirectResponse extends Response
     public function __construct(string $url)
     {
         parent::__construct(307);
-        $this->setHeader('Location', $url);
+        $this->withHeader('Cache-Control', 'private');
+        $this->withHeader('Location', $url);
     }
 }

@@ -23,6 +23,6 @@ class MovedPermanentlyResponse extends Response
     public function __construct(string $url)
     {
         parent::__construct(301);
-        $this->setHeader('Location', $url);
+        $this->withHeader('Location', $url);
     }
 }

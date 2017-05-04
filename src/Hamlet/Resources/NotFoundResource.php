@@ -19,11 +19,9 @@ class NotFoundResource implements WebResource
 
     public function getResponse(Request $request): Response
     {
-        if ($request->getMethod() == 'GET') {
-            $response = new NotFoundResponse($this->entity);
-            $response->setHeader('Cache-Control', 'private');
-            return $response;
+        if ($request->method() == 'GET') {
+            return new NotFoundResponse($this->entity);
         }
-        return new MethodNotAllowedResponse(['GET']);
+        return new MethodNotAllowedResponse('GET');
     }
 }

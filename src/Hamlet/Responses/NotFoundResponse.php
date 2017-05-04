@@ -16,8 +16,9 @@ class NotFoundResponse extends Response
     public function __construct(Entity $entity = null)
     {
         parent::__construct(404);
-        if (!is_null($entity)) {
-            $this->setEntity($entity);
+        $this->withHeader('Cache-Control', 'private');
+        if ($entity) {
+            $this->withEntity($entity);
         }
     }
 }

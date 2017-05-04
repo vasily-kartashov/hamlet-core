@@ -2,9 +2,9 @@
 
 namespace Hamlet\Responses;
 
-use Hamlet\Cache\Cache;
 use Hamlet\Entities\Entity;
 use Hamlet\Requests\Request;
+use Psr\Cache\CacheItemPoolInterface;
 
 class OKOrNotModifiedResponse extends Response
 {
@@ -12,17 +12,15 @@ class OKOrNotModifiedResponse extends Response
     public function __construct(Entity $entity, Request $request)
     {
         parent::__construct();
-        $this->setEntity($entity);
+        $this->withEntity($entity);
     }
 
-    public function output(Request $request, Cache $cache)
+    public function output(Request $request, CacheItemPoolInterface $cache)
     {
         if ($request->preconditionFulfilled($this->entity, $cache)) {
-            $this->setStatus(200);
-            $this->setEmbedEntity(true);
+            $this->withStatusCode(200)->withEmbedEntity(true);
         } else {
-            $this->setStatus(304);
-            $this->setEmbedEntity(false);
+            $this->withStatusCode(304)->withEmbedEntity(false);
         }
         parent::output($request, $cache);
     }

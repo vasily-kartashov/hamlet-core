@@ -2,58 +2,44 @@
 
 namespace Hamlet\Entities;
 
-use Hamlet\Cache\Cache;
+use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractEntity implements Entity
 {
-
-    /**
-     * @var array {
-     *      mixed $content
-     *      string $tag
-     *      string $digest
-     *      int $length
-     *      int $modified
-     *      int $expires
-     * }
-     */
-    private $cacheEntry = null;
+    /** @var CacheValue */
+    private $cacheValue = null;
 
     public function getContentLanguage()
     {
         return null;
     }
 
-    public function load(Cache $cache): array
+    public function load(CacheItemPoolInterface $cache): CacheValue
     {
-        if (!is_null($this->cacheEntry)) {
-            return $this->cacheEntry;
+        if ($this->cacheValue) {
+            return $this->cacheValue;
         }
-
         $key = $this->getKey();
-        list($this->cacheEntry, $found) = $cache->get($key);
-        $now = time();
-        $expires = $this->cacheEntry['expires'] ?? 0;
+        $cacheItem = $cache->getItem($key);
 
-        if (!$found or $now >= $expires) {
-            $content = $this->getContent();
-            $tag = md5($content);
-            if (is_array($this->cacheEntry) and $tag == $this->cacheEntry['tag']) {
-                $this->cacheEntry['expires'] = $now + $this->getCachingTime();
-            } else {
-                $this->cacheEntry = [
-                    'content' => $content,
-                    'tag' => $tag,
-                    'digest' => base64_encode(pack('H*', md5($content))),
-                    'length' => strlen($content),
-                    'modified' => $now,
-                    'expires' => $now + $this->getCachingTime(),
-                ];
-            }
-            $cache->set($key, $this->cacheEntry);
+        if ($cacheItem->isHit()) {
+            $this->cacheValue = $cacheItem->get();
         }
 
-        return $this->cacheEntry;
+        $now = time();
+        if (!$cacheItem->isHit() || $now >= $this->cacheValue->expiry()) {
+            $content   = $this->getContent();
+            $tag       = md5($content);
+            $newExpiry = $now + $this->getCachingTime();
+            if ($this->cacheValue && $tag == $this->cacheValue->tag()) {
+                $this->cacheValue = $this->cacheValue->extendExpiry($newExpiry);
+            } else {
+                $this->cacheValue = new CacheValue($content, $now, $newExpiry);
+            }
+            $cacheItem->set($this->cacheValue);
+            $cache->save($cacheItem);
+        }
+        return $this->cacheValue;
     }
 
     public function getCachingTime(): int

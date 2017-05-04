@@ -3,10 +3,18 @@ Hamlet Core
 
 To Do:
 
+* Change layout to more standard bit
+* Add PSR-2 style
+* Incorporate logger
+* Use PHPUnit
+* Improve transactional support
 * Support for PostgreSQL
 * Support for Redis as Cache backup: http://qpleple.com/install-phpredis-on-amazon-beanstalk/
 * Support for WebSockets
 * Support for HTTP/2.0
-* Easily describe entities reset for update situations, and writes to the cache. 
-  Ideally POST to an entity should not hit database twice.
-* Order test cases
+* Support for OAuth server (PHP League)
+
+Testing
+======
+
+`./vendor/bin/phpunit`

@@ -5,33 +5,131 @@ namespace Hamlet\Requests;
 use DateTime;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
-use Hamlet\Cache\Cache;
 use Hamlet\Entities\Entity;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 
-class Request extends ServerRequest
+class Request
 {
-    public static function fromGlobals()
+    private $headers = [];
+    private $queryParameters = [];
+    private $parameters = [];
+    private $body;
+    private $sessionParameters = [];
+    private $cookies = [];
+    private $files = [];
+
+    private $path;
+
+    protected function __construct(
+        array $headers,
+        array $queryParameters,
+        array $parameters,
+        StreamInterface $body,
+        array $sessionParameters,
+        array $cookies,
+        array $files,
+        array $serverParameters
+    ) {
+        $this->headers           = $headers;
+        $this->queryParameters   = $queryParameters;
+        $this->parameters        = $parameters;
+        $this->body              = $body;
+        $this->sessionParameters = $sessionParameters;
+        $this->cookies           = $cookies;
+        $this->files             = $files;
+        $this->serverParameters  = $serverParameters;
+    }
+
+    public static function fromGlobals(): Request
     {
-        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
-        $headers = function_exists('getallheaders') ? getallheaders() : [];
-        $uri = self::getUriFromGlobals();
-        $body = new LazyOpenStream('php://input', 'r+');
-        $protocol = isset($_SERVER['SERVER_PROTOCOL'])
-            ? str_replace('HTTP/', '', $_SERVER['SERVER_PROTOCOL'])
-            : '1.1';
+        $headers           = Request::readHeaders();
+        $queryParameters   = $_GET;
+        $parameters        = $_POST;
+        $body              = new LazyOpenStream('php://input', 'r+');
+        $sessionParameters = $_SESSION;
+        $cookies           = $_COOKIE;
+        $files             = $_FILES;
+        $serverParameters  = $_SERVER;
 
-        $serverRequest = new Request($method, $uri, $headers, $body, $protocol, $_SERVER);
+        return new Request(
+            $headers,
+            $queryParameters,
+            $parameters,
+            $body,
+            $sessionParameters,
+            $cookies,
+            $files,
+            $serverParameters
+        );
+    }
 
-        return $serverRequest
-            ->withCookieParams($_COOKIE)
-            ->withQueryParams($_GET)
-            ->withParsedBody($_POST)
-            ->withUploadedFiles(self::normalizeFiles($_FILES));
+    public function toPsrRequest(): ServerRequestInterface
+    {
+        $psrRequest = new ServerRequest(
+            $this->method(),
+            $this->uri(),
+            $this->headers,
+            $this->body,
+            $this->protocolVersion(),
+            $this->serverParameters
+        );
+        return $psrRequest->withParsedBody($this->parameters)
+                          ->withCookieParams($this->cookies)
+                          ->withQueryParams($this->queryParameters)
+                          ->withUploadedFiles($this->files);
     }
 
     public function getEnvironmentName(): string
     {
-        return $this->getServerParams()['SERVER_NAME'];
+        return $this->serverParameters['SERVER_NAME'];
+    }
+
+    public function method(): string
+    {
+        return $this->serverParameters['REQUEST_METHOD'] ?? 'GET';
+    }
+
+    public function header(string $name, $defaultValue = null)
+    {
+        return $this->headers[$name] ?? $defaultValue;
+    }
+
+    public function languageCodes(): array
+    {
+        $languageHeader = $this->header('Accept-Language');
+        return $this->parseHeader($languageHeader) ?? [];
+    }
+
+    public function parameter(string $name, $defaultValue = null)
+    {
+        return $this->parameters[$name] ?? $this->queryParameters[$name] ?? $defaultValue;
+    }
+
+    public function hasParameter(string $name)
+    {
+        return isset($this->parameters[$name]) || isset($this->queryParameters[$name]);
+    }
+
+    public function sessionParameter(string $name, $defaultValue = null)
+    {
+        return $this->sessionParameters[$name] ?? $defaultValue;
+    }
+
+    public function hasSessionParameter(string $name)
+    {
+        return isset($this->sessionParameters[$name]);
+    }
+
+    public function cookie(string $name, $defaultValue = null)
+    {
+        return $this->cookies[$name] ?? $defaultValue;
+    }
+
+    public function hasCookie(string $name)
+    {
+        return isset($this->cookies[$name]);
     }
 
     public function environmentNameEndsWith(string $suffix): bool
@@ -39,19 +137,25 @@ class Request extends ServerRequest
         return $suffix == "" || substr($this->getEnvironmentName(), -strlen($suffix)) === $suffix;
     }
 
-    public function getLanguageCodes(): array
+    public function uri(): string
     {
-        $languageHeader = $this->getHeader('Accept-Language');
-        return $this->parseHeader($languageHeader) ?? [];
+        return $this->serverParameters['REQUEST_URI'] ?? '';
     }
 
-    public function getParameter(string $name, $defaultValue = null)
+    public function path(): string
     {
-        static $parameters;
-        if (!isset($parameters)) {
-            $parameters = $this->getQueryParams() + $this->getParsedBody();
+        if (!$this->path) {
+            $position = strpos($this->uri(), '?');
+            $this->path = $position ? substr($this->uri(), 0, $position) : $this->uri();
         }
-        return $parameters[$name] ?? $defaultValue;
+        return $this->path;
+    }
+
+    public function protocolVersion(): string
+    {
+        return isset($this->serverParameters['SERVER_PROTOCOL'])
+            ? str_replace('HTTP/', '', $this->serverParameters['SERVER_PROTOCOL'])
+            : '1.1';
     }
 
     /**
@@ -116,12 +220,12 @@ class Request extends ServerRequest
 
     public function pathMatches(string $path): bool
     {
-        return $this->getUri()->getPath() == $path;
+        return $this->path() == $path;
     }
 
     public function pathMatchesPattern(string $pattern)
     {
-        $pathTokens = explode('/', $this->getUri()->getPath());
+        $pathTokens = explode('/', $this->path());
         $patternTokens = explode('/', $pattern);
         if (count($pathTokens) != count($patternTokens)) {
             return false;
@@ -132,25 +236,27 @@ class Request extends ServerRequest
     public function pathStartsWith(string $prefix): bool
     {
         $length = strlen($prefix);
-        return substr($this->getUri()->getPath(), 0, $length) == $prefix;
+        return substr($this->path(), 0, $length) == $prefix;
     }
 
     public function pathStartsWithPattern(string $pattern)
     {
-        $pathTokens = explode('/', $this->getUri()->getPath());
+        $pathTokens = explode('/', $this->path());
         $patternTokens = explode('/', $pattern);
         return $this->matchTokens($pathTokens, $patternTokens);
     }
 
-    public function preconditionFulfilled(Entity $entity, Cache $cache): bool
+    public function preconditionFulfilled(Entity $entity, CacheItemPoolInterface $cache): bool
     {
-        $matchHeader = $this->getHeader('If-Match');
-        $modifiedSinceHeader = $this->getHeader('If-Modified-Since');
-        $noneMatchHeader = $this->getHeader('If-None-Match');
-        $unmodifiedSinceHeader = $this->getHeader('If-Unmodified-Since');
+        $matchHeader           = $this->header('If-Match');
+        $modifiedSinceHeader   = $this->header('If-Modified-Since');
+        $noneMatchHeader       = $this->header('If-None-Match');
+        $unmodifiedSinceHeader = $this->header('If-Unmodified-Since');
 
-        if (is_null($matchHeader)     && is_null($modifiedSinceHeader) &&
-            is_null($noneMatchHeader) && is_null($unmodifiedSinceHeader)) {
+        if (is_null($matchHeader) &&
+            is_null($modifiedSinceHeader) &&
+            is_null($noneMatchHeader) &&
+            is_null($unmodifiedSinceHeader)) {
             return true;
         }
         $cacheEntry   = $entity->load($cache);
@@ -168,13 +274,12 @@ class Request extends ServerRequest
         if (!is_null($unmodifiedSinceHeader) && $lastModified < strtotime($unmodifiedSinceHeader)) {
             return true;
         }
-
         return false;
     }
 
     public function getDate(): int
     {
-        $dateHeader = $this->getHeader('Date');
+        $dateHeader = $this->header('Date');
         if (empty($dateHeader)) {
             return -1;
         }
@@ -183,8 +288,31 @@ class Request extends ServerRequest
         return $dateTime->getTimestamp();
     }
 
-    public function __toString()
+    private static function readHeaders()
     {
-        return json_encode($this, JSON_PRETTY_PRINT);
+        if (function_exists('getallheaders')) {
+            return getallheaders();
+        }
+        $headers = [];
+        $aliases = [
+            'CONTENT_TYPE'                => 'Content-Type',
+            'CONTENT_LENGTH'              => 'Content-Length',
+            'CONTENT_MD5'                 => 'Content-MD5',
+            'REDIRECT_HTTP_AUTHORIZATION' => 'Authorization',
+            'PHP_AUTH_DIGEST'             => 'Authorization',
+        ];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == "HTTP_") {
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$headerName] = $value;
+            } elseif (isset($aliases[$name]) and !isset($headers[$aliases[$name]])) {
+                $headers[$aliases[$name]] = $value;
+            }
+        }
+        if (!isset($headers['Authorization']) and isset($_SERVER['PHP_AUTH_USER'])) {
+            $password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+            $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $password);
+        }
+        return $headers;
     }
 }

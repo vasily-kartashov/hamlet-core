@@ -14,6 +14,6 @@ class NotModifiedResponse extends Response
     public function __construct(Entity $entity)
     {
         parent::__construct(304);
-        $this->setEntity($entity);
+        $this->withEntity($entity);
     }
 }

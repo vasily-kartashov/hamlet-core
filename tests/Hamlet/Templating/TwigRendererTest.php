@@ -2,9 +2,10 @@
 
 namespace Hamlet\Templating;
 
-use UnitTestCase;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 
-class TwigRendererTest extends UnitTestCase
+class TwigRendererTest extends TestCase
 {
     public function testVariableSubstitution()
     {
@@ -13,6 +14,6 @@ class TwigRendererTest extends UnitTestCase
             "name" => "World"
         ];
         $path = realpath(__DIR__ . '/variable-substitution.twig');
-        $this->assertEqual($renderer->render($data, $path), "Hello, World!");
+        Assert::assertEquals($renderer->render($data, $path), "Hello, World!");
     }
 }

@@ -2,10 +2,10 @@
 
 namespace Hamlet\Applications;
 
-use Hamlet\Cache\Cache;
 use Hamlet\Requests\Request;
 use Hamlet\Resources\WebResource;
 use Hamlet\Responses\Response;
+use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractApplication
 {
@@ -18,7 +18,7 @@ abstract class AbstractApplication
 
     abstract protected function findResource(Request $request): WebResource;
 
-    abstract protected function getCache(Request $request): Cache;
+    abstract protected function getCache(Request $request): CacheItemPoolInterface;
 
     public function output(Request $request, Response $response)
     {

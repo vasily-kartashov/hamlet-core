@@ -19,8 +19,8 @@ class OKResponse extends Response
     public function __construct(Entity $entity = null)
     {
         parent::__construct(200);
-        if (!is_null($entity)) {
-            $this->setEntity($entity);
+        if ($entity) {
+            $this->withEntity($entity);
         }
     }
 }

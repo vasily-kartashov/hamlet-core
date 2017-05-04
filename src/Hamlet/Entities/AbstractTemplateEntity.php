@@ -9,7 +9,7 @@ abstract class AbstractTemplateEntity extends AbstractEntity
     public function getContent(): string
     {
         return $this->getTemplateRenderer()
-            ->render($this->getTemplateData(), $this->getTemplatePath());
+                    ->render($this->getTemplateData(), $this->getTemplatePath());
     }
 
     abstract protected function getTemplateRenderer(): TemplateRenderer;

@@ -1,8 +1,10 @@
 <?php
 
-namespace Hamlet\Database;
+namespace Hamlet\Database\MySQL;
 
 use Exception;
+use Hamlet\Database\Database;
+use Hamlet\Database\Procedure;
 use mysqli;
 
 class MySQLDatabase extends Database
@@ -16,7 +18,7 @@ class MySQLDatabase extends Database
 
     public function prepare(string $query): Procedure
     {
-        return new MySQLProcedure($this->connection, $query);
+        return new MySQLProcedure($this->connection, $query, $this->logger);
     }
 
     public function startTransaction()

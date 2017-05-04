@@ -2,9 +2,10 @@
 
 namespace Hamlet\Database;
 
+use Hamlet\Database\Processing\Processor;
+
 interface Procedure
 {
-
     public function bindBlob(string $value);
 
     public function bindFloat(float $value);
@@ -27,17 +28,17 @@ interface Procedure
 
     public function bindStringList(array $values);
 
+    public function insert();
+
     public function execute();
-
-    public function fetch(callable $callback);
-
-    public function fetchAll(): array;
-
-    public function fetchAllWithKey(string $keyField): array;
 
     public function fetchOne();
 
+    public function fetchAll(): array;
+
     public function affectedRows(): int;
 
-    public function insert();
+    public function processOne(): Processor;
+
+    public function processAll(): Processor;
 }

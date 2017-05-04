@@ -18,8 +18,8 @@ class UnauthorizedResponse extends Response
     public function __construct(Entity $entity = null)
     {
         parent::__construct(401);
-        if (!is_null($entity)) {
-            $this->setEntity($entity);
+        if ($entity) {
+            $this->withEntity($entity);
         }
     }
 }

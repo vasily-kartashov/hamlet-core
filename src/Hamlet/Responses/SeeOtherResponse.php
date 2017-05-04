@@ -20,6 +20,6 @@ class SeeOtherResponse extends Response
     public function __construct(string $url)
     {
         parent::__construct(303);
-        $this->setHeader('Location', $url);
+        $this->withHeader('Location', $url);
     }
 }

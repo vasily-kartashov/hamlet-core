@@ -2,11 +2,10 @@
 
 namespace Hamlet\Entities;
 
-use Hamlet\Cache\Cache;
+use Psr\Cache\CacheItemPoolInterface;
 
 interface Entity
 {
-
     /**
      * Get caching time in seconds. Default caching time is 0
      */
@@ -35,15 +34,8 @@ interface Entity
 
     /**
      * Load entity from cache or generate it
-     * @param \Hamlet\Cache\Cache $cache
-     * @return array {
-     *      mixed $content
-     *      string $tag
-     *      string $digest
-     *      int $length
-     *      int $modified
-     *      int $expires
-     * }
+     * @param CacheItemPoolInterface $cache
+     * @return CacheValue
      */
-    public function load(Cache $cache);
+    public function load(CacheItemPoolInterface $cache): CacheValue;
 }

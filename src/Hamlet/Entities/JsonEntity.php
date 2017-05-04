@@ -4,7 +4,6 @@ namespace Hamlet\Entities;
 
 class JsonEntity extends AbstractJsonEntity
 {
-
     protected $data;
 
     public function __construct($data)

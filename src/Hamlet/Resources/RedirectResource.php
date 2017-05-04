@@ -19,11 +19,9 @@ class RedirectResource implements WebResource
 
     public function getResponse(Request $request): Response
     {
-        if ($request->getMethod() == 'GET') {
-            $response = new TemporaryRedirectResponse($this->url);
-            $response->setHeader('Cache-Control', 'private');
-            return $response;
+        if ($request->method() == 'GET') {
+            return new TemporaryRedirectResponse($this->url);
         }
-        return new MethodNotAllowedResponse(['GET']);
+        return new MethodNotAllowedResponse('GET');
     }
 }

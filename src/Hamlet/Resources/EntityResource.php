@@ -11,18 +11,17 @@ use Hamlet\Responses\OKOrNotModifiedResponse;
 class EntityResource implements WebResource
 {
     protected $entity;
-    /** @var string[] */
     protected $methods;
 
-    public function __construct(Entity $entity, array $methods = ['GET'])
+    public function __construct(Entity $entity, string... $methods)
     {
-        $this->entity = $entity;
-        $this->methods = $methods;
+        $this->entity  = $entity;
+        $this->methods = $methods ?: ['GET'];
     }
 
     public function getResponse(Request $request): Response
     {
-        if (in_array($request->getMethod(), $this->methods)) {
+        if (in_array($request->method(), $this->methods)) {
             $response = new OKOrNotModifiedResponse($this->entity, $request);
             return $response;
         }
