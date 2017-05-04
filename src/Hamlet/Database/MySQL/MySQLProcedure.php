@@ -6,14 +6,13 @@ use Exception;
 use Hamlet\Database\AbstractProcedure;
 use mysqli;
 use mysqli_stmt;
-use Psr\Log\LoggerInterface;
 
 class MySQLProcedure extends AbstractProcedure
 {
     protected $connection;
     protected $query;
 
-    public function __construct(mysqli $connection, string $query, LoggerInterface $logger)
+    public function __construct(mysqli $connection, string $query)
     {
         $this->connection = $connection;
         $this->query = $query;
