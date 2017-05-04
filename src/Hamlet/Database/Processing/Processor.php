@@ -124,6 +124,15 @@ class Processor extends Collector
         return $records;
     }
 
+    public function collectToAssoc(string $keyField): array
+    {
+        $records = [];
+        foreach ($this->records as $record) {
+            $records[$record[$keyField]] = $record;
+        }
+        return $records;
+    }
+
     public function unwrap(string $field): Collector
     {
         $records = [];
