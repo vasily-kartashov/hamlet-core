@@ -29,8 +29,9 @@ interface Entity
 
     /**
      * Get media type
+     * @return string|null
      */
-    public function getMediaType(): string;
+    public function getMediaType();
 
     /**
      * Load entity from cache or generate it

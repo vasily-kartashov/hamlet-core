@@ -48,7 +48,7 @@ class Request
         $queryParameters   = $_GET;
         $parameters        = $_POST;
         $body              = new LazyOpenStream('php://input', 'r+');
-        $sessionParameters = $_SESSION;
+        $sessionParameters = $_SESSION ?? [];
         $cookies           = $_COOKIE;
         $files             = $_FILES;
         $serverParameters  = $_SERVER;

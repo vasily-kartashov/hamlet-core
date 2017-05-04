@@ -17,6 +17,7 @@ class StreamEntity extends AbstractEntity
     public function getContent(): string
     {
         if (!isset($this->content)) {
+            $this->stream->rewind();
             $this->content = $this->stream->getContents();
         }
         return $this->content;
@@ -27,7 +28,7 @@ class StreamEntity extends AbstractEntity
         return md5($this->getContent());
     }
 
-    public function getMediaType(): string
+    public function getMediaType()
     {
         return null;
     }
