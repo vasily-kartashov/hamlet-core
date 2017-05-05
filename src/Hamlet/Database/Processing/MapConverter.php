@@ -4,7 +4,21 @@ namespace Hamlet\Database\Processing;
 
 class MapConverter extends Converter
 {
-    public function asFlattenMap(string $name): Processor
+    public function flatten(): Collector
+    {
+        $map = [];
+        foreach ($this->flattenRecordsInto(':property:') as $record) {
+            $map += $record[':property:'];
+        }
+        return new Collector($map);
+    }
+
+    public function flattenInto(string $name): Selector
+    {
+        return new Selector($this->flattenRecordsInto($name));
+    }
+
+    private function flattenRecordsInto(string $name): array
     {
         $splitter = $this->splitter;
         $records = [];
@@ -23,13 +37,6 @@ class MapConverter extends Converter
         foreach ($records as $key => $record) {
             $records[$key][$name] = $maps[$key];
         }
-        return Processor::with(array_values($records));
-    }
-
-    public function collectToFlattenMap(): array
-    {
-        return $this->asFlattenMap('result')
-            ->unwrap('result')
-            ->collectHead();
+        return array_values($records);
     }
 }

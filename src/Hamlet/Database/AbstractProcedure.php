@@ -2,7 +2,7 @@
 
 namespace Hamlet\Database;
 
-use Hamlet\Database\Processing\Processor;
+use Hamlet\Database\Processing\Selector;
 
 abstract class AbstractProcedure implements Procedure
 {
@@ -79,13 +79,14 @@ abstract class AbstractProcedure implements Procedure
         $this->parameters[] = ['s', $values];
     }
 
-    public function processOne(): Processor
+    public function processOne(): Selector
     {
-        return Processor::withOne($this->fetchOne());
+        $record = $this->fetchOne();
+        return new Selector($record ? [$record] : []);
     }
 
-    public function processAll(): Processor
+    public function processAll(): Selector
     {
-        return Processor::with($this->fetchAll());
+        return new Selector($this->fetchAll());
     }
 }

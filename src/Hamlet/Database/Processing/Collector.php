@@ -6,18 +6,21 @@ class Collector
 {
     protected $records;
 
-    public function __construct($records = [])
+    public function __construct(array $records)
     {
         $this->records = $records;
     }
 
-    public function collectToList(): array
+    public function collectAll(): array
     {
         return $this->records;
     }
 
     public function collectHead()
     {
-        return $this->records[0] ?? null;
+        if (empty($this->records)) {
+            return null;
+        }
+        return reset($this->records);
     }
 }

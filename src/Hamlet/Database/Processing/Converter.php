@@ -2,8 +2,8 @@
 
 namespace Hamlet\Database\Processing;
 
+use Exception;
 use Hamlet\Database\Entity;
-use PHPUnit\Runner\Exception;
 use ReflectionClass;
 
 class Converter
@@ -17,7 +17,33 @@ class Converter
         $this->splitter = $splitter;
     }
 
-    public function asList(string $name): Processor
+    public function name(string $name): Selector
+    {
+        $splitter = $this->splitter;
+        $records = [];
+        foreach ($this->records as $record) {
+            list($item, $record) = $splitter($record);
+            $record[$name] = $item;
+            $records[] = $record;
+        }
+        return new Selector($records);
+    }
+
+    public function group(): Collector
+    {
+        $records = [];
+        foreach ($this->groupRecordsInto(':property:') as $record) {
+            $records[] = $record[':property:'];
+        }
+        return new Collector($records);
+    }
+
+    public function groupInto(string $name): Selector
+    {
+        return new Selector($this->groupRecordsInto($name));
+    }
+
+    private function groupRecordsInto(string $name): array
     {
         $splitter = $this->splitter;
         $records = [];
@@ -36,43 +62,42 @@ class Converter
         foreach ($records as $key => $record) {
             $records[$key][$name] = $groups[$key];
         }
-        return Processor::with(array_values($records));
+        return array_values($records);
     }
 
-    public function asObject(string $name, string $type): Processor
+    public function cast(string $type): Collector
+    {
+        $records = [];
+        foreach ($this->castRecordsInto($type, ':property:') as $record) {
+            $records[] = $record[':property:'];
+        }
+        return new Collector($records);
+    }
+
+    public function castInto(string $type, string $name): Selector
+    {
+        return new Selector($this->castRecordsInto($type, $name));
+    }
+
+    private function castRecordsInto(string $type, string $name): array
     {
         $splitter = $this->splitter;
         $records = [];
         foreach ($this->records as $record) {
             list($item, $record) = $splitter($record);
-            $record[$name] = $this->cast($item, $type);
+            $record[$name] = $this->instantiate($item, $type);
             $records[] = $record;
         }
-        return Processor::with($records);
+        return $records;
     }
 
-    public function asField(string $name): Processor
-    {
-        $splitter = $this->splitter;
-        $records = [];
-        foreach ($this->records as $record) {
-            list($item, $record) = $splitter($record);
-            $record[$name] = $item;
-            $records[] = $record;
-        }
-        return Processor::with($records);
-    }
-
-    private function cast($row, $type)
+    private function instantiate($row, $type)
     {
         if ($this->isNull($row)) {
             return null;
         }
-        if (is_null($type)) {
-            return $row;
-        }
         if (is_subclass_of($type, Entity::class)) {
-            return $this->construct($type, $row);
+            return $this->instantiateEntity($type, $row);
         } else {
             $object = new $type;
             foreach ($row as $key => $value) {
@@ -96,7 +121,7 @@ class Converter
         }
     }
 
-    private function construct(string $typeName, array $data)
+    private function instantiateEntity(string $typeName, array $data)
     {
         $type = new ReflectionClass($typeName);
         $object = new $typeName();

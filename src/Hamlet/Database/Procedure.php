@@ -2,7 +2,7 @@
 
 namespace Hamlet\Database;
 
-use Hamlet\Database\Processing\Processor;
+use Hamlet\Database\Processing\Selector;
 
 interface Procedure
 {
@@ -38,7 +38,7 @@ interface Procedure
 
     public function affectedRows(): int;
 
-    public function processOne(): Processor;
+    public function processOne(): Selector;
 
-    public function processAll(): Processor;
+    public function processAll(): Selector;
 }

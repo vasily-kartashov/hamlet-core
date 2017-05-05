@@ -3,6 +3,7 @@
 namespace Hamlet\Database;
 
 use Hamlet\Database\Processing\Processor;
+use Hamlet\Database\Processing\Selector;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
@@ -143,9 +144,10 @@ class ProcessorTest extends TestCase
 
     public function testFieldExtractor()
     {
-        $collection = Processor::with($this->phones())
-            ->pickOne('phone')->asList('phones')
-            ->collectToList();
+        $collection = (new Selector($this->phones()))
+            ->selectValue('phone')->groupInto('phones')
+            ->collectAll();
+
         Assert::assertEquals(2, count($collection));
         Assert::assertEquals('John', $collection[0]['name']);
         Assert::assertEquals(2, count($collection[0]['phones']));
@@ -153,10 +155,11 @@ class ProcessorTest extends TestCase
 
     public function testCollectToMap()
     {
-        $collection = Processor::with($this->phones())
-            ->pickOne('phone')->asList('phones')
-            ->map('name', 'phones')
-            ->collectToFlattenMap();
+        $collection = (new Selector($this->phones()))
+            ->selectValue('phone')->groupInto('phones')
+            ->map('name', 'phones')->flatten()
+            ->collectAll();
+
         Assert::assertEquals(2, count($collection));
         Assert::assertArrayHasKey('John', $collection);
         Assert::assertArrayHasKey('Bill', $collection);
@@ -164,10 +167,11 @@ class ProcessorTest extends TestCase
 
     public function testPrefixExtractor()
     {
-        $collection = Processor::with($this->addresses())
-            ->pickByPrefix('address')->asList('addresses')
-            ->map('name', 'addresses')
-            ->collectToFlattenMap();
+        $collection = (new Selector($this->addresses()))
+            ->selectByPrefix('address_')->groupInto('addresses')
+            ->map('name', 'addresses')->flatten()
+            ->collectAll();
+
         Assert::assertEquals(2, count($collection));
         Assert::assertArrayHasKey('John', $collection);
         Assert::assertEquals(1812, $collection['Anatoly'][0]['number']);
@@ -175,46 +179,51 @@ class ProcessorTest extends TestCase
 
     public function testNestedGroups()
     {
-        $collection = Processor:: with($this->cities())
-            ->pickOne('city')->asList('cities')
-            ->map('state', 'cities')->asFlattenMap('states')
-            ->map('country', 'states')
-            ->collectToFlattenMap();
+        $collection = (new Selector($this->cities()))
+            ->selectValue('city')->groupInto('cities')
+            ->map('state', 'cities')->flattenInto('states')
+            ->map('country', 'states')->flatten()
+            ->collectAll();
+
         Assert::assertEquals('Balakovo', $collection['Russia']['Saratovskaya Oblast'][0]);
     }
 
     public function testCollectTypedList()
     {
-        $collection = Processor::with($this->phones())
-            ->all()->asObject('phone', Phone::class)
-            ->unwrapAndCollectToList();
+        $collection = (new Selector($this->phones()))
+            ->selectAll()->cast(Phone::class)
+            ->collectAll();
+
         Assert::assertInstanceOf(Phone::class, $collection[0]);
     }
 
     public function testCollectTypedListOfMappedEntities()
     {
-        $collection = Processor::with($this->phones())
-            ->all()->asObject('phone', PhoneEntity::class)
-            ->unwrapAndCollectToList();
+        $collection = (new Selector($this->phones()))
+            ->selectAll()->cast(PhoneEntity::class)
+            ->collectAll();
+
         Assert::assertInstanceOf(PhoneEntity::class, $collection[0]);
     }
 
     public function testCollectNestedTypedList()
     {
-        $collection = Processor::with($this->addresses())
-            ->pickByPrefix('address')->asObject('address', Address::class)
-            ->pickOne('address')->asList('addresses')
-            ->all()->asObject('entry', AddressBookEntry::class)
-            ->unwrapAndCollectToList();
+        $collection = (new Selector($this->addresses()))
+            ->selectByPrefix('address_')->castInto(Address::class, 'address')
+            ->selectValue('address')->groupInto('addresses')
+            ->selectAll()->cast(AddressBookEntry::class)
+            ->collectAll();
+
         Assert::assertInstanceOf(AddressBookEntry::class, $collection[0]);
         Assert::assertInstanceOf(Address::class, $collection[0]->addresses[1]);
     }
 
     public function testCollate()
     {
-        $collection = Processor::with($this->locations())
+        $collection = (new Selector($this->locations()))
             ->collateAll()
-            ->collectToList();
+            ->collectAll();
+
         Assert::assertEquals('Victoria', $collection[0]);
         Assert::assertEquals('Australia', $collection[1]);
         Assert::assertEquals('Russia', $collection[2]);
@@ -223,10 +232,11 @@ class ProcessorTest extends TestCase
 
     public function testCollator()
     {
-        $collection = Processor::with($this->locations())
-            ->collate('state', 'city')->asField('details')
-            ->map('country', 'details')
-            ->collectToFlattenMap();
+        $collection = (new Selector($this->locations()))
+            ->collate('state', 'city')->name('details')
+            ->map('country', 'details')->flatten()
+            ->collectAll();
+
         Assert::assertEquals('Saratovskaya Oblast', $collection['Russia']);
     }
 }
