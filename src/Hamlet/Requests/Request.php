@@ -102,6 +102,11 @@ class Request
         return $this->parseHeader($languageHeader) ?? [];
     }
 
+    public function parameters()
+    {
+        return $this->queryParameters + $this->parameters;
+    }
+
     public function parameter(string $name, $defaultValue = null)
     {
         return $this->parameters[$name] ?? $this->queryParameters[$name] ?? $defaultValue;
