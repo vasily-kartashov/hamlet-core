@@ -92,4 +92,13 @@ class Selector extends Collector
         }
         return new Collector($records);
     }
+
+    public function withKey(string $keyField): Collector
+    {
+        $records = [];
+        foreach ($this->records as $record) {
+            $records[$record[$keyField]] = $record;
+        }
+        return new Collector($records);
+    }
 }
