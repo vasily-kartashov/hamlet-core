@@ -16,7 +16,7 @@ class Request
     private $queryParameters = [];
     private $parameters = [];
     private $body;
-    private $sessionParameters = [];
+    private $sessionParameters = null;
     private $cookies = [];
     private $files = [];
 
@@ -27,7 +27,7 @@ class Request
         array $queryParameters,
         array $parameters,
         StreamInterface $body,
-        array $sessionParameters,
+        callable $sessionParameters,
         array $cookies,
         array $files,
         array $serverParameters
@@ -48,7 +48,12 @@ class Request
         $queryParameters   = $_GET;
         $parameters        = $_POST;
         $body              = new LazyOpenStream('php://input', 'r+');
-        $sessionParameters = $_SESSION ?? [];
+        $sessionParameters = function() {
+            if (!session_id()) {
+                session_start();
+            }
+            return $_SESSION ?? [];
+        };
         $cookies           = $_COOKIE;
         $files             = $_FILES;
         $serverParameters  = $_SERVER;
@@ -119,12 +124,22 @@ class Request
 
     public function sessionParameter(string $name, $defaultValue = null)
     {
-        return $this->sessionParameters[$name] ?? $defaultValue;
+        $generator = $this->sessionParameters;
+        if ($generator) {
+            $parameters = $generator();
+            return $parameters[$name] ?? $defaultValue;
+        }
+        return $defaultValue;
     }
 
     public function hasSessionParameter(string $name)
     {
-        return isset($this->sessionParameters[$name]);
+        $generator = $this->sessionParameters;
+        if ($generator) {
+            $parameters = $generator();
+            return isset($parameters[$name]);
+        }
+        return false;
     }
 
     public function cookie(string $name, $defaultValue = null)
