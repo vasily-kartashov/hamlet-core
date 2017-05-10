@@ -147,6 +147,12 @@ class Request
         return $this->cookies[$name] ?? $defaultValue;
     }
 
+    public function payload(): string
+    {
+        $this->body->rewind();
+        return $this->body->getContents();
+    }
+
     public function hasCookie(string $name)
     {
         return isset($this->cookies[$name]);
