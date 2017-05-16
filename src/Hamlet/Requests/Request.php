@@ -104,7 +104,11 @@ class Request
     public function languageCodes(): array
     {
         $languageHeader = $this->header('Accept-Language');
-        return $this->parseHeader($languageHeader) ?? [];
+        if ($languageHeader) {
+            return $this->parseHeader($languageHeader);
+        } else {
+            return [];
+        }
     }
 
     public function parameters()
