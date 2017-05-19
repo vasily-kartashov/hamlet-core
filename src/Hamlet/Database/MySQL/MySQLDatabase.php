@@ -13,40 +13,43 @@ class MySQLDatabase extends Database
 
     public function __construct(mysqli $connection)
     {
+        parent::__construct();
         $this->connection = $connection;
     }
 
     public function prepare(string $query): Procedure
     {
-        return new MySQLProcedure($this->connection, $query, $this->logger);
+        $procedure = new MySQLProcedure($this->connection, $query, $this->logger);
+        $procedure->setLogger($this->logger);
+        return $procedure;
     }
 
     public function startTransaction()
     {
-        $success = $this->connection->autocommit(false);
-        if (!$success) {
-            throw new Exception($this->connection->error);
-        }
+        $this->logger->debug('Starting transaction');
         $success = $this->connection->begin_transaction();
         if (!$success) {
+            $this->logger->warning($this->connection->error);
             throw new Exception($this->connection->error);
         }
     }
 
     public function commit()
     {
+        $this->logger->debug('Committing transaction');
         $success = $this->connection->commit();
-        $success = $this->connection->autocommit(true) && $success;
         if (!$success) {
+            $this->logger->warning($this->connection->error);
             throw new Exception($this->connection->error);
         }
     }
 
     public function rollback()
     {
+        $this->logger->debug('Rolling back transaction');
         $success = $this->connection->rollback();
-        $success = $this->connection->autocommit(true) && $success;
         if (!$success) {
+            $this->logger->warning($this->connection->error);
             throw new Exception($this->connection->error);
         }
     }

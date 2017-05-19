@@ -3,8 +3,9 @@
 namespace Hamlet\Database;
 
 use Hamlet\Database\Processing\Selector;
+use Psr\Log\LoggerAwareInterface;
 
-interface Procedure
+interface Procedure extends LoggerAwareInterface
 {
     public function bindBlob(string $value);
 

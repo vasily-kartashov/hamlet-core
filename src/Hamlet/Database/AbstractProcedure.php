@@ -3,9 +3,14 @@
 namespace Hamlet\Database;
 
 use Hamlet\Database\Processing\Selector;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractProcedure implements Procedure
 {
+    /** @var LoggerInterface */
+    protected $logger;
+
+    /** @var array[]  */
     protected $parameters = [];
 
     public function bindBlob(string $value)
@@ -88,5 +93,10 @@ abstract class AbstractProcedure implements Procedure
     public function processAll(): Selector
     {
         return new Selector($this->fetchAll());
+    }
+
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }
