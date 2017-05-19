@@ -32,11 +32,12 @@ abstract class Database
                 $this->startTransaction();
             }
             $this->transactionStarted = true;
-            $callable();
+            $result = $callable();
             if (!$nested) {
                 $this->commit();
             }
             $this->transactionStarted = $nested;
+            return $result;
         } catch (Exception $e) {
             $this->rollback();
             throw $e;
