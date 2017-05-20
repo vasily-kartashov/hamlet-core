@@ -27,8 +27,11 @@ abstract class Database implements LoggerAwareInterface
         return new MySQLDatabase($connection);
     }
 
-    public static function sqlite3(string $location, $flags = null, $encryptionKey = null): Database
-    {
+    public static function sqlite3(
+        string $location,
+        $flags = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE,
+        $encryptionKey = null
+    ): Database {
         $connection = new SQLite3($location, $flags, $encryptionKey);
         return new SQLiteDatabase($connection);
     }
