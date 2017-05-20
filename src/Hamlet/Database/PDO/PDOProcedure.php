@@ -1,56 +1,58 @@
 <?php
 
-namespace Hamlet\Database\SQLite;
+namespace Hydrawise\Database\PDO;
 
 use Exception;
 use Hamlet\Database\AbstractProcedure;
-use SQLite3;
-use SQLite3Stmt;
+use PDO;
+use PDOStatement;
 
-class SQLiteProcedure extends AbstractProcedure
+class PDOProcedure extends AbstractProcedure
 {
     private $connection;
     private $query;
+    private $affectedRows;
 
-    public function __construct(SQLite3 $connection, string $query)
+    public function __construct(PDO $connection, string $query)
     {
         $this->connection = $connection;
-        $this->query = $query;
+        $this->query      = $query;
     }
 
     public function insert()
     {
-        $this->execute();
-        return $this->connection->lastInsertRowID();
+        $statement = $this->prepareAndBind();
+        $this->affectedRows = $statement->rowCount();
+        return $this->connection->lastInsertId();
     }
 
     public function execute()
     {
-        $this->bindParameters()->execute();
+        $statement = $this->prepareAndBind();
+        $statement->execute();
+        $this->affectedRows = $statement->rowCount();
     }
 
     public function fetchOne()
     {
-        $result = $this->bindParameters()->execute();
-        return $result->fetchArray(SQLITE3_ASSOC);
+        $statement = $this->prepareAndBind();
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
     public function fetchAll(): array
     {
-        $result = $this->bindParameters()->execute();
-        $data = [];
-        while (($row = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $data[] = $row;
-        }
-        return $data;
+        $statement = $this->prepareAndBind();
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function affectedRows(): int
     {
-        return $this->connection->changes();
+        return $this->affectedRows;
     }
 
-    private function bindParameters(): SQLite3Stmt
+    private function prepareAndBind(): PDOStatement
     {
         $query = $this->query;
         $position = 0;
@@ -76,7 +78,7 @@ class SQLiteProcedure extends AbstractProcedure
         foreach ($this->parameters as list($typeAlias, $value)) {
             $type = $this->resolveTypeAlias($typeAlias);
             if (is_null($value)) {
-                $statement->bindValue($counter++, null, SQLITE3_NULL);
+                $statement->bindValue($counter++, null, PDO::PARAM_NULL);
             } elseif (is_array($value)) {
                 foreach ($value as $item) {
                     $statement->bindValue($counter++, $item, $type);
@@ -92,13 +94,12 @@ class SQLiteProcedure extends AbstractProcedure
     {
         switch ($alias) {
             case 'b':
-                return SQLITE3_BLOB;
-            case 'd':
-                return SQLITE3_FLOAT;
-            case 'i':
-                return SQLITE3_INTEGER;
+                return PDO::PARAM_LOB;
+            case 'f':
             case 's':
-                return SQLITE3_TEXT;
+                return PDO::PARAM_STR;
+            case 'i':
+                return PDO::PARAM_INT;
             default:
                 throw new Exception('Cannot resolve type alias "' . $alias . '"');
         }
