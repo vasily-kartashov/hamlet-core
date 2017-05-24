@@ -66,7 +66,10 @@ abstract class Database implements LoggerAwareInterface
             $this->transactionStarted = $nested;
             return $result;
         } catch (Throwable $e) {
-            $this->rollback();
+            if ($this->transactionStarted) {
+                $this->rollback();
+                $this->transactionStarted = false;
+            }
             throw $e;
         }
     }
