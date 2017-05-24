@@ -2,7 +2,6 @@
 
 namespace Hamlet\Database;
 
-use Exception;
 use Hamlet\Database\MySQL\MySQLDatabase;
 use Hamlet\Database\SQLite\SQLiteDatabase;
 use Hydrawise\Database\PDO\PDODatabase;
@@ -12,6 +11,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use SQLite3;
+use Throwable;
 
 abstract class Database implements LoggerAwareInterface
 {
@@ -65,7 +65,7 @@ abstract class Database implements LoggerAwareInterface
             }
             $this->transactionStarted = $nested;
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->rollback();
             throw $e;
         }
