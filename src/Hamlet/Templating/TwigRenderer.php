@@ -13,6 +13,7 @@ class TwigRenderer implements TemplateRenderer
         $loader->addPath(dirname($path));
         $environment = new Twig_Environment($loader, [
             'cache' => sys_get_temp_dir(),
+            'auto_reload' => true
         ]);
         $wrappedData = is_array($data) ? $data : ['content' => $data];
         return $environment->render(basename($path), $wrappedData);
