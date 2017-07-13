@@ -2,9 +2,9 @@
 
 namespace Hamlet\Database\SQLite;
 
+use Exception;
 use Hamlet\Database\Database;
 use Hamlet\Database\Procedure;
-use PHPUnit\Runner\Exception;
 use SQLite3;
 
 class SQLiteDatabase extends Database
