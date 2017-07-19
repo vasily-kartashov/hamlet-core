@@ -19,6 +19,7 @@ class Request
     private $sessionParameters = null;
     private $cookies = [];
     private $files = [];
+    private $serverParameters = [];
 
     private $path;
 

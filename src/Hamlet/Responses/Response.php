@@ -54,7 +54,7 @@ class Response
         foreach ($response->getHeaders() as $name => $values) {
             $headers[$name] = join(', ', $values);
         }
-        $entity = new StreamEntity($response->getBody(), $response->getHeader('Content-Type'));
+        $entity = new StreamEntity($response->getBody());
 
         return new Response(
             $response->getStatusCode(),

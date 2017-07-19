@@ -19,7 +19,7 @@ class MySQLDatabase extends Database
 
     public function prepare(string $query): Procedure
     {
-        $procedure = new MySQLProcedure($this->connection, $query, $this->logger);
+        $procedure = new MySQLProcedure($this->connection, $query);
         $procedure->setLogger($this->logger);
         return $procedure;
     }
