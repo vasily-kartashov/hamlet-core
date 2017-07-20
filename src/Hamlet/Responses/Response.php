@@ -64,7 +64,8 @@ class Response
         );
     }
 
-    public function output(Request $request, CacheItemPoolInterface $cache) {
+    public function output(Request $request, CacheItemPoolInterface $cache)
+    {
         if (count($this->session) > 0) {
             if (!session_id()) {
                 session_start();
