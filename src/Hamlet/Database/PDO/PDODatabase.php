@@ -1,6 +1,6 @@
 <?php
 
-namespace Hydrawise\Database\PDO;
+namespace Hamlet\Database\PDO;
 
 use Hamlet\Database\Database;
 use Hamlet\Database\Procedure;

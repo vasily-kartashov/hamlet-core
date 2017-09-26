@@ -6,7 +6,7 @@ class Selector extends Collector
 {
     public function selectValue(string $field): Converter
     {
-        $splitter = function($record) use ($field) {
+        $splitter = function ($record) use ($field) {
             $item = $record[$field];
             unset($record[$field]);
             return [$item, $record];
@@ -16,7 +16,7 @@ class Selector extends Collector
 
     public function selectFields(string... $fields): Converter
     {
-        $splitter = function($record) use ($fields) {
+        $splitter = function ($record) use ($fields) {
             $item = [];
             foreach ($fields as $field) {
                 $item[$field] = $record[$field];
@@ -29,7 +29,7 @@ class Selector extends Collector
 
     public function map(string $keyField, string $valueField): MapConverter
     {
-        $splitter = function($record) use ($keyField, $valueField) {
+        $splitter = function ($record) use ($keyField, $valueField) {
             $item = [
                 $record[$keyField] => $record[$valueField]
             ];
@@ -43,7 +43,7 @@ class Selector extends Collector
     public function selectByPrefix(string $prefix): Converter
     {
         $length = strlen($prefix);
-        $splitter = function($record) use ($prefix, $length) {
+        $splitter = function ($record) use ($prefix, $length) {
             $item = [];
             foreach ($record as $field => $value) {
                 if (substr($field, 0, $length) == $prefix) {
@@ -58,7 +58,7 @@ class Selector extends Collector
 
     public function selectAll(): Converter
     {
-        $splitter = function($record) {
+        $splitter = function ($record) {
             return [$record, null];
         };
         return new Converter($this->records, $splitter);
@@ -66,7 +66,7 @@ class Selector extends Collector
 
     public function collate(string... $fields): Converter
     {
-        $splitter = function($record) use ($fields) {
+        $splitter = function ($record) use ($fields) {
             $item = null;
             foreach ($fields as $field) {
                 if ($item === null) {

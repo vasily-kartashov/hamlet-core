@@ -9,7 +9,7 @@ use Psr\Cache\CacheItemPoolInterface;
 class OKOrNotModifiedResponse extends Response
 {
 
-    public function __construct(Entity $entity, Request $request)
+    public function __construct(Entity $entity)
     {
         parent::__construct();
         $this->withEntity($entity);
@@ -25,4 +25,3 @@ class OKOrNotModifiedResponse extends Response
         parent::output($request, $cache);
     }
 }
-

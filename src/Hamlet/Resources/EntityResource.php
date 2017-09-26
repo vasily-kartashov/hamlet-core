@@ -22,7 +22,7 @@ class EntityResource implements WebResource
     public function getResponse(Request $request): Response
     {
         if (in_array($request->method(), $this->methods)) {
-            $response = new OKOrNotModifiedResponse($this->entity, $request);
+            $response = new OKOrNotModifiedResponse($this->entity);
             return $response;
         }
         return new MethodNotAllowedResponse($this->methods);

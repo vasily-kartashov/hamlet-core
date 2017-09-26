@@ -49,7 +49,7 @@ class Request
         $queryParameters   = $_GET;
         $parameters        = $_POST;
         $body              = new LazyOpenStream('php://input', 'r+');
-        $sessionParameters = function() {
+        $sessionParameters = function () {
             if (!session_id()) {
                 session_start();
             }

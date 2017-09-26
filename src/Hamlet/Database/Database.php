@@ -4,7 +4,7 @@ namespace Hamlet\Database;
 
 use Hamlet\Database\MySQL\MySQLDatabase;
 use Hamlet\Database\SQLite\SQLiteDatabase;
-use Hydrawise\Database\PDO\PDODatabase;
+use Hamlet\Database\PDO\PDODatabase;
 use mysqli;
 use PDO;
 use Psr\Log\LoggerAwareInterface;
@@ -44,7 +44,7 @@ abstract class Database implements LoggerAwareInterface
         return new PDODatabase($connection);
     }
 
-    public abstract function prepare(string $query): Procedure;
+    abstract public function prepare(string $query): Procedure;
 
     public function setLogger(LoggerInterface $logger)
     {
@@ -74,9 +74,9 @@ abstract class Database implements LoggerAwareInterface
         }
     }
 
-    public abstract function startTransaction();
+    abstract public function startTransaction();
 
-    public abstract function commit();
+    abstract public function commit();
 
-    public abstract function rollback();
+    abstract public function rollback();
 }

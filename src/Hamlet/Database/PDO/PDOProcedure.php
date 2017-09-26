@@ -1,6 +1,6 @@
 <?php
 
-namespace Hydrawise\Database\PDO;
+namespace Hamlet\Database\PDO;
 
 use Exception;
 use Hamlet\Database\AbstractProcedure;
@@ -16,7 +16,7 @@ class PDOProcedure extends AbstractProcedure
     public function __construct(PDO $connection, string $query)
     {
         $this->connection = $connection;
-        $this->query      = $query;
+        $this->query = $query;
     }
 
     public function insert()
