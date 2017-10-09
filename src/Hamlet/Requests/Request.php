@@ -291,8 +291,8 @@ class Request
             return true;
         }
         $cacheEntry   = $entity->load($cache);
-        $tag          = $cacheEntry['tag'];
-        $lastModified = $cacheEntry['modified'];
+        $tag          = $cacheEntry->tag();
+        $lastModified = $cacheEntry->modified();
         if (!is_null($matchHeader) && $tag == $matchHeader) {
             return true;
         }
