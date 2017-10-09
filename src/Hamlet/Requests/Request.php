@@ -74,9 +74,26 @@ class Request
 
     public static function builder(): Builder
     {
-        $constructor = function(array $headers, array $queryParameters, array $parameters, StreamInterface $body, callable $sessionParameters, array $cookies, array $files, array $serverParameters)
-        {
-            return new Request($headers, $queryParameters, $parameters, $body, $sessionParameters, $cookies, $files, $serverParameters);
+        $constructor = function (
+            array $headers,
+            array $queryParameters,
+            array $parameters,
+            StreamInterface $body,
+            callable $sessionParameters,
+            array $cookies,
+            array $files,
+            array $serverParameters
+        ) {
+            return new Request(
+                $headers,
+                $queryParameters,
+                $parameters,
+                $body,
+                $sessionParameters,
+                $cookies,
+                $files,
+                $serverParameters
+            );
         };
 
         return new class($constructor) implements Builder
@@ -439,7 +456,11 @@ class Request
         ];
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == "HTTP_") {
-                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headerName = str_replace(
+                    ' ',
+                    '-',
+                    ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
+                );
                 $headers[$headerName] = $value;
             } elseif (isset($aliases[$name]) and !isset($headers[$aliases[$name]])) {
                 $headers[$aliases[$name]] = $value;
