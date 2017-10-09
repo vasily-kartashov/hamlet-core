@@ -3,6 +3,7 @@
 namespace Hamlet\Requests;
 
 use DateTime;
+use GuzzleHttp\Psr7\BufferStream;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use Hamlet\Entities\Entity;
@@ -69,6 +70,111 @@ class Request
             $files,
             $serverParameters
         );
+    }
+
+    public static function builder(): Builder
+    {
+        $constructor = function(array $headers, array $queryParameters, array $parameters, StreamInterface $body, callable $sessionParameters, array $cookies, array $files, array $serverParameters)
+        {
+            return new Request($headers, $queryParameters, $parameters, $body, $sessionParameters, $cookies, $files, $serverParameters);
+        };
+
+        return new class($constructor) implements Builder
+        {
+            private $constructor;
+
+            private $headers = [];
+            private $queryParameters = [];
+            private $parameters = [];
+            private $body;
+            private $sessionParameters = [];
+            private $cookies = [];
+            private $files = [];
+            private $serverParameters = [];
+
+            public function __construct(callable $constructor)
+            {
+                $this->constructor = $constructor;
+                $this->body = new BufferStream(PHP_INT_MAX);
+            }
+
+            public function withHeader(string $name, string $value): Builder
+            {
+                $this->headers[$name] = $value;
+                return $this;
+            }
+
+            public function withQueryParameter(string $name, string $value): Builder
+            {
+                $this->queryParameters[$name] = $value;
+                return $this;
+            }
+
+            public function withParameter(string $name, string $value): Builder
+            {
+                $this->parameters[$name] = $value;
+                return $this;
+            }
+
+            public function withBody(string $content): Builder
+            {
+                $this->body->write($content);
+                return $this;
+            }
+
+            public function withSessionParameter(string $name, string $value): Builder
+            {
+                $this->sessionParameters[$name] = $value;
+                return $this;
+            }
+
+            public function withCookie(string $name, string $value): Builder
+            {
+                $this->cookies[$name] = $value;
+                return $this;
+            }
+
+            // @todo add interface for file upload
+            public function withFile(string $name, array $value): Builder
+            {
+                $this->files[$name] = $value;
+                return $this;
+            }
+
+            public function withServerParameter(string $name, string $value): Builder
+            {
+                $this->serverParameters[$name] = $value;
+                return $this;
+            }
+
+            public function withMethod(string $method): Builder
+            {
+                $this->serverParameters['REQUEST_METHOD'] = $method;
+                return $this;
+            }
+
+            public function withUri(string $uri): Builder
+            {
+                $this->serverParameters['REQUEST_URI'] = $uri;
+                return $this;
+            }
+
+            public function build(): Request
+            {
+                return ($this->constructor)(
+                    $this->headers,
+                    $this->queryParameters,
+                    $this->parameters,
+                    $this->body,
+                    function () {
+                        return $this->sessionParameters;
+                    },
+                    $this->cookies,
+                    $this->files,
+                    $this->serverParameters
+                );
+            }
+        };
     }
 
     public function toPsrRequest(): ServerRequestInterface
@@ -223,7 +329,6 @@ class Request
      * Parse header
      *
      * @param string $headerString
-     *
      * @return string[]
      */
     protected function parseHeader(string $headerString): array

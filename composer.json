@@ -25,7 +25,8 @@
     "twig/twig": "1.*"
   },
   "require-dev": {
-    "cache/void-adapter": "1.*",
+    "cache/void-adapter": "^1",
+    "cache/array-adapter": "^1",
     "phpunit/phpunit": "^6",
     "phpstan/phpstan": "*",
     "squizlabs/php_codesniffer": "*"
