@@ -96,7 +96,11 @@ class Converter
         if ($this->isNull($row)) {
             return null;
         }
-        if (is_subclass_of($type, Entity::class)) {
+        static $entitySubclasses = [];
+        if (!isset($entitySubclasses[$type])) {
+            $entitySubclasses[$type] = is_subclass_of($type, Entity::class);
+        }
+        if ($entitySubclasses[$type]) {
             return $this->instantiateEntity($type, $row);
         } else {
             $object = new $type;
@@ -123,7 +127,13 @@ class Converter
 
     private function instantiateEntity(string $typeName, array $data)
     {
-        $type = new ReflectionClass($typeName);
+        /** @var ReflectionClass[] $types */
+        static $types = [];
+        if (!isset($types[$typeName])) {
+            $types[$typeName] = new ReflectionClass($typeName);
+        }
+
+        $type = $types[$typeName];
         $object = new $typeName();
 
         foreach ($data as $name => $value) {

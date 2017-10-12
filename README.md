@@ -5,6 +5,8 @@ Hamlet Core
 
 To Do:
 
+* Add more profiling to selectors, closure seems to be quite slow
+* Add more cacheing to reflection, especially around types
 * Support for WebSockets
 * Support for HTTP/2.0
 * Support for OAuth server (PHP League)
