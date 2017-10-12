@@ -129,25 +129,27 @@ class Converter
     {
         /** @var ReflectionClass[] $types */
         static $types = [];
+        /** @var \ReflectionProperty[][] $properties */
+        static $properties = [];
         if (!isset($types[$typeName])) {
+            $properties[$typeName] = [];
             $types[$typeName] = new ReflectionClass($typeName);
+            foreach ($types[$typeName]->getProperties() as $property) {
+                $property->setAccessible(true);
+                $properties[$typeName][$property->getName()] = $property;
+            }
         }
 
-        $type = $types[$typeName];
         $object = new $typeName();
-
         foreach ($data as $name => $value) {
-            if (!$type->hasProperty($name)) {
+            if (!isset($properties[$typeName][$name])) {
                 throw new Exception('Property ' . $name . ' not found in class ' . $typeName);
             }
-            $property = $type->getProperty($name);
-            $property->setAccessible(true);
-            $property->setValue($object, $value);
+            $properties[$typeName][$name]->setValue($object, $value);
         }
-        foreach ($type->getProperties() as $property) {
-            if (!array_key_exists($property->getName(), $data)) {
-                throw new Exception('Property ' . $typeName . '::' . $property->getName()
-                    . ' not set in ' . json_encode($data));
+        foreach ($properties[$typeName] as $name => $property) {
+            if (!array_key_exists($name, $data)) {
+                throw new Exception('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
             }
         }
         return $object;
