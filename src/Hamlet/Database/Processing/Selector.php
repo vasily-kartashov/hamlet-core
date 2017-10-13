@@ -18,7 +18,7 @@ class Selector extends Collector
     {
         $splitter = function ($record) use ($fields) {
             $item = [];
-            foreach ($fields as $field) {
+            foreach ($fields as &$field) {
                 $item[$field] = $record[$field];
                 unset($record[$field]);
             }
@@ -45,7 +45,7 @@ class Selector extends Collector
         $length = strlen($prefix);
         $splitter = function ($record) use ($prefix, $length) {
             $item = [];
-            foreach ($record as $field => $value) {
+            foreach ($record as $field => &$value) {
                 if (substr($field, 0, $length) == $prefix) {
                     $item[substr($field, $length)] = $value;
                     unset($record[$field]);
@@ -68,7 +68,7 @@ class Selector extends Collector
     {
         $splitter = function ($record) use ($fields) {
             $item = null;
-            foreach ($fields as $field) {
+            foreach ($fields as &$field) {
                 if ($item === null) {
                     $item = $record[$field];
                 }
@@ -83,7 +83,7 @@ class Selector extends Collector
     {
         $records = [];
         foreach ($this->records as $record) {
-            foreach ($record as $value) {
+            foreach ($record as &$value) {
                 if ($value !== null) {
                     $records[] = $value;
                     break;
@@ -96,7 +96,7 @@ class Selector extends Collector
     public function withKey(string $keyField): Collector
     {
         $records = [];
-        foreach ($this->records as $record) {
+        foreach ($this->records as &$record) {
             $records[$record[$keyField]] = $record;
         }
         return new Collector($records);

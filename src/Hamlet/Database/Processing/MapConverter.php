@@ -7,7 +7,7 @@ class MapConverter extends Converter
     public function flatten(): Collector
     {
         $map = [];
-        foreach ($this->flattenRecordsInto(':property:') as $record) {
+        foreach ($this->flattenRecordsInto(':property:') as &$record) {
             $map += $record[':property:'];
         }
         return new Collector($map);
@@ -23,7 +23,7 @@ class MapConverter extends Converter
         $splitter = $this->splitter;
         $records = [];
         $maps = [];
-        foreach ($this->records as $record) {
+        foreach ($this->records as &$record) {
             list($item, $record) = $splitter($record);
             $key = md5(serialize($record));
             if (!isset($maps[$key])) {
@@ -34,7 +34,7 @@ class MapConverter extends Converter
             }
             $records[$key] = $record;
         }
-        foreach ($records as $key => $record) {
+        foreach ($records as $key => &$record) {
             $records[$key][$name] = $maps[$key];
         }
         return array_values($records);

@@ -21,7 +21,7 @@ class Converter
     {
         $splitter = $this->splitter;
         $records = [];
-        foreach ($this->records as $record) {
+        foreach ($this->records as &$record) {
             list($item, $record) = $splitter($record);
             $record[$name] = $item;
             $records[] = $record;
@@ -32,7 +32,7 @@ class Converter
     public function group(): Collector
     {
         $records = [];
-        foreach ($this->groupRecordsInto(':property:') as $record) {
+        foreach ($this->groupRecordsInto(':property:') as &$record) {
             $records[] = $record[':property:'];
         }
         return new Collector($records);
@@ -48,7 +48,7 @@ class Converter
         $splitter = $this->splitter;
         $records = [];
         $groups = [];
-        foreach ($this->records as $record) {
+        foreach ($this->records as &$record) {
             list($item, $record) = $splitter($record);
             $key = md5(serialize($record));
             if (!isset($groups[$key])) {
@@ -59,7 +59,7 @@ class Converter
             }
             $records[$key] = $record;
         }
-        foreach ($records as $key => $record) {
+        foreach ($records as $key => &$record) {
             $records[$key][$name] = $groups[$key];
         }
         return array_values($records);
@@ -68,7 +68,7 @@ class Converter
     public function cast(string $type): Collector
     {
         $records = [];
-        foreach ($this->castRecordsInto($type, ':property:') as $record) {
+        foreach ($this->castRecordsInto($type, ':property:') as &$record) {
             $records[] = $record[':property:'];
         }
         return new Collector($records);
@@ -83,7 +83,7 @@ class Converter
     {
         $splitter = $this->splitter;
         $records = [];
-        foreach ($this->records as $record) {
+        foreach ($this->records as &$record) {
             list($item, $record) = $splitter($record);
             $record[$name] = $this->instantiate($item, $type);
             $records[] = $record;
@@ -114,14 +114,14 @@ class Converter
     protected function isNull($item): bool
     {
         if (is_array($item)) {
-            foreach ($item as $value) {
-                if (!is_null($value)) {
+            foreach ($item as &$value) {
+                if ($value !== null) {
                     return false;
                 }
             }
             return true;
         } else {
-            return is_null($item);
+            return $item === null;
         }
     }
 
@@ -134,21 +134,23 @@ class Converter
         if (!isset($types[$typeName])) {
             $properties[$typeName] = [];
             $types[$typeName] = new ReflectionClass($typeName);
-            foreach ($types[$typeName]->getProperties() as $property) {
+            foreach ($types[$typeName]->getProperties() as &$property) {
                 $property->setAccessible(true);
                 $properties[$typeName][$property->getName()] = $property;
             }
         }
 
         $object = new $typeName();
-        foreach ($data as $name => $value) {
+        $propertiesSet = [];
+        foreach ($data as $name => &$value) {
             if (!isset($properties[$typeName][$name])) {
                 throw new Exception('Property ' . $name . ' not found in class ' . $typeName);
             }
+            $propertiesSet[$name] = 1;
             $properties[$typeName][$name]->setValue($object, $value);
         }
-        foreach ($properties[$typeName] as $name => $property) {
-            if (!array_key_exists($name, $data)) {
+        foreach ($properties[$typeName] as $name => &$property) {
+            if (!isset($propertiesSet[$name])) {
                 throw new Exception('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
             }
         }
