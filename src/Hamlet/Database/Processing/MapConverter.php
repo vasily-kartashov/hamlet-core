@@ -20,12 +20,11 @@ class MapConverter extends Converter
 
     private function flattenRecordsInto(string $name): array
     {
-        $splitter = $this->splitter;
         $records = [];
         $maps = [];
         foreach ($this->records as &$record) {
-            list($item, $record) = $splitter($record);
-            $key = md5(serialize($record));
+            list($item, $record) = ($this->splitter)($record);
+            $key = \md5(\serialize($record));
             if (!isset($maps[$key])) {
                 $maps[$key] = [];
             }
@@ -37,6 +36,6 @@ class MapConverter extends Converter
         foreach ($records as $key => &$record) {
             $records[$key][$name] = $maps[$key];
         }
-        return array_values($records);
+        return \array_values($records);
     }
 }

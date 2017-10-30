@@ -21,6 +21,6 @@ class Collector
         if (empty($this->records)) {
             return null;
         }
-        return reset($this->records);
+        return \reset($this->records);
     }
 }

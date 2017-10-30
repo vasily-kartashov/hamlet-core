@@ -19,10 +19,9 @@ class Converter
 
     public function name(string $name): Selector
     {
-        $splitter = $this->splitter;
         $records = [];
         foreach ($this->records as &$record) {
-            list($item, $record) = $splitter($record);
+            list($item, $record) = ($this->splitter)($record);
             $record[$name] = $item;
             $records[] = $record;
         }
@@ -45,12 +44,11 @@ class Converter
 
     private function groupRecordsInto(string $name): array
     {
-        $splitter = $this->splitter;
         $records = [];
         $groups = [];
         foreach ($this->records as &$record) {
-            list($item, $record) = $splitter($record);
-            $key = md5(serialize($record));
+            list($item, $record) = ($this->splitter)($record);
+            $key = \md5(\serialize($record));
             if (!isset($groups[$key])) {
                 $groups[$key] = [];
             }
@@ -62,7 +60,7 @@ class Converter
         foreach ($records as $key => &$record) {
             $records[$key][$name] = $groups[$key];
         }
-        return array_values($records);
+        return \array_values($records);
     }
 
     public function cast(string $type): Collector
@@ -81,10 +79,9 @@ class Converter
 
     private function castRecordsInto(string $type, string $name): array
     {
-        $splitter = $this->splitter;
         $records = [];
         foreach ($this->records as &$record) {
-            list($item, $record) = $splitter($record);
+            list($item, $record) = ($this->splitter)($record);
             $record[$name] = $this->instantiate($item, $type);
             $records[] = $record;
         }
@@ -98,13 +95,13 @@ class Converter
         }
         static $entitySubclasses = [];
         if (!isset($entitySubclasses[$type])) {
-            $entitySubclasses[$type] = is_subclass_of($type, Entity::class);
+            $entitySubclasses[$type] = \is_subclass_of($type, Entity::class);
         }
         if ($entitySubclasses[$type]) {
             return $this->instantiateEntity($type, $row);
         } else {
             $object = new $type;
-            foreach ($row as $key => $value) {
+            foreach ($row as $key => &$value) {
                 $object->$key = $value;
             }
             return $object;
@@ -113,7 +110,7 @@ class Converter
 
     protected function isNull($item): bool
     {
-        if (is_array($item)) {
+        if (\is_array($item)) {
             foreach ($item as &$value) {
                 if ($value !== null) {
                     return false;
@@ -140,6 +137,7 @@ class Converter
             }
         }
 
+        // @todo deal with private constructors
         $object = new $typeName();
         $propertiesSet = [];
         foreach ($data as $name => &$value) {

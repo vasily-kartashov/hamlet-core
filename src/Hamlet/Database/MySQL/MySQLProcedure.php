@@ -49,7 +49,7 @@ class MySQLProcedure extends AbstractProcedure
                     $rowCopy[$key] = $value;
                 }
                 call_user_func_array($callback, [$rowCopy]);
-            } elseif (is_null($status)) {
+            } elseif ($status === null) {
                 break;
             } else {
                 throw new Exception($this->connection->error);
