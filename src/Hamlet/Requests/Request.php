@@ -7,7 +7,6 @@ use GuzzleHttp\Psr7\BufferStream;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use Hamlet\Entities\Entity;
-use Hamlet\Responses\Cookie;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -288,8 +287,8 @@ class Request
 
     /**
      * @param string $name
-     * @param string|null $defaultValue
-     * @return string|null
+     * @param mixed|null $defaultValue
+     * @return mixed|null
      */
     public function parameter(string $name, $defaultValue = null)
     {
@@ -303,8 +302,8 @@ class Request
 
     /**
      * @param string $name
-     * @param string|null $defaultValue
-     * @return string|null
+     * @param mixed|null $defaultValue
+     * @return mixed|null
      */
     public function sessionParameter(string $name, $defaultValue = null)
     {
@@ -328,8 +327,8 @@ class Request
 
     /**
      * @param string $name
-     * @param string|null $defaultValue
-     * @return string|null
+     * @param mixed|null $defaultValue
+     * @return mixed|null
      */
     public function cookie(string $name, $defaultValue = null)
     {
