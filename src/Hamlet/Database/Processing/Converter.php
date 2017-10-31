@@ -98,22 +98,24 @@ class Converter
      */
     private function instantiate($row, string $type)
     {
-        if ($this->isNull($row)) {
+        if ($row === null) {
             return null;
-        }
-        assert($row !== null);
-        static $entitySubclasses = [];
-        if (!isset($entitySubclasses[$type])) {
-            $entitySubclasses[$type] = \is_subclass_of($type, Entity::class);
-        }
-        if ($entitySubclasses[$type]) {
-            return $this->instantiateEntity($type, $row);
+        } elseif ($this->isNull($row)) {
+            return null;
         } else {
-            $object = new $type;
-            foreach ($row as $key => &$value) {
-                $object->$key = $value;
+            static $entitySubclasses = [];
+            if (!isset($entitySubclasses[$type])) {
+                $entitySubclasses[$type] = \is_subclass_of($type, Entity::class);
             }
-            return $object;
+            if ($entitySubclasses[$type]) {
+                return $this->instantiateEntity($type, $row);
+            } else {
+                $object = new $type;
+                foreach ($row as $key => &$value) {
+                    $object->$key = $value;
+                }
+                return $object;
+            }
         }
     }
 
@@ -138,7 +140,7 @@ class Converter
     /**
      * @param string $typeName
      * @param array $data
-     * @return mixed
+     * @return object
      * @throws Exception
      */
     private function instantiateEntity(string $typeName, array $data)

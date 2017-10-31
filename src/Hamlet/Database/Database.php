@@ -41,7 +41,7 @@ abstract class Database implements LoggerAwareInterface
         return new SQLiteDatabase($connection);
     }
 
-    public static function pdo(string $dsn, string $username = null, string $password = null, array $options = []): Database
+    public static function pdo(string $dsn, string $username, string $password, array $options): Database
     {
         $connection = new PDO($dsn, $username, $password, $options);
         return new PDODatabase($connection);

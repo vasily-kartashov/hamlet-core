@@ -9,7 +9,7 @@ class JsonEntityResource extends EntityResource
     /**
      * JsonEntityResource constructor.
      * @param mixed $value
-     * @param string[] $methods
+     * @param string ... $methods
      */
     public function __construct($value, string ... $methods)
     {

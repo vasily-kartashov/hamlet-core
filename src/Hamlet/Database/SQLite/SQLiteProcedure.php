@@ -66,15 +66,16 @@ class SQLiteProcedure extends AbstractProcedure
         $counter = 0;
         if (!empty($this->parameters)) {
             while (true) {
-                $position = strpos($query, '?', $position);
+                /** @psalm-suppress PossiblyFalseArgument */
+                $position = \strpos($query, '?', $position);
                 if ($position === false) {
                     break;
                 }
                 $value = $this->parameters[$counter++][1];
-                if (is_array($value)) {
-                    $in = '(' . join(', ', array_fill(0, count($value), '?')) . ')';
-                    $query = substr($query, 0, $position) . $in . substr($query, $position + 1);
-                    $position += strlen($in);
+                if (\is_array($value)) {
+                    $in = '(' . \join(', ', \array_fill(0, \count($value), '?')) . ')';
+                    $query = \substr($query, 0, $position) . $in . \substr($query, $position + 1);
+                    $position += \strlen($in);
                 } else {
                     $position++;
                 }

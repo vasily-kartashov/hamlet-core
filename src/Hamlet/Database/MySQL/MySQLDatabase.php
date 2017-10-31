@@ -9,6 +9,7 @@ use mysqli;
 
 class MySQLDatabase extends Database
 {
+    /** @var mysqli */
     private $connection;
 
     public function __construct(mysqli $connection)
@@ -34,7 +35,7 @@ class MySQLDatabase extends Database
         $success = $this->connection->begin_transaction();
         if (!$success) {
             $this->logger->warning($this->connection->error);
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
     }
 
@@ -48,7 +49,7 @@ class MySQLDatabase extends Database
         $success = $this->connection->commit();
         if (!$success) {
             $this->logger->warning($this->connection->error);
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
     }
 
@@ -62,7 +63,7 @@ class MySQLDatabase extends Database
         $success = $this->connection->rollback();
         if (!$success) {
             $this->logger->warning($this->connection->error);
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
     }
 }

@@ -24,13 +24,14 @@ class MySQLProcedure extends AbstractProcedure
     public function execute()
     {
         $statement = $this->bindParameters();
-        $success = $statement->execute();
-        if (!$success) {
-            throw new Exception($this->connection->error);
-        }
-        $success = $statement->close();
-        if (!$success) {
-            throw new Exception($this->connection->error);
+        $executionSucceeded = $statement->execute();
+        if ($executionSucceeded === false) {
+            throw new MySQLException($this->connection);
+        } else {
+            $closeSucceeded = $statement->close();
+            if (!$closeSucceeded) {
+                throw new MySQLException($this->connection);
+            }
         }
     }
 
@@ -40,6 +41,11 @@ class MySQLProcedure extends AbstractProcedure
         return $this->connection->insert_id;
     }
 
+    /**
+     * @param callable $callback
+     * @return void
+     * @throws MySQLException
+     */
     public function fetch(callable $callback)
     {
         /** @var mysqli_stmt $statement */
@@ -51,11 +57,11 @@ class MySQLProcedure extends AbstractProcedure
                 foreach ($row as $key => $value) {
                     $rowCopy[$key] = $value;
                 }
-                call_user_func_array($callback, [$rowCopy]);
+                \call_user_func_array($callback, [$rowCopy]);
             } elseif ($status === null) {
                 break;
             } else {
-                throw new Exception($this->connection->error);
+                throw new MySQLException($this->connection);
             }
         }
         $this->finalizeFetching($statement);
@@ -74,7 +80,7 @@ class MySQLProcedure extends AbstractProcedure
         if ($status === true) {
             $value = $row;
         } elseif ($status === false) {
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
         $this->finalizeFetching($statement);
         return $value;
@@ -83,7 +89,7 @@ class MySQLProcedure extends AbstractProcedure
     public function fetchAll(): array
     {
         $result = [];
-        $this->fetch(function (array $row) use (&$result) {
+        $this->fetch(/** @return void */ function (array $row) use (&$result) {
             $result[] = $row;
         });
         return $result;
@@ -98,20 +104,20 @@ class MySQLProcedure extends AbstractProcedure
     {
         $query = $this->query;
 
-        // expand list parameters
         if (!empty($this->parameters)) {
             $position = 0;
             $counter = 0;
             while (true) {
-                $position = strpos($query, '?', $position);
+                /** @psalm-suppress PossiblyFalseArgument */
+                $position = \strpos($query, '?', $position);
                 if ($position === false) {
                     break;
                 }
                 $value = $this->parameters[$counter++][1];
                 if (is_array($value)) {
-                    $in = '(' . join(', ', array_fill(0, count($value), '?')) . ')';
-                    $query = substr($query, 0, $position) . $in . substr($query, $position + 1);
-                    $position += strlen($in);
+                    $in = '(' . \join(', ', \array_fill(0, \count($value), '?')) . ')';
+                    $query = \substr($query, 0, $position) . $in . \substr($query, $position + 1);
+                    $position += \strlen($in);
                 } else {
                     $position++;
                 }
@@ -119,7 +125,7 @@ class MySQLProcedure extends AbstractProcedure
         }
         $statement = $this->connection->prepare($query);
         if (!$statement) {
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
         if (count($this->parameters) == 0) {
             return $statement;
@@ -145,14 +151,14 @@ class MySQLProcedure extends AbstractProcedure
                 $counter++;
             }
         }
-        $success = call_user_func_array([$statement, 'bind_param'], $callParameters);
+        $success = \call_user_func_array([$statement, 'bind_param'], $callParameters);
         if (!$success) {
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
         foreach ($blobs as $i => $data) {
             $success = $statement->send_long_data($i, $data);
             if (!$success) {
-                throw new Exception($this->connection->error);
+                throw new MySQLException($this->connection);
             }
         }
         return $statement;
@@ -164,7 +170,7 @@ class MySQLProcedure extends AbstractProcedure
         $row = $this->bindResult($statement);
         $success = $statement->execute();
         if (!$success) {
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
         $statement->store_result();
         return [$row, $statement];
@@ -180,24 +186,25 @@ class MySQLProcedure extends AbstractProcedure
         $statement->free_result();
         $success = $statement->close();
         if (!$success) {
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
     }
 
     private function bindResult(mysqli_stmt $statement): array
     {
         $metaData = $statement->result_metadata();
-        if ($metaData === false) {
-            throw new Exception($this->connection->error);
+        if (!$metaData) {
+            throw new MySQLException($this->connection);
         }
         $row = [];
         $boundParameters = [];
         while ($field = $metaData->fetch_field()) {
+            $row[$field->name] = null;
             $boundParameters[] = &$row[$field->name];
         }
         $success = call_user_func_array([$statement, 'bind_result'], $boundParameters);
         if (!$success) {
-            throw new Exception($this->connection->error);
+            throw new MySQLException($this->connection);
         }
         return $row;
     }

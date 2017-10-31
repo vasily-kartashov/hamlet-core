@@ -74,26 +74,50 @@ class Request
 
     public static function fromGlobals(): Request
     {
-        $headers           = Request::readHeaders() ?: [];
-        $queryParameters   = $_GET;
-        $parameters        = $_POST;
-        $body              = new LazyOpenStream('php://input', 'r+');
+        $headers = Request::readHeaders() ?: [];
+
+        /** @var string[] $queryParameters */
+        $queryParameters = $_GET;
+
+        /** @var string[] $parameters */
+        $parameters = $_POST;
+
+        $body = new LazyOpenStream('php://input', 'r+');
+
         $sessionParameters = function (): array {
             if (!session_id()) {
                 session_start();
             }
             return $_SESSION ?? [];
         };
-        $cookies           = $_COOKIE;
-        $files             = $_FILES;
-        $serverParameters  = $_SERVER;
+
+        /** @var string[] $cookies */
+        $cookies = $_COOKIE;
+
+        /** @var array[] $files */
+        $files = $_FILES;
+
+        /** @var string[] $serverParameters */
+        $serverParameters = $_SERVER;
 
         return new Request($headers, $queryParameters, $parameters, $body, $sessionParameters, $cookies, $files, $serverParameters);
     }
 
     public static function builder(): Builder
     {
-        $constructor = function (array $headers, array $queryParameters, array $parameters, StreamInterface $body, callable $sessionParameters, array $cookies, array $files, array $serverParameters): Request {
+        $constructor =
+        /**
+         * @param string[] $headers
+         * @param string[] $queryParameters
+         * @param string[] $parameters
+         * @param StreamInterface $body
+         * @param callable $sessionParameters
+         * @param string[] $cookies
+         * @param array[] $files
+         * @param string[] $serverParameters
+         * @return Request
+         */
+        function (array $headers, array $queryParameters, array $parameters, StreamInterface $body, callable $sessionParameters, array $cookies, array $files, array $serverParameters): Request {
             return new Request($headers, $queryParameters, $parameters, $body, $sessionParameters, $cookies, $files, $serverParameters);
         };
 
@@ -353,10 +377,10 @@ class Request
      * Compare path tokens side by side. Returns false if no match, true if match without capture,
      * and array with matched tokens if used with capturing pattern
      *
-     * @param array $pathTokens
-     * @param array $patternTokens
+     * @param string[] $pathTokens
+     * @param string[] $patternTokens
      *
-     * @return array|bool
+     * @return string[]|bool
      */
     protected function matchTokens(array $pathTokens, array $patternTokens)
     {
@@ -383,7 +407,7 @@ class Request
      * Parse header
      *
      * @param string $headerString
-     * @return array
+     * @return string[]
      */
     protected function parseHeader(string $headerString): array
     {
@@ -416,7 +440,7 @@ class Request
 
     /**
      * @param string $pattern
-     * @return array|bool
+     * @return string[]|bool
      */
     public function pathMatchesPattern(string $pattern)
     {
@@ -436,7 +460,7 @@ class Request
 
     /**
      * @param string $pattern
-     * @return array|bool
+     * @return string[]|bool
      */
     public function pathStartsWithPattern(string $pattern)
     {
@@ -491,36 +515,39 @@ class Request
     }
 
     /**
-     * @return array|false
+     * @return string[]
      */
     private static function readHeaders()
     {
-        if (function_exists('getallheaders')) {
-            return getallheaders();
-        }
         $headers = [];
-        $aliases = [
-            'CONTENT_TYPE'                => 'Content-Type',
-            'CONTENT_LENGTH'              => 'Content-Length',
-            'CONTENT_MD5'                 => 'Content-MD5',
-            'REDIRECT_HTTP_AUTHORIZATION' => 'Authorization',
-            'PHP_AUTH_DIGEST'             => 'Authorization',
-        ];
-        foreach ($_SERVER as $name => $value) {
-            if (substr($name, 0, 5) == "HTTP_") {
-                $headerName = str_replace(
-                    ' ',
-                    '-',
-                    ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
-                );
-                $headers[$headerName] = $value;
-            } elseif (isset($aliases[$name]) and !isset($headers[$aliases[$name]])) {
-                $headers[$aliases[$name]] = $value;
+        if (function_exists('getallheaders')) {
+            foreach (getallheaders() as $key => &$value) {
+                $headers[$key] = (string) $value;
             }
-        }
-        if (!isset($headers['Authorization']) and isset($_SERVER['PHP_AUTH_USER'])) {
-            $password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
-            $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $password);
+        } else {
+            $aliases = [
+                'CONTENT_TYPE'                => 'Content-Type',
+                'CONTENT_LENGTH'              => 'Content-Length',
+                'CONTENT_MD5'                 => 'Content-MD5',
+                'REDIRECT_HTTP_AUTHORIZATION' => 'Authorization',
+                'PHP_AUTH_DIGEST'             => 'Authorization',
+            ];
+            foreach ($_SERVER as $name => &$value) {
+                if (substr($name, 0, 5) == "HTTP_") {
+                    $headerName = str_replace(
+                        ' ',
+                        '-',
+                        ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
+                    );
+                    $headers[$headerName] = (string) $value;
+                } elseif (isset($aliases[$name]) and !isset($headers[$aliases[$name]])) {
+                    $headers[$aliases[$name]] = (string) $value;
+                }
+            }
+            if (!isset($headers['Authorization']) and isset($_SERVER['PHP_AUTH_USER'])) {
+                $password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+                $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $password);
+            }
         }
         return $headers;
     }
