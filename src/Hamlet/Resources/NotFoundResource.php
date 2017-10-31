@@ -10,6 +10,7 @@ use Hamlet\Responses\Response;
 
 class NotFoundResource implements WebResource
 {
+    /** @var Entity|null */
     protected $entity;
 
     public function __construct(Entity $entity = null)

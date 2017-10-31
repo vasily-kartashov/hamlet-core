@@ -24,6 +24,10 @@ class MySQLDatabase extends Database
         return $procedure;
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function startTransaction()
     {
         $this->logger->debug('Starting transaction');
@@ -34,6 +38,10 @@ class MySQLDatabase extends Database
         }
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function commit()
     {
         $this->logger->debug('Committing transaction');
@@ -44,6 +52,10 @@ class MySQLDatabase extends Database
         }
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function rollback()
     {
         $this->logger->debug('Rolling back transaction');

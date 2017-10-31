@@ -4,5 +4,10 @@ namespace Hamlet\Templating;
 
 interface TemplateRenderer
 {
-    public function render($data, string $path);
+    /**
+     * @param mixed $data
+     * @param string $path
+     * @return string
+     */
+    public function render($data, string $path): string;
 }

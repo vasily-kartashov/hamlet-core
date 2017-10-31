@@ -9,7 +9,10 @@ use mysqli_stmt;
 
 class MySQLProcedure extends AbstractProcedure
 {
+    /** @var mysqli */
     protected $connection;
+
+    /** @var string */
     protected $query;
 
     public function __construct(mysqli $connection, string $query)
@@ -58,6 +61,10 @@ class MySQLProcedure extends AbstractProcedure
         $this->finalizeFetching($statement);
     }
 
+    /**
+     * @return array|null
+     * @throws Exception
+     */
     public function fetchOne()
     {
         /** @var mysqli_stmt $statement */
@@ -76,7 +83,7 @@ class MySQLProcedure extends AbstractProcedure
     public function fetchAll(): array
     {
         $result = [];
-        $this->fetch(function ($row) use (&$result) {
+        $this->fetch(function (array $row) use (&$result) {
             $result[] = $row;
         });
         return $result;
@@ -163,6 +170,11 @@ class MySQLProcedure extends AbstractProcedure
         return [$row, $statement];
     }
 
+    /**
+     * @param mysqli_stmt $statement
+     * @return void
+     * @throws Exception
+     */
     private function finalizeFetching(mysqli_stmt $statement)
     {
         $statement->free_result();

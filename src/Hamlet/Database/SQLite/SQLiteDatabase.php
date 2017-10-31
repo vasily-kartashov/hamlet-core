@@ -9,6 +9,7 @@ use SQLite3;
 
 class SQLiteDatabase extends Database
 {
+    /** @var SQLite3 */
     private $connection;
 
     public function __construct(SQLite3 $connection)
@@ -24,6 +25,10 @@ class SQLiteDatabase extends Database
         return $procedure;
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function startTransaction()
     {
         $this->logger->debug('Starting transaction');
@@ -33,6 +38,10 @@ class SQLiteDatabase extends Database
         }
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function commit()
     {
         $this->logger->debug('Committing transaction');
@@ -42,6 +51,10 @@ class SQLiteDatabase extends Database
         }
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function rollback()
     {
         $this->logger->debug('Rolling back transaction');

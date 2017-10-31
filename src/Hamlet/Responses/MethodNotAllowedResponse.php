@@ -8,7 +8,7 @@ namespace Hamlet\Responses;
  */
 class MethodNotAllowedResponse extends Response
 {
-    public function __construct(string... $allowedMethods)
+    public function __construct(string ... $allowedMethods)
     {
         parent::__construct(405);
         $this->withHeader('Allow', join(', ', $allowedMethods));

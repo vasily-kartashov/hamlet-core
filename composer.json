@@ -29,7 +29,8 @@
     "cache/array-adapter": "^1",
     "phpunit/phpunit": "^6",
     "phpstan/phpstan": "*",
-    "squizlabs/php_codesniffer": "*"
+    "squizlabs/php_codesniffer": "*",
+    "vimeo/psalm": "*"
   },
   "autoload": {
     "psr-4": {

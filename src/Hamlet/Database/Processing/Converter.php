@@ -8,7 +8,10 @@ use ReflectionClass;
 
 class Converter
 {
+    /** @var array */
     protected $records;
+
+    /** @var callable */
     protected $splitter;
 
     public function __construct(array $records, callable $splitter)
@@ -88,11 +91,17 @@ class Converter
         return $records;
     }
 
-    private function instantiate($row, $type)
+    /**
+     * @param array|null $row
+     * @param string $type
+     * @return mixed|null
+     */
+    private function instantiate($row, string $type)
     {
         if ($this->isNull($row)) {
             return null;
         }
+        assert($row !== null);
         static $entitySubclasses = [];
         if (!isset($entitySubclasses[$type])) {
             $entitySubclasses[$type] = \is_subclass_of($type, Entity::class);
@@ -108,6 +117,10 @@ class Converter
         }
     }
 
+    /**
+     * @param mixed $item
+     * @return bool
+     */
     protected function isNull($item): bool
     {
         if (\is_array($item)) {
@@ -122,6 +135,12 @@ class Converter
         }
     }
 
+    /**
+     * @param string $typeName
+     * @param array $data
+     * @return mixed
+     * @throws Exception
+     */
     private function instantiateEntity(string $typeName, array $data)
     {
         /** @var ReflectionClass[] $types */

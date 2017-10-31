@@ -6,7 +6,8 @@ abstract class AbstractJsonEntity extends AbstractEntity
 {
     public function getContent(): string
     {
-        return json_encode($this->getData());
+        $json = json_encode($this->getData());
+        return $json !== false ? $json : '';
     }
 
     abstract protected function getData();

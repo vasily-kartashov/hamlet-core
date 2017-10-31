@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 
 abstract class AbstractProcedure implements Procedure
 {
-    /** @var LoggerInterface */
+    /** @var LoggerInterface|null */
     protected $logger;
 
     /** @var array[]  */

@@ -4,7 +4,10 @@ namespace Hamlet\Entities;
 
 class EntityLocationTuple
 {
+    /** @var string */
     protected $location;
+
+    /** @var Entity */
     protected $entity;
 
     public function __construct(string $location, Entity $entity)

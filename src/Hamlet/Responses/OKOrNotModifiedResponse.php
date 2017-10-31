@@ -17,7 +17,7 @@ class OKOrNotModifiedResponse extends Response
 
     public function output(Request $request, CacheItemPoolInterface $cache)
     {
-        if ($request->preconditionFulfilled($this->entity, $cache)) {
+        if ($this->entity && $request->preconditionFulfilled($this->entity, $cache)) {
             $this->withStatusCode(200)->withEmbedEntity(true);
         } else {
             $this->withStatusCode(304)->withEmbedEntity(false);

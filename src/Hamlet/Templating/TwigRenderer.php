@@ -7,6 +7,11 @@ use Twig_Environment;
 
 class TwigRenderer implements TemplateRenderer
 {
+    /**
+     * @param mixed $data
+     * @param string $path
+     * @return string
+     */
     public function render($data, string $path): string
     {
         $loader = new Twig_Loader_Filesystem();

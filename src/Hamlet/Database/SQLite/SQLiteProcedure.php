@@ -9,7 +9,10 @@ use SQLite3Stmt;
 
 class SQLiteProcedure extends AbstractProcedure
 {
+    /** @var SQLite3 */
     private $connection;
+
+    /** @var string */
     private $query;
 
     public function __construct(SQLite3 $connection, string $query)
@@ -18,18 +21,24 @@ class SQLiteProcedure extends AbstractProcedure
         $this->query = $query;
     }
 
-    public function insert()
+    /**
+     * @return int
+     */
+    public function insert(): int
     {
         $this->execute();
         return $this->connection->lastInsertRowID();
     }
 
+    /**
+     * @return void
+     */
     public function execute()
     {
         $this->bindParameters()->execute();
     }
 
-    public function fetchOne()
+    public function fetchOne(): array
     {
         $result = $this->bindParameters()->execute();
         return $result->fetchArray(SQLITE3_ASSOC);

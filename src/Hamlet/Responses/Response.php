@@ -20,7 +20,7 @@ class Response
     /** @var string[] */
     protected $headers = [];
 
-    /** @var Entity */
+    /** @var Entity|null */
     protected $entity;
 
     /** @var bool */
@@ -32,6 +32,14 @@ class Response
     /** @var string[] */
     protected $session = [];
 
+    /**
+     * @param int $statusCode
+     * @param Entity|null $entity
+     * @param bool $embedEntity
+     * @param string[] $headers
+     * @param Cookie[] $cookies
+     * @param string[] $session
+     */
     protected function __construct(
         int $statusCode = 0,
         $entity = null,
@@ -64,6 +72,11 @@ class Response
         );
     }
 
+    /**
+     * @param Request $request
+     * @param CacheItemPoolInterface $cache
+     * @return void
+     */
     public function output(Request $request, CacheItemPoolInterface $cache)
     {
         if (count($this->session) > 0) {
@@ -152,7 +165,7 @@ class Response
         return $this;
     }
 
-    private function getStatusLine()
+    private function getStatusLine(): string
     {
         static $phrases = [
             100 => 'Continue',

@@ -8,6 +8,7 @@ use PDO;
 
 class PDODatabase extends Database
 {
+    /** @var PDO */
     private $connection;
 
     public function __construct(PDO $connection)
@@ -23,18 +24,27 @@ class PDODatabase extends Database
         return $procedure;
     }
 
+    /**
+     * @return void
+     */
     public function startTransaction()
     {
         $this->logger->debug('Starting transaction');
         $this->connection->beginTransaction();
     }
 
+    /**
+     * @return void
+     */
     public function commit()
     {
         $this->logger->debug('Committing transaction');
         $this->connection->commit();
     }
 
+    /**
+     * @return void
+     */
     public function rollback()
     {
         $this->logger->debug('Rolling back transaction');

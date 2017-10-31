@@ -15,7 +15,10 @@ use Throwable;
 
 abstract class Database implements LoggerAwareInterface
 {
+    /** @var LoggerInterface */
     protected $logger;
+
+    /** @var bool */
     protected $transactionStarted = false;
 
     protected function __construct()
@@ -25,20 +28,20 @@ abstract class Database implements LoggerAwareInterface
 
     public static function mysql(string $host, string $user, string $password, string $database = null): Database
     {
-        $connection = new mysqli($host, $user, $password, $database);
+        $connection = $database ? new mysqli($host, $user, $password, $database) : new mysqli($host, $user, $password);
         return new MySQLDatabase($connection);
     }
 
     public static function sqlite3(
         string $location,
-        $flags = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE,
-        $encryptionKey = null
+        int $flags = SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE,
+        string $encryptionKey = null
     ): Database {
-        $connection = new SQLite3($location, $flags, $encryptionKey);
+        $connection = $encryptionKey ? new SQLite3($location, $flags, $encryptionKey) : new SQLite3($location, $flags);
         return new SQLiteDatabase($connection);
     }
 
-    public static function pdo(string $dsn, string $username = null, string $password = null, array $options = [])
+    public static function pdo(string $dsn, string $username = null, string $password = null, array $options = []): Database
     {
         $connection = new PDO($dsn, $username, $password, $options);
         return new PDODatabase($connection);
@@ -51,6 +54,11 @@ abstract class Database implements LoggerAwareInterface
         $this->logger = $logger;
     }
 
+    /**
+     * @param callable $callable
+     * @return mixed
+     * @throws Throwable
+     */
     public function withTransaction(callable $callable)
     {
         try {

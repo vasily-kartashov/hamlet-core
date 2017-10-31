@@ -4,9 +4,16 @@ namespace Hamlet\Responses;
 
 class Cookie
 {
+    /** @var string */
     private $name;
+
+    /** @var string */
     private $value;
+
+    /** @var string */
     private $path;
+
+    /** @var int */
     private $timeToLive;
 
     public function __construct(string $name, string $value, string $path, int $timeToLive)
@@ -17,22 +24,22 @@ class Cookie
         $this->timeToLive = $timeToLive;
     }
 
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
 
-    public function value()
+    public function value(): string
     {
         return $this->value;
     }
 
-    public function path()
+    public function path(): string
     {
         return $this->path;
     }
 
-    public function timeToLive()
+    public function timeToLive(): int
     {
         return $this->timeToLive;
     }

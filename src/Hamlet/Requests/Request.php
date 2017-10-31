@@ -7,23 +7,51 @@ use GuzzleHttp\Psr7\BufferStream;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use Hamlet\Entities\Entity;
+use Hamlet\Responses\Cookie;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
 class Request
 {
+    /** @var string[] */
     private $headers = [];
+
+    /** @var string[] */
     private $queryParameters = [];
+
+    /** @var string[] */
     private $parameters = [];
+
+    /** @var StreamInterface */
     private $body;
+
+    /** @var callable */
     private $sessionParameters = null;
+
+    /** @var string[] */
     private $cookies = [];
+
+    /** @var array[] */
     private $files = [];
+
+    /** @var string[] */
     private $serverParameters = [];
 
+    /** @var string|null */
     private $path;
 
+    /**
+     * Request constructor.
+     * @param string[] $headers
+     * @param string[] $queryParameters
+     * @param string[] $parameters
+     * @param StreamInterface $body
+     * @param callable $sessionParameters
+     * @param string[] $cookies
+     * @param array[] $files
+     * @param string[] $serverParameters
+     */
     protected function __construct(
         array $headers,
         array $queryParameters,
@@ -46,11 +74,11 @@ class Request
 
     public static function fromGlobals(): Request
     {
-        $headers           = Request::readHeaders();
+        $headers           = Request::readHeaders() ?: [];
         $queryParameters   = $_GET;
         $parameters        = $_POST;
         $body              = new LazyOpenStream('php://input', 'r+');
-        $sessionParameters = function () {
+        $sessionParameters = function (): array {
             if (!session_id()) {
                 session_start();
             }
@@ -60,53 +88,42 @@ class Request
         $files             = $_FILES;
         $serverParameters  = $_SERVER;
 
-        return new Request(
-            $headers,
-            $queryParameters,
-            $parameters,
-            $body,
-            $sessionParameters,
-            $cookies,
-            $files,
-            $serverParameters
-        );
+        return new Request($headers, $queryParameters, $parameters, $body, $sessionParameters, $cookies, $files, $serverParameters);
     }
 
     public static function builder(): Builder
     {
-        $constructor = function (
-            array $headers,
-            array $queryParameters,
-            array $parameters,
-            StreamInterface $body,
-            callable $sessionParameters,
-            array $cookies,
-            array $files,
-            array $serverParameters
-        ) {
-            return new Request(
-                $headers,
-                $queryParameters,
-                $parameters,
-                $body,
-                $sessionParameters,
-                $cookies,
-                $files,
-                $serverParameters
-            );
+        $constructor = function (array $headers, array $queryParameters, array $parameters, StreamInterface $body, callable $sessionParameters, array $cookies, array $files, array $serverParameters): Request {
+            return new Request($headers, $queryParameters, $parameters, $body, $sessionParameters, $cookies, $files, $serverParameters);
         };
 
         return new class($constructor) implements Builder
         {
+            /** @var callable */
             private $constructor;
 
+            /** @var string[] */
             private $headers = [];
+
+            /** @var string[] */
             private $queryParameters = [];
+
+            /** @var string[] */
             private $parameters = [];
+
+            /** @var BufferStream */
             private $body;
+
+            /** @var string[] */
             private $sessionParameters = [];
+
+            /** @var string[] */
             private $cookies = [];
+
+            /** @var array[] */
             private $files = [];
+
+            /** @var string[] */
             private $serverParameters = [];
 
             public function __construct(callable $constructor)
@@ -220,6 +237,11 @@ class Request
         return $this->serverParameters['REQUEST_METHOD'] ?? 'GET';
     }
 
+    /**
+     * @param string $name
+     * @param string|null $defaultValue
+     * @return string|null
+     */
     public function header(string $name, $defaultValue = null)
     {
         return $this->headers[$name] ?? $defaultValue;
@@ -235,21 +257,31 @@ class Request
         }
     }
 
-    public function parameters()
+    public function parameters(): array
     {
         return $this->queryParameters + $this->parameters;
     }
 
+    /**
+     * @param string $name
+     * @param string|null $defaultValue
+     * @return string|null
+     */
     public function parameter(string $name, $defaultValue = null)
     {
         return $this->parameters[$name] ?? $this->queryParameters[$name] ?? $defaultValue;
     }
 
-    public function hasParameter(string $name)
+    public function hasParameter(string $name): bool
     {
         return isset($this->parameters[$name]) || isset($this->queryParameters[$name]);
     }
 
+    /**
+     * @param string $name
+     * @param string|null $defaultValue
+     * @return string|null
+     */
     public function sessionParameter(string $name, $defaultValue = null)
     {
         $generator = $this->sessionParameters;
@@ -260,7 +292,7 @@ class Request
         return $defaultValue;
     }
 
-    public function hasSessionParameter(string $name)
+    public function hasSessionParameter(string $name): bool
     {
         $generator = $this->sessionParameters;
         if ($generator) {
@@ -270,6 +302,11 @@ class Request
         return false;
     }
 
+    /**
+     * @param string $name
+     * @param string|null $defaultValue
+     * @return string|null
+     */
     public function cookie(string $name, $defaultValue = null)
     {
         return $this->cookies[$name] ?? $defaultValue;
@@ -281,7 +318,7 @@ class Request
         return $this->body->getContents();
     }
 
-    public function hasCookie(string $name)
+    public function hasCookie(string $name): bool
     {
         return isset($this->cookies[$name]);
     }
@@ -346,11 +383,12 @@ class Request
      * Parse header
      *
      * @param string $headerString
-     * @return string[]
+     * @return array
      */
     protected function parseHeader(string $headerString): array
     {
         $ranges = explode(',', trim(strtolower($headerString)));
+        $result = [];
         foreach ($ranges as $i => $range) {
             $tokens = explode(';', trim($range), 2);
             $type = trim(array_shift($tokens));
@@ -360,7 +398,7 @@ class Request
                     $key = substr($token, 0, $position);
                     $value = substr($token, $position + 1);
                     if (trim($key) == 'q') {
-                        $priority = 1000 * $value - $i;
+                        $priority = 1000 * floatval($value)- $i;
                         break;
                     }
                 }
@@ -376,6 +414,10 @@ class Request
         return $this->path() == $path;
     }
 
+    /**
+     * @param string $pattern
+     * @return array|bool
+     */
     public function pathMatchesPattern(string $pattern)
     {
         $pathTokens = explode('/', $this->path());
@@ -392,6 +434,10 @@ class Request
         return substr($this->path(), 0, $length) == $prefix;
     }
 
+    /**
+     * @param string $pattern
+     * @return array|bool
+     */
     public function pathStartsWithPattern(string $pattern)
     {
         $pathTokens = explode('/', $this->path());
@@ -438,9 +484,15 @@ class Request
         }
         $format = 'D M d Y H:i:s O+';
         $dateTime = DateTime::createFromFormat($format, $dateHeader[0]);
+        if ($dateTime === false) {
+            return -1;
+        }
         return $dateTime->getTimestamp();
     }
 
+    /**
+     * @return array|false
+     */
     private static function readHeaders()
     {
         if (function_exists('getallheaders')) {

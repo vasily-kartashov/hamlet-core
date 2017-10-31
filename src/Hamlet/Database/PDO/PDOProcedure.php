@@ -9,9 +9,14 @@ use PDOStatement;
 
 class PDOProcedure extends AbstractProcedure
 {
+    /** @var PDO */
     private $connection;
+
+    /** @var string */
     private $query;
-    private $affectedRows;
+
+    /** @var int */
+    private $affectedRows = 0;
 
     public function __construct(PDO $connection, string $query)
     {
@@ -19,13 +24,19 @@ class PDOProcedure extends AbstractProcedure
         $this->query = $query;
     }
 
-    public function insert()
+    /**
+     * @return string
+     */
+    public function insert(): string
     {
         $statement = $this->prepareAndBind();
         $this->affectedRows = $statement->rowCount();
         return $this->connection->lastInsertId();
     }
 
+    /**
+     * @return void
+     */
     public function execute()
     {
         $statement = $this->prepareAndBind();
@@ -33,6 +44,9 @@ class PDOProcedure extends AbstractProcedure
         $this->affectedRows = $statement->rowCount();
     }
 
+    /**
+     * @return array|null
+     */
     public function fetchOne()
     {
         $statement = $this->prepareAndBind();
@@ -59,7 +73,7 @@ class PDOProcedure extends AbstractProcedure
         $counter = 0;
         if (!empty($this->parameters)) {
             while (true) {
-                $position = strpos($query, '?', $position);
+                $position = \strpos($query, '?', $position);
                 if ($position === false) {
                     break;
                 }

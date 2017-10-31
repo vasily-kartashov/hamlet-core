@@ -9,7 +9,7 @@ use Hamlet\Responses\TemporaryRedirectResponse;
 
 class RedirectResource implements WebResource
 {
-
+    /** @var string */
     protected $url;
 
     public function __construct(string $url)
