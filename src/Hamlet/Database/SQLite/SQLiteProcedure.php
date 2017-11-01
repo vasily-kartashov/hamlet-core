@@ -85,7 +85,7 @@ class SQLiteProcedure extends AbstractProcedure
         $counter = 1;
         foreach ($this->parameters as list($typeAlias, $value)) {
             $type = $this->resolveTypeAlias($typeAlias);
-            if (is_null($value)) {
+            if ($value === null) {
                 $statement->bindValue($counter++, null, SQLITE3_NULL);
             } elseif (is_array($value)) {
                 foreach ($value as $item) {

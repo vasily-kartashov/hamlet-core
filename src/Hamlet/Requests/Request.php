@@ -348,7 +348,7 @@ class Request
 
     public function environmentNameEndsWith(string $suffix): bool
     {
-        return $suffix == "" || substr($this->getEnvironmentName(), -strlen($suffix)) === $suffix;
+        return $suffix == "" || \substr($this->getEnvironmentName(), -strlen($suffix)) === $suffix;
     }
 
     public function uri(): string
@@ -359,8 +359,8 @@ class Request
     public function path(): string
     {
         if (!$this->path) {
-            $position = strpos($this->uri(), '?');
-            $this->path = $position ? substr($this->uri(), 0, $position) : $this->uri();
+            $position = \strpos($this->uri(), '?');
+            $this->path = $position ? \substr($this->uri(), 0, $position) : $this->uri();
         }
         return $this->path;
     }
@@ -368,7 +368,7 @@ class Request
     public function protocolVersion(): string
     {
         return isset($this->serverParameters['SERVER_PROTOCOL'])
-            ? str_replace('HTTP/', '', $this->serverParameters['SERVER_PROTOCOL'])
+            ? \str_replace('HTTP/', '', $this->serverParameters['SERVER_PROTOCOL'])
             : '1.1';
     }
 
@@ -384,7 +384,7 @@ class Request
     protected function matchTokens(array $pathTokens, array $patternTokens)
     {
         $matches = [];
-        for ($i = 1; $i < count($patternTokens); $i++) {
+        for ($i = 1; $i < \count($patternTokens); $i++) {
             $pathToken = $pathTokens[$i];
             $patternToken = $patternTokens[$i];
             if ($pathToken == '' && $patternToken != '') {
@@ -393,9 +393,9 @@ class Request
             if ($patternToken == '*') {
                 continue;
             }
-            if (substr($patternToken, 0, 1) == '{') {
-                $matches[substr($patternToken, 1, -1)] = urldecode($pathToken);
-            } else if (urldecode($pathToken) != $patternToken) {
+            if (\substr($patternToken, 0, 1) == '{') {
+                $matches[\substr($patternToken, 1, -1)] = \urldecode($pathToken);
+            } else if (\urldecode($pathToken) != $patternToken) {
                 return false;
             }
         }
@@ -410,11 +410,11 @@ class Request
      */
     protected function parseHeader(string $headerString): array
     {
-        $ranges = explode(',', trim(strtolower($headerString)));
+        $ranges = explode(',', \trim(\strtolower($headerString)));
         $result = [];
         foreach ($ranges as $i => $range) {
-            $tokens = explode(';', trim($range), 2);
-            $type = trim(array_shift($tokens));
+            $tokens = \explode(';', trim($range), 2);
+            $type = \trim(\array_shift($tokens));
             $priority = 1000 - $i;
             foreach ($tokens as $token) {
                 if (($position = strpos($token, '=')) !== false) {
@@ -428,7 +428,7 @@ class Request
             }
             $result[$type] = $priority;
         }
-        arsort($result);
+        \arsort($result);
         return array_keys($result);
     }
 
@@ -443,9 +443,9 @@ class Request
      */
     public function pathMatchesPattern(string $pattern)
     {
-        $pathTokens = explode('/', $this->path());
-        $patternTokens = explode('/', $pattern);
-        if (count($pathTokens) != count($patternTokens)) {
+        $pathTokens = \explode('/', $this->path());
+        $patternTokens = \explode('/', $pattern);
+        if (\count($pathTokens) != \count($patternTokens)) {
             return false;
         }
         return $this->matchTokens($pathTokens, $patternTokens);
@@ -453,8 +453,8 @@ class Request
 
     public function pathStartsWith(string $prefix): bool
     {
-        $length = strlen($prefix);
-        return substr($this->path(), 0, $length) == $prefix;
+        $length = \strlen($prefix);
+        return \substr($this->path(), 0, $length) == $prefix;
     }
 
     /**
@@ -475,25 +475,22 @@ class Request
         $noneMatchHeader       = $this->header('If-None-Match');
         $unmodifiedSinceHeader = $this->header('If-Unmodified-Since');
 
-        if (is_null($matchHeader) &&
-            is_null($modifiedSinceHeader) &&
-            is_null($noneMatchHeader) &&
-            is_null($unmodifiedSinceHeader)) {
+        if ($matchHeader === null && $modifiedSinceHeader === null && $noneMatchHeader === null && $unmodifiedSinceHeader === null) {
             return true;
         }
         $cacheEntry   = $entity->load($cache);
         $tag          = $cacheEntry->tag();
         $lastModified = $cacheEntry->modified();
-        if (!is_null($matchHeader) && $tag == $matchHeader) {
+        if ($matchHeader !== null && $tag == $matchHeader) {
             return true;
         }
-        if (!is_null($modifiedSinceHeader) && $lastModified > strtotime($modifiedSinceHeader)) {
+        if ($modifiedSinceHeader !== null && $lastModified > strtotime($modifiedSinceHeader)) {
             return true;
         }
-        if (!is_null($noneMatchHeader) && $tag != $noneMatchHeader) {
+        if ($noneMatchHeader !== null && $tag != $noneMatchHeader) {
             return true;
         }
-        if (!is_null($unmodifiedSinceHeader) && $lastModified < strtotime($unmodifiedSinceHeader)) {
+        if ($unmodifiedSinceHeader !== null && $lastModified < strtotime($unmodifiedSinceHeader)) {
             return true;
         }
         return false;
@@ -519,8 +516,8 @@ class Request
     private static function readHeaders()
     {
         $headers = [];
-        if (function_exists('getallheaders')) {
-            foreach (getallheaders() as $key => &$value) {
+        if (\function_exists('getallheaders')) {
+            foreach (\getallheaders() as $key => &$value) {
                 $headers[$key] = (string) $value;
             }
         } else {
@@ -532,11 +529,11 @@ class Request
                 'PHP_AUTH_DIGEST'             => 'Authorization',
             ];
             foreach ($_SERVER as $name => &$value) {
-                if (substr($name, 0, 5) == "HTTP_") {
-                    $headerName = str_replace(
+                if (\substr($name, 0, 5) == "HTTP_") {
+                    $headerName = \str_replace(
                         ' ',
                         '-',
-                        ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
+                        \ucwords(\strtolower(\str_replace('_', ' ', \substr($name, 5))))
                     );
                     $headers[$headerName] = (string) $value;
                 } elseif (isset($aliases[$name]) and !isset($headers[$aliases[$name]])) {
@@ -545,7 +542,7 @@ class Request
             }
             if (!isset($headers['Authorization']) and isset($_SERVER['PHP_AUTH_USER'])) {
                 $password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
-                $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $password);
+                $headers['Authorization'] = 'Basic ' . \base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $password);
             }
         }
         return $headers;

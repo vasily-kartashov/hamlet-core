@@ -66,7 +66,7 @@ class ResponseBuilder
         if ($this->statusCode == null) {
             throw new Exception('Status code needs to be defined');
         }
-        return new class($this->statusCode, $this->entity,  !is_null($this->entity), $this->headers, $this->cookies, $this->session) extends Response
+        return new class($this->statusCode, $this->entity,  $this->entity !== null, $this->headers, $this->cookies, $this->session) extends Response
         {
             /**
              * @param int $statusCode

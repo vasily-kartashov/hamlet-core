@@ -35,25 +35,25 @@ abstract class AbstractProcedure implements Procedure
 
     public function bindNullableBlob($value)
     {
-        assert(is_null($value) || is_string($value));
+        assert($value === null || is_string($value));
         $this->parameters[] = ['b', $value];
     }
 
     public function bindNullableFloat($value)
     {
-        assert(is_null($value) || is_float($value));
+        assert($value === null || is_float($value));
         $this->parameters[] = ['d', $value];
     }
 
     public function bindNullableInteger($value)
     {
-        assert(is_null($value) || is_int($value));
+        assert($value === null || is_int($value));
         $this->parameters[] = ['i', $value];
     }
 
     public function bindNullableString($value)
     {
-        assert(is_null($value) || is_string($value));
+        assert($value === null || is_string($value));
         $this->parameters[] = ['s', $value];
     }
 
