@@ -46,7 +46,7 @@ class Selector extends Collector
         $splitter = function (array $record) use ($prefix, $length): array {
             $item = [];
             foreach ($record as $field => &$value) {
-                if (\substr($field, 0, $length) == $prefix) {
+                if (\strpos($field, $prefix) === 0) {
                     $item[\substr($field, $length)] = $value;
                     unset($record[$field]);
                 }
