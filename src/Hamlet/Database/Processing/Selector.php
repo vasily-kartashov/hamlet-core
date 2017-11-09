@@ -42,12 +42,23 @@ class Selector extends Collector
 
     public function selectByPrefix(string $prefix): Converter
     {
+        $cache = [];
         $length = \strlen($prefix);
-        $splitter = function (array $record) use ($prefix, $length): array {
+        $splitter = function (array $record) use ($prefix, $length, &$cache): array {
             $item = [];
             foreach ($record as $field => &$value) {
-                if (\strpos($field, $prefix) === 0) {
-                    $item[\substr($field, $length)] = $value;
+                if (isset($cache[$field])) {
+                    $suffix = $cache[$field];
+                } else {
+                    if (\strpos($field, $prefix) === 0) {
+                        $suffix = \substr($field, $length);
+                    } else {
+                        $suffix = false;
+                    }
+                    $cache[$field] = $suffix;
+                }
+                if ($suffix) {
+                    $item[$suffix] = $value;
                     unset($record[$field]);
                 }
             }
