@@ -9,8 +9,8 @@ class StreamEntity extends AbstractEntity
     /** @var StreamInterface */
     private $stream;
 
-    /** @var string */
-    private $content = '';
+    /** @var string|null */
+    private $content = null;
 
     public function __construct(StreamInterface $stream)
     {
