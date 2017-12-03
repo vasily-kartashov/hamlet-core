@@ -10,6 +10,16 @@ use PHPUnit\Framework\TestCase;
 
 class RequestTest extends TestCase
 {
+    public function testMatchTokens()
+    {
+        $request = Request::builder()
+            ->withUri('/world/russia/world-cup')
+            ->build();
+
+        $tokens = $request->pathMatchesPattern('/world/{country}/world-cup');
+        Assert::assertEquals(['country' => 'russia'], $tokens);
+    }
+
     public function testIfMatch()
     {
         $cache = new VoidCachePool();

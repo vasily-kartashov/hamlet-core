@@ -380,6 +380,7 @@ class Request
      * @param string[] $patternTokens
      *
      * @return string[]|bool
+     * @psalm-return array<string,string>|bool
      */
     protected function matchTokens(array $pathTokens, array $patternTokens)
     {
@@ -399,7 +400,10 @@ class Request
                 return false;
             }
         }
-        return count($matches) == 0 ? true : $matches;
+        if (empty($matches)) {
+            return true;
+        }
+        return $matches;
     }
 
     /**
