@@ -77,7 +77,7 @@ class Response
      * @param CacheItemPoolInterface $cache
      * @return void
      */
-    public function output(Request $request, CacheItemPoolInterface $cache)
+    public function output(/** @noinspection PhpUnusedParameterInspection */ Request $request, CacheItemPoolInterface $cache)
     {
         if (count($this->session) > 0) {
             if (!session_id()) {

@@ -3,9 +3,9 @@
 namespace Hamlet\Database\MySQL;
 
 use mysqli;
-use Exception;
+use RuntimeException;
 
-class MySQLException extends Exception
+class MySQLException extends RuntimeException
 {
     public function __construct(mysqli $connection)
     {

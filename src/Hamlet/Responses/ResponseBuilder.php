@@ -2,8 +2,8 @@
 
 namespace Hamlet\Responses;
 
-use Exception;
 use Hamlet\Entities\Entity;
+use RuntimeException;
 
 class ResponseBuilder
 {
@@ -64,7 +64,7 @@ class ResponseBuilder
     public function build(): Response
     {
         if ($this->statusCode == null) {
-            throw new Exception('Status code needs to be defined');
+            throw new RuntimeException('Status code needs to be defined');
         }
         return new class($this->statusCode, $this->entity,  $this->entity !== null, $this->headers, $this->cookies, $this->session) extends Response
         {

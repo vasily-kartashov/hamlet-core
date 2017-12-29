@@ -21,6 +21,10 @@ class MySQLProcedure extends AbstractProcedure
         $this->query = $query;
     }
 
+    /**
+     * @return void
+     * @throws MySQLException
+     */
     public function execute()
     {
         $statement = $this->bindParameters();
@@ -35,6 +39,10 @@ class MySQLProcedure extends AbstractProcedure
         }
     }
 
+    /**
+     * @return int
+     * @throws MySQLException
+     */
     public function insert(): int
     {
         $this->execute();
@@ -86,6 +94,10 @@ class MySQLProcedure extends AbstractProcedure
         return $value;
     }
 
+    /**
+     * @return array
+     * @throws MySQLException
+     */
     public function fetchAll(): array
     {
         $result = [];
@@ -100,6 +112,10 @@ class MySQLProcedure extends AbstractProcedure
         return $this->connection->affected_rows;
     }
 
+    /**
+     * @return mysqli_stmt
+     * @throws MySQLException
+     */
     private function bindParameters(): mysqli_stmt
     {
         $query = $this->query;
@@ -124,6 +140,7 @@ class MySQLProcedure extends AbstractProcedure
             }
         }
         $statement = $this->connection->prepare($query);
+        /** @psalm-suppress RedundantCondition */
         if (!$statement) {
             throw new MySQLException($this->connection);
         }
@@ -164,6 +181,10 @@ class MySQLProcedure extends AbstractProcedure
         return $statement;
     }
 
+    /**
+     * @return array
+     * @throws MySQLException
+     */
     private function initFetching(): array
     {
         $statement = $this->bindParameters();
@@ -179,7 +200,7 @@ class MySQLProcedure extends AbstractProcedure
     /**
      * @param mysqli_stmt $statement
      * @return void
-     * @throws Exception
+     * @throws MySQLException
      */
     private function finalizeFetching(mysqli_stmt $statement)
     {
@@ -190,14 +211,21 @@ class MySQLProcedure extends AbstractProcedure
         }
     }
 
+    /**
+     * @param mysqli_stmt $statement
+     * @return array
+     * @throws MySQLException
+     */
     private function bindResult(mysqli_stmt $statement): array
     {
         $metaData = $statement->result_metadata();
+        /** @psalm-suppress RedundantCondition */
         if (!$metaData) {
             throw new MySQLException($this->connection);
         }
         $row = [];
         $boundParameters = [];
+        /** @psalm-suppress RedundantCondition */
         while ($field = $metaData->fetch_field()) {
             $row[$field->name] = null;
             $boundParameters[] = &$row[$field->name];

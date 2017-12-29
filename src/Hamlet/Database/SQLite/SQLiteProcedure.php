@@ -2,8 +2,8 @@
 
 namespace Hamlet\Database\SQLite;
 
-use Exception;
 use Hamlet\Database\AbstractProcedure;
+use RuntimeException;
 use SQLite3;
 use SQLite3Stmt;
 
@@ -110,7 +110,7 @@ class SQLiteProcedure extends AbstractProcedure
             case 's':
                 return SQLITE3_TEXT;
             default:
-                throw new Exception('Cannot resolve type alias "' . $alias . '"');
+                throw new RuntimeException('Cannot resolve type alias "' . $alias . '"');
         }
     }
 }

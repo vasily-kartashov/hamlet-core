@@ -14,6 +14,11 @@ abstract class AbstractEntity implements Entity
         return null;
     }
 
+    /**
+     * @param CacheItemPoolInterface $cache
+     * @return CacheValue
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
     public function load(CacheItemPoolInterface $cache): CacheValue
     {
         if ($this->cacheValue) {

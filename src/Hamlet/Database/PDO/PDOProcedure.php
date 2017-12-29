@@ -2,10 +2,10 @@
 
 namespace Hamlet\Database\PDO;
 
-use Exception;
 use Hamlet\Database\AbstractProcedure;
 use PDO;
 use PDOStatement;
+use RuntimeException;
 
 class PDOProcedure extends AbstractProcedure
 {
@@ -66,6 +66,9 @@ class PDOProcedure extends AbstractProcedure
         return $this->affectedRows;
     }
 
+    /**
+     * @return PDOStatement
+     */
     private function prepareAndBind(): PDOStatement
     {
         $query = $this->query;
@@ -116,7 +119,7 @@ class PDOProcedure extends AbstractProcedure
             case 'i':
                 return PDO::PARAM_INT;
             default:
-                throw new Exception('Cannot resolve type alias "' . $alias . '"');
+                throw new RuntimeException('Cannot resolve type alias "' . $alias . '"');
         }
     }
 }

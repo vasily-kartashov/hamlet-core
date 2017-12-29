@@ -33,7 +33,8 @@ class MapConverter extends Converter
             }
             $records[$key] = $record;
         }
-        foreach ($records as $key => &$record) {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        foreach ($records as $key => &$_) {
             $records[$key][$name] = $maps[$key];
         }
         return \array_values($records);

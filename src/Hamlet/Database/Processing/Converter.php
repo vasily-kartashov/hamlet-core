@@ -2,9 +2,9 @@
 
 namespace Hamlet\Database\Processing;
 
-use Exception;
 use Hamlet\Database\Entity;
 use ReflectionClass;
+use RuntimeException;
 
 class Converter
 {
@@ -60,7 +60,8 @@ class Converter
             }
             $records[$key] = $record;
         }
-        foreach ($records as $key => &$record) {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        foreach ($records as $key => &$_) {
             $records[$key][$name] = $groups[$key];
         }
         return \array_values($records);
@@ -80,6 +81,11 @@ class Converter
         return new Selector($this->castRecordsInto($type, $name));
     }
 
+    /**
+     * @param string $type
+     * @param string $name
+     * @return array
+     */
     private function castRecordsInto(string $type, string $name): array
     {
         $records = [];
@@ -141,7 +147,6 @@ class Converter
      * @param string $typeName
      * @param array $data
      * @return object
-     * @throws Exception
      */
     private function instantiateEntity(string $typeName, array $data)
     {
@@ -163,14 +168,15 @@ class Converter
         $propertiesSet = [];
         foreach ($data as $name => &$value) {
             if (!isset($properties[$typeName][$name])) {
-                throw new Exception('Property ' . $name . ' not found in class ' . $typeName);
+                throw new RuntimeException('Property ' . $name . ' not found in class ' . $typeName);
             }
             $propertiesSet[$name] = 1;
             $properties[$typeName][$name]->setValue($object, $value);
         }
-        foreach ($properties[$typeName] as $name => &$property) {
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        foreach ($properties[$typeName] as $name => &$_) {
             if (!isset($propertiesSet[$name])) {
-                throw new Exception('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
+                throw new RuntimeException('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
             }
         }
         return $object;
