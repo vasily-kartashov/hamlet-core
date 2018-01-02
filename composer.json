@@ -3,7 +3,6 @@
   "type": "library",
   "description": "hamlet framework",
   "keywords": ["framework"],
-  "version": "2.1.1",
   "license": "Apache-2.0",
   "authors": [
     {
