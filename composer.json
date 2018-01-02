@@ -1,31 +1,45 @@
 {
-    "name": "hamlet/hamlet-core",
-    "type": "library",
-    "description": "hamlet framework",
-    "keywords": ["framework"],
-    "authors": [
-        {
-            "name": "Vasily Kartashov",
-            "email": "vasily@kartashov.com"
-        },
-        {
-            "name": "Danny Marsland",
-            "email": "danny.marsland@gmail.com"
-        }
-    ],
-    "require": {
-        "php": ">=5.4.0",
-        "twig/twig": "dev-master",
-        "smarty/smarty": "3.1.21",
-        "simpletest/simpletest": "dev-master",
-        "symfony/console": "2.6.0",
-        "phpoffice/phpexcel": "dev-master",
-        "google/apiclient": "1.0.*@dev"
+  "name": "hamlet/hamlet-core",
+  "type": "library",
+  "description": "hamlet framework",
+  "keywords": ["framework"],
+  "version": "2.1.1",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Vasily Kartashov",
+      "email": "vasily@kartashov.com"
     },
-    "autoload": {
-        "classmap": [
-            "src/",
-            "test/"
-        ]
+    {
+      "name": "Danny Marsland",
+      "email": "danny.marsland@gmail.com"
     }
+  ],
+  "require": {
+    "php": "^7.0",
+    "psr/cache": "1.*",
+    "psr/http-message": "1.*",
+    "psr/log": "1.*",
+    "guzzlehttp/psr7": "1.*",
+    "symfony/console": "3.*",
+    "twig/twig": "1.*"
+  },
+  "require-dev": {
+    "cache/void-adapter": "^1",
+    "cache/array-adapter": "^1",
+    "phpunit/phpunit": "^6",
+    "phpstan/phpstan": "*",
+    "squizlabs/php_codesniffer": "*",
+    "vimeo/psalm": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Hamlet\\": "src/Hamlet"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Hamlet\\": "tests/Hamlet"
+    }
+  }
 }
