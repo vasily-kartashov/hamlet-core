@@ -2,6 +2,7 @@
 
 namespace Hamlet\Database;
 
+use Exception;
 use Hamlet\Database\MySQL\MySQLDatabase;
 use Hamlet\Database\SQLite\SQLiteDatabase;
 use Hamlet\Database\PDO\PDODatabase;
@@ -79,6 +80,25 @@ abstract class Database implements LoggerAwareInterface
                 $this->transactionStarted = false;
             }
             throw $e;
+        }
+    }
+
+    /**
+     * @param callable $callable
+     * @param int $maxAttempts
+     * @return mixed
+     * @throws Throwable
+     */
+    public function tryWithTransaction(callable $callable, int $maxAttempts) {
+        $attempts = 0;
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                return $this->withTransaction($callable);
+            } catch (Throwable $e) {
+                if ($attempts == $maxAttempts) {
+                    throw $e;
+                }
+            }
         }
     }
 
