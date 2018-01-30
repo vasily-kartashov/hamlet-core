@@ -90,12 +90,11 @@ abstract class Database implements LoggerAwareInterface
      * @throws Throwable
      */
     public function tryWithTransaction(callable $callable, int $maxAttempts) {
-        $attempts = 0;
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             try {
                 return $this->withTransaction($callable);
             } catch (Throwable $e) {
-                if ($attempts == $maxAttempts) {
+                if ($attempt == $maxAttempts) {
                     throw $e;
                 }
             }
