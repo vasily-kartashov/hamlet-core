@@ -21,7 +21,7 @@ abstract class AbstractEntity implements Entity
      */
     public function load(CacheItemPoolInterface $cache): CacheValue
     {
-        if ($this->cacheValue) {
+        if ($this->cacheValue !== null) {
             return $this->cacheValue;
         }
         $key = $this->getKey();
@@ -32,11 +32,11 @@ abstract class AbstractEntity implements Entity
         }
 
         $now = time();
-        if (!$cacheItem->isHit() || $now >= $this->cacheValue->expiry()) {
+        if (!$cacheItem->isHit() || ($this->cacheValue && $this->cacheValue->expiry() <= $now)) {
             $content   = $this->getContent();
             $tag       = md5($content);
             $newExpiry = $now + $this->getCachingTime();
-            if ($this->cacheValue && $tag == $this->cacheValue->tag()) {
+            if ($this->cacheValue && $this->cacheValue->tag() == $tag) {
                 $this->cacheValue = $this->cacheValue->extendExpiry($newExpiry);
             } else {
                 $this->cacheValue = new CacheValue($content, $now, $newExpiry);
@@ -44,6 +44,8 @@ abstract class AbstractEntity implements Entity
             $cacheItem->set($this->cacheValue);
             $cache->save($cacheItem);
         }
+
+        assert($this->cacheValue !== null);
         return $this->cacheValue;
     }
 
