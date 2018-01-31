@@ -6,7 +6,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractEntity implements Entity
 {
-    /** @var CacheValue */
+    /** @var CacheValue|null */
     private $cacheValue = null;
 
     public function getContentLanguage()

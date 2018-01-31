@@ -25,7 +25,7 @@ class Request
     /** @var StreamInterface */
     private $body;
 
-    /** @var callable */
+    /** @var callable|null */
     private $sessionParameters = null;
 
     /** @var string[] */

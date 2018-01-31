@@ -89,7 +89,8 @@ abstract class Database implements LoggerAwareInterface
      * @return mixed
      * @throws Throwable
      */
-    public function tryWithTransaction(callable $callable, int $maxAttempts) {
+    public function tryWithTransaction(callable $callable, int $maxAttempts)
+    {
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             try {
                 return $this->withTransaction($callable);
