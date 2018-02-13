@@ -67,6 +67,11 @@ class Converter
         return \array_values($records);
     }
 
+    /**
+     * @param string $type
+     * @return Collector
+     * @throws \ReflectionException
+     */
     public function cast(string $type): Collector
     {
         $records = [];
@@ -76,6 +81,12 @@ class Converter
         return new Collector($records);
     }
 
+    /**
+     * @param string $type
+     * @param string $name
+     * @return Selector
+     * @throws \ReflectionException
+     */
     public function castInto(string $type, string $name): Selector
     {
         return new Selector($this->castRecordsInto($type, $name));
@@ -85,6 +96,7 @@ class Converter
      * @param string $type
      * @param string $name
      * @return array
+     * @throws \ReflectionException
      */
     private function castRecordsInto(string $type, string $name): array
     {
@@ -101,6 +113,7 @@ class Converter
      * @param array|null $row
      * @param string $type
      * @return mixed|null
+     * @throws \ReflectionException
      */
     private function instantiate($row, string $type)
     {
@@ -133,7 +146,7 @@ class Converter
     {
         if (\is_array($item)) {
             foreach ($item as &$value) {
-                if ($value !== null) {
+                if (!$this->isNull($value)) {
                     return false;
                 }
             }
@@ -147,6 +160,7 @@ class Converter
      * @param string $typeName
      * @param array $data
      * @return object
+     * @throws \ReflectionException
      */
     private function instantiateEntity(string $typeName, array $data)
     {
