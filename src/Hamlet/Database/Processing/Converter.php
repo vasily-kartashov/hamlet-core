@@ -4,6 +4,7 @@ namespace Hamlet\Database\Processing;
 
 use Hamlet\Database\Entity;
 use ReflectionClass;
+use ReflectionException;
 use RuntimeException;
 
 class Converter
@@ -70,7 +71,6 @@ class Converter
     /**
      * @param string $type
      * @return Collector
-     * @throws \ReflectionException
      */
     public function cast(string $type): Collector
     {
@@ -85,7 +85,6 @@ class Converter
      * @param string $type
      * @param string $name
      * @return Selector
-     * @throws \ReflectionException
      */
     public function castInto(string $type, string $name): Selector
     {
@@ -96,7 +95,6 @@ class Converter
      * @param string $type
      * @param string $name
      * @return array
-     * @throws \ReflectionException
      */
     private function castRecordsInto(string $type, string $name): array
     {
@@ -113,7 +111,6 @@ class Converter
      * @param array|null $row
      * @param string $type
      * @return mixed|null
-     * @throws \ReflectionException
      */
     private function instantiate($row, string $type)
     {
@@ -160,7 +157,6 @@ class Converter
      * @param string $typeName
      * @param array $data
      * @return object
-     * @throws \ReflectionException
      */
     private function instantiateEntity(string $typeName, array $data)
     {
@@ -170,7 +166,12 @@ class Converter
         static $properties = [];
         if (!isset($types[$typeName])) {
             $properties[$typeName] = [];
-            $types[$typeName] = new ReflectionClass($typeName);
+            try {
+                $types[$typeName] = new ReflectionClass($typeName);
+            } catch (ReflectionException $e) {
+                throw new RuntimeException('Cannot load reflection information for ' . $typeName, 1, $e);
+            }
+
             foreach ($types[$typeName]->getProperties() as &$property) {
                 $property->setAccessible(true);
                 $properties[$typeName][$property->getName()] = $property;
