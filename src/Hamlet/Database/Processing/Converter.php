@@ -12,7 +12,10 @@ class Converter
     /** @var array */
     protected $records;
 
-    /** @var callable */
+    /**
+     * @var callable
+     * @psalm-var callable(array<int,array>) : array<int,array>
+     */
     protected $splitter;
 
     public function __construct(array $records, callable $splitter)

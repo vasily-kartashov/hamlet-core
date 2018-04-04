@@ -218,6 +218,7 @@ class Request
 
             public function build(): Request
             {
+                /** @psalm-suppress TooManyArguments */
                 return ($this->constructor)(
                     $this->headers,
                     $this->queryParameters,
