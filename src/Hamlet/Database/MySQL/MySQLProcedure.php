@@ -140,8 +140,8 @@ class MySQLProcedure extends AbstractProcedure
             }
         }
         $statement = $this->connection->prepare($query);
-        /** @psalm-suppress RedundantCondition */
-        if (!$statement) {
+        /** @psalm-suppress TypeDoesNotContainType */
+        if ($statement === false) {
             throw new MySQLException($this->connection);
         }
         if (count($this->parameters) == 0) {
@@ -219,8 +219,8 @@ class MySQLProcedure extends AbstractProcedure
     private function bindResult(mysqli_stmt $statement): array
     {
         $metaData = $statement->result_metadata();
-        /** @psalm-suppress RedundantCondition */
-        if (!$metaData) {
+        /** @psalm-suppress TypeDoesNotContainType */
+        if ($metaData === false) {
             throw new MySQLException($this->connection);
         }
         $row = [];
