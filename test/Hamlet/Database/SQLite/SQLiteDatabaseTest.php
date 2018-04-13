@@ -31,7 +31,7 @@ class SQLiteDatabaseTest extends TestCase
     public function testInsertAndSelect()
     {
         $this->database->prepare("INSERT INTO users VALUES (1, 'Vladimir')")->execute();
-        $this->database->prepare("INSERT INTO addresses VALUES (1, 'Moskow')")->execute();
+        $this->database->prepare("INSERT INTO addresses VALUES (1, 'Moskva')")->execute();
         $this->database->prepare("INSERT INTO addresses VALUES (1, 'Vladivostok')")->execute();
 
         $procedure = $this->database->prepare('
@@ -52,5 +52,14 @@ class SQLiteDatabaseTest extends TestCase
         Assert::assertArrayHasKey(1, $result);
         Assert::assertEquals('Vladimir', $result[1]['name']);
         Assert::assertCount(2, $result[1]['addresses']);
+
+        $procedure->stream()
+            ->selectValue('address')->groupInto('addresses')
+            ->selectFields('name', 'addresses')->name('user')
+            ->map('id', 'user')->flatten()
+            ->forEachWithIndex(function ($id, $user) {
+                Assert::assertEquals(1, $id);
+                Assert::assertCount(2, $user['addresses']);
+            });
     }
 }

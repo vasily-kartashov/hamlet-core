@@ -3,5 +3,7 @@
     <projectFiles>
         <directory name="src" />
     </projectFiles>
-    <issueHandlers/>
+    <issueHandlers>
+        <MissingClosureReturnType errorLevel="suppress"/>
+    </issueHandlers>
 </psalm>

@@ -4,6 +4,8 @@ namespace Hamlet\Database\MySQL;
 
 use Exception;
 use Hamlet\Database\AbstractProcedure;
+use Hamlet\Database\Stream\Selector as StreamSelector;
+use Hamlet\Database\Stream\Selector;
 use mysqli;
 use mysqli_stmt;
 
@@ -106,6 +108,31 @@ class MySQLProcedure extends AbstractProcedure
         });
         return $result;
     }
+
+    public function stream(): StreamSelector
+    {
+        return new StreamSelector(function () {
+            /** @var mysqli_stmt $statement */
+            list($row, $statement) = $this->initFetching();
+            $index = 0;
+            while (true) {
+                $status = $statement->fetch();
+                if ($status === true) {
+                    $rowCopy = [];
+                    foreach ($row as $key => $value) {
+                        $rowCopy[$key] = $value;
+                    }
+                    yield [$index++, $rowCopy];
+                } elseif ($status === null) {
+                    break;
+                } else {
+                    throw new MySQLException($this->connection);
+                }
+            }
+            $this->finalizeFetching($statement);
+        });
+    }
+
 
     public function affectedRows(): int
     {

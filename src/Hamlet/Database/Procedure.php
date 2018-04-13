@@ -2,7 +2,8 @@
 
 namespace Hamlet\Database;
 
-use Hamlet\Database\Processing\Selector;
+use Hamlet\Database\Processing\Selector as FetchSelector;
+use Hamlet\Database\Stream\Selector as StreamSelector;
 use Psr\Log\LoggerAwareInterface;
 
 interface Procedure extends LoggerAwareInterface
@@ -92,7 +93,9 @@ interface Procedure extends LoggerAwareInterface
 
     public function affectedRows(): int;
 
-    public function processOne(): Selector;
+    public function processOne(): FetchSelector;
 
-    public function processAll(): Selector;
+    public function processAll(): FetchSelector;
+
+    public function stream(): StreamSelector;
 }

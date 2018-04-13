@@ -1,7 +1,8 @@
 <?php
 
-namespace Hamlet\Database;
+namespace Hamlet\Database\Processing;
 
+use Hamlet\Database\Entity;
 use Hamlet\Database\Processing\Selector;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;

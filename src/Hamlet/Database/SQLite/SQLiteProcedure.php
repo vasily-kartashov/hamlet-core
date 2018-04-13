@@ -3,6 +3,7 @@
 namespace Hamlet\Database\SQLite;
 
 use Hamlet\Database\AbstractProcedure;
+use Hamlet\Database\Stream\Selector as StreamSelector;
 use RuntimeException;
 use SQLite3;
 use SQLite3Stmt;
@@ -52,6 +53,17 @@ class SQLiteProcedure extends AbstractProcedure
             $data[] = $row;
         }
         return $data;
+    }
+
+    public function stream(): StreamSelector
+    {
+        return new StreamSelector(function () {
+            $result = $this->bindParameters()->execute();
+            $index = 0;
+            while (($row = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
+                yield [$index++, $row];
+            }
+        });
     }
 
     public function affectedRows(): int

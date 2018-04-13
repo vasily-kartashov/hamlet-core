@@ -3,6 +3,7 @@
 namespace Hamlet\Database\PDO;
 
 use Hamlet\Database\AbstractProcedure;
+use Hamlet\Database\Stream\Selector as StreamSelector;
 use PDO;
 use PDOStatement;
 use RuntimeException;
@@ -60,6 +61,19 @@ class PDOProcedure extends AbstractProcedure
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function stream(): StreamSelector
+    {
+        return new StreamSelector(function () {
+            $statement = $this->prepareAndBind();
+            $statement->execute();
+            $index = 0;
+            while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+                yield [$index++, $row];
+            }
+        });
+    }
+
 
     public function affectedRows(): int
     {
