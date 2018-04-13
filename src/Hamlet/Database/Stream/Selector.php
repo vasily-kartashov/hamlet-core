@@ -93,7 +93,7 @@ class Selector extends Collector
     public function collateAll(): Collector
     {
         $generator = function () {
-            foreach (($this->generator)() as [$key, $record]) {
+            foreach (($this->generator)() as list($key, $record)) {
                 foreach ($record as &$value) {
                     if ($value !== null) {
                         yield [$key, $value];
@@ -108,7 +108,7 @@ class Selector extends Collector
     public function withKey(string $keyField): Collector
     {
         $generator = function () use ($keyField) {
-            foreach (($this->generator)() as [$key, $record]) {
+            foreach (($this->generator)() as list($key, $record)) {
                 yield [$record[$keyField], $record];
             }
         };

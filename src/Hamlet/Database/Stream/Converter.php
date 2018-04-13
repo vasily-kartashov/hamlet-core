@@ -27,7 +27,7 @@ class Converter
     public function name(string $name): Selector
     {
         $generator = function () use ($name) {
-            foreach (($this->generator)() as [$key, $record]) {
+            foreach (($this->generator)() as list($key, $record)) {
                 list($item, $record) = ($this->splitter)($record);
                 $record[$name] = $item;
                 yield [$key, $record];
@@ -40,7 +40,7 @@ class Converter
     {
         $generator = function () {
             $aggregator = $this->aggregateRecordsInto(':property:');
-            foreach ($aggregator() as [$key, $record]) {
+            foreach ($aggregator() as list($key, $record)) {
                 foreach ($record[':property:'] as $value) {
                     yield [$key, $value];
                 }
@@ -60,7 +60,7 @@ class Converter
             $currentGroup = null;
             $lastRecord = null;
             $index = 0;
-            foreach (($this->generator)() as [$key, $record]) {
+            foreach (($this->generator)() as list($key, $record)) {
                 list($item, $record) = ($this->splitter)($record);
                 if ($lastRecord !== $record) {
                     if ($currentGroup !== null) {
@@ -87,7 +87,7 @@ class Converter
     {
         $generator = function () use ($type) {
             $converter = $this->castRecordsInto($type, ':property:');
-            foreach (($converter)() as [$key, $record]) {
+            foreach (($converter)() as list($key, $record)) {
                 yield [$key, $record[':property:']];
             }
         };
@@ -112,7 +112,7 @@ class Converter
     private function castRecordsInto(string $type, string $name): callable
     {
         return function () use ($type, $name) {
-            foreach (($this->generator)() as [$key, $record]) {
+            foreach (($this->generator)() as list($key, $record)) {
                 list($item, $record) = ($this->splitter)($record);
                 $record[$name] = $this->instantiate($item, $type);
                 yield [$key, $record];

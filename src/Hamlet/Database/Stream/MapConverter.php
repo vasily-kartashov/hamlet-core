@@ -8,7 +8,7 @@ class MapConverter extends Converter
     {
         $generator = function () {
             $aggregator = $this->aggregateRecordsInto(':property:');
-            foreach ($aggregator() as [$_, $record]) {
+            foreach ($aggregator() as list($_, $record)) {
                 foreach ($record[':property:'] as $key => $value) {
                     yield [$key, $value];
                 }
@@ -29,7 +29,7 @@ class MapConverter extends Converter
             $currentGroup = null;
             $lastRecord = null;
             $index = 0;
-            foreach (($this->generator)() as [$key, $record]) {
+            foreach (($this->generator)() as list($key, $record)) {
                 list($item, $record) = ($this->splitter)($record);
                 if ($lastRecord !== $record) {
                     if ($currentGroup !== null) {

@@ -15,7 +15,7 @@ class Collector
     public function collectAll(): array
     {
         $result = [];
-        foreach (($this->generator)() as [$key, $value]) {
+        foreach (($this->generator)() as list($key, $value)) {
             $result[$key] = $value;
         }
         return $result;
@@ -36,7 +36,7 @@ class Collector
      */
     public function forEach(callable $callable)
     {
-        foreach (($this->generator)() as [$_, $value]) {
+        foreach (($this->generator)() as list($_, $value)) {
             ($callable)($value);
         }
     }
@@ -48,7 +48,7 @@ class Collector
      */
     public function forEachWithIndex(callable $callable)
     {
-        foreach (($this->generator)() as [$key, $value]) {
+        foreach (($this->generator)() as list($key, $value)) {
             ($callable)($key, $value);
         }
     }
