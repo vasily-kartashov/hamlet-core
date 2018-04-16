@@ -34,7 +34,9 @@ class MapConverter extends Converter
                 if ($lastRecord !== $record) {
                     if ($currentGroup !== null) {
                         $lastRecord[$name] = $currentGroup;
-                        yield [$index++, $lastRecord];
+                        if (!$this->isNull($lastRecord)) {
+                            yield [$index++, $lastRecord];
+                        }
                     }
                     $currentGroup = [];
                 }
@@ -45,7 +47,9 @@ class MapConverter extends Converter
                 $lastRecord = $record;
             }
             $lastRecord[$name] = $currentGroup;
-            yield [$index, $lastRecord];
+            if (!$this->isNull($lastRecord)) {
+                yield [$index, $lastRecord];
+            }
         };
     }
 }

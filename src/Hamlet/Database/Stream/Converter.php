@@ -63,9 +63,11 @@ class Converter
             foreach (($this->generator)() as list($key, $record)) {
                 list($item, $record) = ($this->splitter)($record);
                 if ($lastRecord !== $record) {
-                    if ($currentGroup !== null) {
+                    if (!$this->isNull($currentGroup)) {
                         $lastRecord[$name] = $currentGroup;
-                        yield [$index++, $lastRecord];
+                        if (!$this->isNull($lastRecord)) {
+                            yield [$index++, $lastRecord];
+                        }
                     }
                     $currentGroup = [];
                 }
@@ -75,7 +77,9 @@ class Converter
                 $lastRecord = $record;
             }
             $lastRecord[$name] = $currentGroup;
-            yield [$index, $lastRecord];
+            if (!$this->isNull($lastRecord)) {
+                yield [$index, $lastRecord];
+            }
         };
     }
 

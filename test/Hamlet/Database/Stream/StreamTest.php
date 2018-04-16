@@ -258,4 +258,22 @@ class ProcessorTest extends TestCase
 
         Assert::assertEquals('Saratovskaya Oblast', $collection['Russia']);
     }
+
+    public function testEmptyCollection()
+    {
+        $empty = function () {
+            foreach ([] as $i) {
+                yield $i;
+            }
+        };
+        $found = false;
+        (new Selector($empty))
+            ->selectByPrefix('station_')->castInto(Address::class, 'station')
+            ->selectValue('station')->groupInto('stations')
+            ->selectAll()->cast(AddressBookEntry::class)
+            ->forEach(function ($_) use (&$found) {
+                $found = true;
+            });
+        Assert::assertFalse($found);
+    }
 }
