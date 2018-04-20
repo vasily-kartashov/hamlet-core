@@ -44,8 +44,10 @@ class User implements \Hamlet\Database\Entity
 ```
 
 The repository method that fetches User entity by ID would look like following
+
 ```php
 $database = Database::sqlite3(tempnam(sys_get_temp_dir(), '.sqlite'));
+
 $procedure = $database->prepare('
     SELECT id, name, address
       FROM users
@@ -54,20 +56,29 @@ $procedure = $database->prepare('
      WHERE id = ?
 ');
 $procedure->bindInteger($userId);
+
 return $procedure->processAll()
     ->selectValue('address')->groupInto('addresses')
     ->selectAll()->cast(User::class)
     ->collectHead();
 ```
 
-And Bob's your uncle.
+And Bob's your uncle. Unless you need to chew through tens of 1000s of rows, in which case you'll need to process entities in a stream:
+
+```php
+...
+
+return $procedure->stream()
+    ->selectValue('address')->groupInto('addresses')
+    ->selectAll()->cast(User::class)
+    ->forEach(function (User $user) {
+        echo $user . PHP_EOL;
+    });
+```
 
 ### To Do:
 
 * Add more unit tests for travis
-* Add more profiling to selectors, closure seems to be quite slow
-* Add more cacheing to reflection, especially around types
 * Support for WebSockets
 * Support for HTTP/2.0
 * Support for OAuth server (PHP League)
-
