@@ -5,7 +5,6 @@ namespace Hamlet\Database\MySQL;
 use Exception;
 use Hamlet\Database\AbstractProcedure;
 use Hamlet\Database\Stream\Selector as StreamSelector;
-use Hamlet\Database\Stream\Selector;
 use mysqli;
 use mysqli_stmt;
 

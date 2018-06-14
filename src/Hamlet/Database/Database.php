@@ -2,15 +2,15 @@
 
 namespace Hamlet\Database;
 
-use Exception;
 use Hamlet\Database\MySQL\MySQLDatabase;
-use Hamlet\Database\SQLite\SQLiteDatabase;
 use Hamlet\Database\PDO\PDODatabase;
+use Hamlet\Database\SQLite\SQLiteDatabase;
 use mysqli;
 use PDO;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use RuntimeException;
 use SQLite3;
 use Throwable;
 
@@ -100,6 +100,7 @@ abstract class Database implements LoggerAwareInterface
                 }
             }
         }
+        throw new RuntimeException('Number of attempts must be greater than 0');
     }
 
     abstract public function startTransaction();
