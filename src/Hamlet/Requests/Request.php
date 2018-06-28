@@ -515,6 +515,10 @@ class Request
         return $dateTime->getTimestamp();
     }
 
+    public function remoteIp(): string {
+        return $this->headers['X-Forwarded-For'] ?? $this->serverParameters['REMOTE_ADDR'];
+    }
+
     /**
      * @return string[]
      */
