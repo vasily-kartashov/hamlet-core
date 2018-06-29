@@ -243,6 +243,7 @@ class MySQLProcedure extends AbstractProcedure
     private function bindResult(mysqli_stmt $statement): array
     {
         $metaData = $statement->result_metadata();
+        /** @psalm-suppress TypeDoesNotContainType */
         if ($metaData === false) {
             throw new MySQLException($this->connection);
         }

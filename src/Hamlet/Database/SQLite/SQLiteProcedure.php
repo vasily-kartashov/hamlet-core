@@ -93,6 +93,7 @@ class SQLiteProcedure extends AbstractProcedure
             }
         }
         $statement = $this->connection->prepare($query);
+        /** @psalm-suppress TypeDoesNotContainType */
         if ($statement === false) {
             throw new SQLiteException('Cannot prepare statement ' . $query);
         }
