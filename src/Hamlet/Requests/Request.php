@@ -218,7 +218,6 @@ class Request
 
             public function build(): Request
             {
-                /** @psalm-suppress TooManyArguments */
                 return ($this->constructor)(
                     $this->headers,
                     $this->queryParameters,
@@ -408,33 +407,25 @@ class Request
     }
 
     /**
-     * Parse header
-     *
      * @param string $headerString
      * @return string[]
      */
     protected function parseHeader(string $headerString): array
     {
-        $ranges = explode(',', \trim(\strtolower($headerString)));
-        $result = [];
-        foreach ($ranges as $i => $range) {
-            $tokens = \explode(';', trim($range), 2);
-            $type = \trim(\array_shift($tokens));
-            $priority = 1000 - $i;
-            foreach ($tokens as $token) {
-                if (($position = strpos($token, '=')) !== false) {
-                    $key = substr($token, 0, $position);
-                    $value = substr($token, $position + 1);
-                    if (trim($key) == 'q') {
-                        $priority = 1000 * floatval($value)- $i;
-                        break;
-                    }
-                }
-            }
-            $result[$type] = $priority;
-        }
-        \arsort($result);
-        return array_keys($result);
+        $tokens = \explode(',', $headerString);
+        $weights = \array_reduce(
+            $tokens,
+            function (array $acc, string $element) {
+                list($l, $q) = \array_merge(\explode(';q=', $element), ['1']);
+                $acc[trim($l)] = (float) $q;
+                return $acc;
+            },
+            []
+        );
+        \arsort($weights);
+        /** @var string[] $locales */
+        $locales = \array_keys($weights);
+        return $locales;
     }
 
     public function pathMatches(string $path): bool
@@ -518,7 +509,8 @@ class Request
     /**
      * @return string|null
      */
-    public function remoteIp() {
+    public function remoteIp()
+    {
         return $this->headers['X-Forwarded-For'] ?? $this->serverParameters['REMOTE_ADDR'] ?? null;
     }
 

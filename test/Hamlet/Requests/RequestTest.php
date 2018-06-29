@@ -89,4 +89,17 @@ class RequestTest extends TestCase
 
         Assert::assertFalse($request2->preconditionFulfilled($entity, $cache));
     }
+
+    public function testAcceptParser()
+    {
+        $request1 = Request::builder()
+            ->withHeader('Accept-Language', 'en-US,en;q=0.8,uk;q=0.6,ru;q=0.4')
+            ->build();
+        Assert::assertEquals(['en-US', 'en', 'uk', 'ru'], $request1->languageCodes());
+
+        $request2 = Request::builder()
+            ->withHeader('Accept-Language', 'fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5')
+            ->build();
+        Assert::assertEquals(['fr-CH', 'fr', 'en', 'de', '*'], $request2->languageCodes());
+    }
 }

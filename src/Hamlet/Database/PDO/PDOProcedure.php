@@ -90,7 +90,6 @@ class PDOProcedure extends AbstractProcedure
         $counter = 0;
         if (!empty($this->parameters)) {
             while (true) {
-                /** @psalm-suppress PossiblyFalseArgument */
                 $position = \strpos($query, '?', $position);
                 if ($position === false) {
                     break;

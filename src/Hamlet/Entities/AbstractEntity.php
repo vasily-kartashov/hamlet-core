@@ -3,6 +3,8 @@
 namespace Hamlet\Entities;
 
 use Psr\Cache\CacheItemPoolInterface;
+use Psr\Cache\InvalidArgumentException;
+use RuntimeException;
 
 abstract class AbstractEntity implements Entity
 {
@@ -17,7 +19,7 @@ abstract class AbstractEntity implements Entity
     /**
      * @param CacheItemPoolInterface $cache
      * @return CacheValue
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @psalm-suppress InvalidCatch
      */
     public function load(CacheItemPoolInterface $cache): CacheValue
     {
@@ -25,7 +27,11 @@ abstract class AbstractEntity implements Entity
             return $this->cacheValue;
         }
         $key = $this->getKey();
-        $cacheItem = $cache->getItem($key);
+        try {
+            $cacheItem = $cache->getItem($key);
+        } catch (InvalidArgumentException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode());
+        }
 
         if ($cacheItem->isHit()) {
             $this->cacheValue = $cacheItem->get();

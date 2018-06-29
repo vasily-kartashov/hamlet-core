@@ -150,7 +150,6 @@ class MySQLProcedure extends AbstractProcedure
             $position = 0;
             $counter = 0;
             while (true) {
-                /** @psalm-suppress PossiblyFalseArgument */
                 $position = \strpos($query, '?', $position);
                 if ($position === false) {
                     break;
@@ -166,7 +165,6 @@ class MySQLProcedure extends AbstractProcedure
             }
         }
         $statement = $this->connection->prepare($query);
-        /** @psalm-suppress TypeDoesNotContainType */
         if ($statement === false) {
             throw new MySQLException($this->connection);
         }
@@ -245,13 +243,11 @@ class MySQLProcedure extends AbstractProcedure
     private function bindResult(mysqli_stmt $statement): array
     {
         $metaData = $statement->result_metadata();
-        /** @psalm-suppress TypeDoesNotContainType */
         if ($metaData === false) {
             throw new MySQLException($this->connection);
         }
         $row = [];
         $boundParameters = [];
-        /** @psalm-suppress RedundantCondition */
         while ($field = $metaData->fetch_field()) {
             $row[$field->name] = null;
             $boundParameters[] = &$row[$field->name];

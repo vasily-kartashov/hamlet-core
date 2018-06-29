@@ -78,7 +78,6 @@ class SQLiteProcedure extends AbstractProcedure
         $counter = 0;
         if (!empty($this->parameters)) {
             while (true) {
-                /** @psalm-suppress PossiblyFalseArgument */
                 $position = \strpos($query, '?', $position);
                 if ($position === false) {
                     break;
@@ -94,6 +93,9 @@ class SQLiteProcedure extends AbstractProcedure
             }
         }
         $statement = $this->connection->prepare($query);
+        if ($statement === false) {
+            throw new SQLiteException('Cannot prepare statement ' . $query);
+        }
         $counter = 1;
         foreach ($this->parameters as list($typeAlias, $value)) {
             $type = $this->resolveTypeAlias($typeAlias);
