@@ -25,6 +25,9 @@ class Request
     /** @var StreamInterface */
     private $body;
 
+    /** @var string|null */
+    private $payload;
+
     /** @var callable|null */
     private $sessionParameters = null;
 
@@ -236,12 +239,14 @@ class Request
 
     public function toPsrRequest(): ServerRequestInterface
     {
-        $this->body->rewind();
+        $body = new BufferStream();
+        $body->write($this->payload());
+
         $psrRequest = new ServerRequest(
             $this->method(),
             $this->uri(),
             $this->headers,
-            $this->body,
+            $body,
             $this->protocolVersion(),
             $this->serverParameters
         );
@@ -338,8 +343,10 @@ class Request
 
     public function payload(): string
     {
-        $this->body->rewind();
-        return $this->body->getContents();
+        if (!isset($this->payload)) {
+            $this->payload = $this->body->getContents();
+        }
+        return $this->payload;
     }
 
     public function hasCookie(string $name): bool

@@ -102,4 +102,14 @@ class RequestTest extends TestCase
             ->build();
         Assert::assertEquals(['fr-CH', 'fr', 'en', 'de', '*'], $request2->languageCodes());
     }
+
+    public function testEntityRewind()
+    {
+        $request = Request::builder()
+            ->withBody('content')
+            ->build();
+
+        Assert::assertEquals('content', $request->payload());
+        Assert::assertEquals('content', $request->toPsrRequest()->getBody()->getContents());
+    }
 }
