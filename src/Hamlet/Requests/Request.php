@@ -236,6 +236,7 @@ class Request
 
     public function toPsrRequest(): ServerRequestInterface
     {
+        $this->body->rewind();
         $psrRequest = new ServerRequest(
             $this->method(),
             $this->uri(),
