@@ -110,6 +110,7 @@ class SQLiteProcedure extends AbstractProcedure
                 $statement->bindValue($counter++, $value, $type);
             }
         }
+        $this->parameters = [];
         return $statement;
     }
 

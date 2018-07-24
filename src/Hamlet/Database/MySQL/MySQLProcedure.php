@@ -202,6 +202,7 @@ class MySQLProcedure extends AbstractProcedure
                 throw new MySQLException($this->connection);
             }
         }
+        $this->parameters = [];
         return $statement;
     }
 
