@@ -3,9 +3,14 @@ Hamlet Core
 
 [![Build Status](https://travis-ci.org/vasily-kartashov/hamlet-core.svg)](https://travis-ci.org/vasily-kartashov/hamlet-core)
 
+### Some notes
+
+* [Framework design](https://notes.kartashov.com/2016/07/08/simple-caching-web-framework/)
+* [Data processing](https://notes.kartashov.com/2017/05/09/result-set-processor/)
+
 ### How to use database package:
 
-Assume we have two tables 
+Start with two tables 
 
 ```sql
 CREATE TABLE users (
@@ -19,7 +24,7 @@ CREATE TABLE addresses (
 );
 ```
 
-We can map both tables to a simple immutable entity
+We can map both tables to a single immutable entity like following:
 
 ```php
 class User implements \Hamlet\Database\Entity
@@ -43,7 +48,7 @@ class User implements \Hamlet\Database\Entity
 }
 ```
 
-The repository method that fetches User entity by ID would look like following
+The repository method that fetches `User` entity by ID would look like this:
 
 ```php
 $database = Database::sqlite3(tempnam(sys_get_temp_dir(), '.sqlite'));
@@ -78,6 +83,7 @@ return $procedure->stream()
 
 ### To Do:
 
+* Try swoole integration and compatibility
 * Add more unit tests for travis
 * Support for WebSockets
 * Support for HTTP/2.0
