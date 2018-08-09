@@ -59,7 +59,11 @@ class PDOProcedure extends AbstractProcedure
     {
         $statement = $this->prepareAndBind();
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if ($result === false) {
+            throw new RuntimeException('Cannot fetch all');
+        }
+        return $result;
     }
 
     public function stream(): StreamSelector
