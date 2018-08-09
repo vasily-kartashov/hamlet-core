@@ -60,6 +60,7 @@ class PDOProcedure extends AbstractProcedure
         $statement = $this->prepareAndBind();
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        /** @psalm-suppress TypeDoesNotContainType */
         if ($result === false) {
             throw new RuntimeException('Cannot fetch all');
         }
