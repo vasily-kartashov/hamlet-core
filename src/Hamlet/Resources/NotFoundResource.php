@@ -20,7 +20,7 @@ class NotFoundResource implements WebResource
 
     public function getResponse(Request $request): Response
     {
-        if ($request->method() == 'GET') {
+        if ($request->getMethod() == 'GET') {
             return new NotFoundResponse($this->entity);
         }
         return new MethodNotAllowedResponse('GET');

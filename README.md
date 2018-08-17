@@ -8,6 +8,26 @@ Hamlet Core
 * [Framework design](https://notes.kartashov.com/2016/07/08/simple-caching-web-framework/)
 * [Data processing](https://notes.kartashov.com/2017/05/09/result-set-processor/)
 
+### Bootstrapping an application with a Web Server
+
+```php
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+\Hamlet\Bootstraps\ServerBootstrap::run(function () {
+    return new \Example\Application;
+});
+```
+
+### Bootstrapping an application with Swoole Http Server
+
+```php
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+\Hamlet\Bootstraps\SwooleBootstrap::run('0.0.0.0', 8080, function () {
+    return new \Example\Application;
+});
+```
+
 ### How to use database package:
 
 Start with two tables 
@@ -83,7 +103,8 @@ return $procedure->stream()
 
 ### To Do:
 
-* Try swoole integration and compatibility
+* Fix Request/Response sessions ping pong
+* Swoole authentication + session handling
 * Add more unit tests for travis
 * Support for WebSockets
 * Support for HTTP/2.0

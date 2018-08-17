@@ -1,25 +1,22 @@
 {
   "name": "hamlet/hamlet-core",
-  "type": "library",
-  "description": "hamlet framework",
+  "type": "framework",
+  "description": "Hamlet Framework",
   "keywords": ["framework"],
   "license": "Apache-2.0",
   "authors": [
     {
       "name": "Vasily Kartashov",
-      "email": "vasily@kartashov.com"
-    },
-    {
-      "name": "Danny Marsland",
-      "email": "danny.marsland@gmail.com"
+      "email": "info@kartashov.com"
     }
   ],
   "require": {
     "php": "^7.0",
+    "ext-json": "*",
+    "guzzlehttp/psr7": "1.*",
     "psr/cache": "1.*",
     "psr/http-message": "1.*",
     "psr/log": "1.*",
-    "guzzlehttp/psr7": "1.*",
     "symfony/console": "3.*",
     "twig/twig": "1.*"
   },
