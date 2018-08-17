@@ -5,6 +5,7 @@ namespace Hamlet\Responses;
 use Hamlet\Entities\Entity;
 use Hamlet\Entities\StreamEntity;
 use Hamlet\Requests\Request;
+use Hamlet\Writers\ResponseWriter;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -29,8 +30,8 @@ class Response
     /** @var Cookie[]  */
     protected $cookies = [];
 
-    /** @var string[] */
-    protected $session = [];
+    /** @var array */
+    protected $sessionParams = [];
 
     /**
      * @param int $statusCode
@@ -38,7 +39,7 @@ class Response
      * @param bool $embedEntity
      * @param string[] $headers
      * @param Cookie[] $cookies
-     * @param string[] $session
+     * @param array $session
      */
     protected function __construct(
         int $statusCode = 0,
@@ -48,15 +49,15 @@ class Response
         array $cookies = [],
         array $session = []
     ) {
-        $this->statusCode      = $statusCode;
-        $this->entity          = $entity;
-        $this->embedEntity     = $embedEntity;
-        $this->headers         = $headers;
-        $this->cookies         = $cookies;
-        $this->session         = $session;
+        $this->statusCode    = $statusCode;
+        $this->entity        = $entity;
+        $this->embedEntity   = $embedEntity;
+        $this->headers       = $headers;
+        $this->cookies       = $cookies;
+        $this->sessionParams = $session;
     }
 
-    public static function fromPsrResponse(ResponseInterface $response): Response
+    public static function fromResponseInterface(ResponseInterface $response): Response
     {
         $headers = [];
         foreach ($response->getHeaders() as $name => $values) {
@@ -75,26 +76,23 @@ class Response
     /**
      * @param Request $request
      * @param CacheItemPoolInterface $cache
+     * @param ResponseWriter $writer
      * @return void
      */
-    public function output(/** @noinspection PhpUnusedParameterInspection */ Request $request, CacheItemPoolInterface $cache)
+    public function output(Request $request, CacheItemPoolInterface $cache, ResponseWriter $writer)
     {
-        if (count($this->session) > 0) {
-            if (!session_id()) {
-                session_start();
-            }
-            foreach ($this->session as $name => $value) {
-                $_SESSION[$name] = $value;
-            }
+        $writer->status($this->statusCode, $this->getStatusLine());
+
+        if (!empty($request->getSessionParams()) || !empty($this->sessionParams)) {
+            $writer->session($request, $this->sessionParams);
         }
 
-        header($this->getStatusLine());
         foreach ($this->headers as $name => $value) {
-            header($name . ': ' . $value);
+            $writer->header($name, $value);
         }
 
         foreach ($this->cookies as $cookie) {
-            setcookie($cookie->name(), $cookie->value(), time() + $cookie->timeToLive(), $cookie->path());
+            $writer->cookie($cookie->name(), $cookie->value(), time() + $cookie->timeToLive(), $cookie->path());
         }
 
         if ($this->entity) {
@@ -102,26 +100,26 @@ class Response
             $now = time();
             $maxAge = max(0, $cacheValue->expiry() - $now);
 
-            header('ETag: ' . $cacheValue->tag());
-            header('Last-Modified: ' . $this->formatTimestamp($cacheValue->modified()));
-            header('Cache-Control: public, max-age=' . $maxAge);
-            header('Expires: ' . $this->formatTimestamp($now + $maxAge));
+            $writer->header('ETag', $cacheValue->tag());
+            $writer->header('Last-Modified', $this->formatTimestamp($cacheValue->modified()));
+            $writer->header('Cache-Control', 'public, max-age=' . $maxAge);
+            $writer->header('Expires', $this->formatTimestamp($now + $maxAge));
 
             if ($this->embedEntity) {
-                header('Content-Length: ' . $cacheValue->length());
-                header('Content-MD5: ' . $cacheValue->digest());
+                $writer->header('Content-Length', (string) $cacheValue->length());
+                $writer->header('Content-MD5', $cacheValue->digest());
                 $language = $this->entity->getContentLanguage();
                 if ($language) {
-                    header('Content-Language: ' . $language);
+                    $writer->header('Content-Language', $language);
                 }
                 $mediaType = $this->entity->getMediaType();
                 if ($mediaType) {
-                    header('Content-Type: ' . $mediaType);
+                    $writer->header('Content-Type', $mediaType);
                 }
-                echo $cacheValue->content();
+                $writer->write($cacheValue->content());
             }
         }
-        exit;
+        $writer->end();
     }
 
     protected function formatTimestamp(int $timestamp): string
@@ -138,12 +136,6 @@ class Response
     protected function withHeader(string $name, string $value): Response
     {
         $this->headers[$name] = $value;
-        return $this;
-    }
-
-    protected function withSessionParameter(string $name, string $value): Response
-    {
-        $this->session[$name] = $value;
         return $this;
     }
 

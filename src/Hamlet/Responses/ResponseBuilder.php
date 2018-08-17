@@ -20,7 +20,7 @@ class ResponseBuilder
     private $cookies = [];
 
     /** @var string[] */
-    private $session = [];
+    private $sessionParams = [];
 
     private function __construct()
     {
@@ -55,9 +55,9 @@ class ResponseBuilder
         return $this;
     }
 
-    public function withSessionParameter(string $name, string $value): ResponseBuilder
+    public function withSessionParam(string $name, string $value): ResponseBuilder
     {
-        $this->session[$name] = $value;
+        $this->sessionParams[$name] = $value;
         return $this;
     }
 
@@ -66,7 +66,7 @@ class ResponseBuilder
         if ($this->statusCode == null) {
             throw new RuntimeException('Status code needs to be defined');
         }
-        return new class($this->statusCode, $this->entity,  $this->entity !== null, $this->headers, $this->cookies, $this->session) extends Response
+        return new class($this->statusCode, $this->entity,  $this->entity !== null, $this->headers, $this->cookies, $this->sessionParams) extends Response
         {
             /**
              * @param int $statusCode
@@ -74,11 +74,11 @@ class ResponseBuilder
              * @param bool $embedEntity
              * @param string[] $headers
              * @param Cookie[] $cookies
-             * @param string[] $session
+             * @param array $sessionParams
              */
-            public function __construct($statusCode, $entity, $embedEntity, array $headers, array $cookies, array $session)
+            public function __construct($statusCode, $entity, $embedEntity, array $headers, array $cookies, array $sessionParams)
             {
-                parent::__construct($statusCode, $entity, $embedEntity, $headers, $cookies, $session);
+                parent::__construct($statusCode, $entity, $embedEntity, $headers, $cookies, $sessionParams);
             }
         };
     }

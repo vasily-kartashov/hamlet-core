@@ -5,6 +5,7 @@ namespace Hamlet\Applications;
 use Hamlet\Requests\Request;
 use Hamlet\Resources\WebResource;
 use Hamlet\Responses\Response;
+use Hamlet\Writers\ResponseWriter;
 use Psr\Cache\CacheItemPoolInterface;
 
 abstract class AbstractApplication
@@ -23,10 +24,11 @@ abstract class AbstractApplication
     /**
      * @param Request $request
      * @param Response $response
+     * @param ResponseWriter $writer
      * @return void
      */
-    public function output(Request $request, Response $response)
+    public function output(Request $request, Response $response, ResponseWriter $writer)
     {
-        $response->output($request, $this->getCache($request));
+        $response->output($request, $this->getCache($request), $writer);
     }
 }

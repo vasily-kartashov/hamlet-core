@@ -9,13 +9,16 @@ use ReflectionClass;
 
 class ResponseBuilderTest extends TestCase
 {
+    /**
+     * @throws \ReflectionException
+     */
     public function testResponseBuilder()
     {
         $response = ResponseBuilder::create()
             ->withStatusCode(200)
             ->withEntity(new JsonEntity("hey there"))
             ->withHeader('Cache-Control', 'none')
-            ->withSessionParameter('userId', 1)
+            ->withSessionParam('userId', 1)
             ->build();
 
         $type = new ReflectionClass(get_class($response));
@@ -32,7 +35,7 @@ class ResponseBuilderTest extends TestCase
         $embedEntity->setAccessible(true);
         Assert::assertTrue($embedEntity->getValue($response));
 
-        $session = $type->getProperty('session');
+        $session = $type->getProperty('sessionParams');
         $session->setAccessible(true);
         Assert::assertEquals(['userId' => 1], $session->getValue($response));
     }
