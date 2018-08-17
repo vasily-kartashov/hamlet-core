@@ -56,7 +56,7 @@ class SwooleResponseWriter implements ResponseWriter
                 session_id(\bin2hex(\random_bytes(32)));
             }
             $_SESSION = [];
-            $lifeTime = $params['lifetime'] ? time() + $params['lifetime'] : null;
+            $lifeTime = $params['lifetime'] ? time() + ((int) $params['lifetime']) : time();
             $this->cookie(session_name(), session_id(), $lifeTime, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
         }
 

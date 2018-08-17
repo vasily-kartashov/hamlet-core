@@ -84,7 +84,9 @@ class Request implements ServerRequestInterface
     public static function empty(): self
     {
         $serverRequest = new ServerRequest('', '');
-        return new self($serverRequest, []);
+        return new self($serverRequest, function () {
+            return null;
+        });
     }
 
     /**

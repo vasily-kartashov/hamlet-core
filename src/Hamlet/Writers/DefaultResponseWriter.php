@@ -35,7 +35,7 @@ class DefaultResponseWriter implements ResponseWriter
 
     public function session(Request $request, array $params)
     {
-        if (session_id() !== null) {
+        if (session_id() != '') {
             session_start();
         }
         foreach ($params as $name => $value) {

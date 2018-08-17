@@ -4,7 +4,6 @@ namespace Hamlet\Requests;
 
 use Cache\Adapter\PHPArray\ArrayCachePool;
 use Cache\Adapter\Void\VoidCachePool;
-use GuzzleHttp\Psr7\BufferStream;
 use GuzzleHttp\Psr7\Uri;
 use Hamlet\Entities\JsonEntity;
 use PHPUnit\Framework\Assert;
