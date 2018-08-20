@@ -35,7 +35,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Hamlet\\": "tests/Hamlet"
+      "Hamlet\\": "test/Hamlet"
     }
   }
 }

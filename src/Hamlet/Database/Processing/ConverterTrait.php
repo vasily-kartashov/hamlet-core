@@ -30,7 +30,7 @@ trait ConverterTrait
     /**
      * @param array|null $row
      * @param string $type
-     * @param class-string $type
+     * @psalm-param class-string $type
      * @return mixed|null
      */
     private function instantiate($row, string $type)
