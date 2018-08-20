@@ -30,6 +30,7 @@ trait ConverterTrait
     /**
      * @param array|null $row
      * @param string $type
+     * @param class-string $type
      * @return mixed|null
      */
     private function instantiate($row, string $type)
@@ -57,6 +58,7 @@ trait ConverterTrait
 
     /**
      * @param string $typeName
+     * @psalm-param class-string $typeName
      * @param array $data
      * @return object
      */

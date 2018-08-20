@@ -84,6 +84,7 @@ class Converter
 
     /**
      * @param string $type
+     * @psalm-param class-string $type
      * @return Collector
      */
     public function cast(string $type): Collector
@@ -99,6 +100,7 @@ class Converter
 
     /**
      * @param string $type
+     * @psalm-param class-string $type
      * @param string $name
      * @return Selector
      */
@@ -109,6 +111,7 @@ class Converter
 
     /**
      * @param string $type
+     * @psalm-param class-string $type
      * @param string $name
      * @return callable
      */
