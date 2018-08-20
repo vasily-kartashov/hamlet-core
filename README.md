@@ -34,12 +34,12 @@ Start with two tables
 
 ```sql
 CREATE TABLE users (
-    id INTEGER
+    id   INTEGER,
     name VARCHAR(255)
 );
 
 CREATE TABLE addresses (
-    user_id INTEGER
+    user_id INTEGER,
     address VARCHAR(255)
 );
 ```
@@ -61,9 +61,17 @@ class User implements \Hamlet\Database\Entity
         return $this->name;
     }
     
+    /**
+     * @return string[]
+     */
     public function addresses(): array
     {
         return $this->addresses;
+    }
+    
+    public function __toString(): string
+    {
+        return $this->name . ' [' . join(', ', $this->addresses . ']'; 
     }
 }
 ```
@@ -82,10 +90,14 @@ $procedure = $database->prepare('
 ');
 $procedure->bindInteger($userId);
 
-return $procedure->processAll()
+$users = $procedure->processAll()
     ->selectValue('address')->groupInto('addresses')
     ->selectAll()->cast(User::class)
     ->collectHead();
+    
+foreach ($users as $user) {
+    echo $user . PHP_EOL;
+}
 ```
 
 And Bob's your uncle. Unless you need to chew through tens of 1000s of rows, in which case you'll need to process entities in a stream:
@@ -105,7 +117,7 @@ return $procedure->stream()
 
 * Fix Request/Response sessions ping pong
 * Swoole authentication + session handling
-* Add more unit tests for travis
 * Support for WebSockets
 * Support for HTTP/2.0
+* Add more unit tests for travis
 * Support for OAuth server (PHP League)
