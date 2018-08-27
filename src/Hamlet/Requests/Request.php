@@ -123,28 +123,6 @@ class Request implements ServerRequestInterface
         return $matches;
     }
 
-    /**
-     * @param string $headerString
-     * @return string[]
-     */
-    protected function parseHeader(string $headerString): array
-    {
-        $tokens = \explode(',', $headerString);
-        $weights = \array_reduce(
-            $tokens,
-            function (array $acc, string $element) {
-                list($l, $q) = \array_merge(\explode(';q=', $element), ['1']);
-                $acc[trim($l)] = (float) $q;
-                return $acc;
-            },
-            []
-        );
-        \arsort($weights);
-        /** @var string[] $locales */
-        $locales = \array_keys($weights);
-        return $locales;
-    }
-
     public function pathMatches(string $path): bool
     {
         return $this->getUri()->getPath() == $path;
