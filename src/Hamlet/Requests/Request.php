@@ -21,8 +21,11 @@ class Request implements ServerRequestInterface
     /** @var callable */
     private $sessionReader;
 
-    /** @var int|array */
-    private $sessionParams = -1;
+    /** @var null|array */
+    private $sessionParams;
+
+    /** @var bool */
+    private $sessionParamsSet = false;
 
     private function __construct(ServerRequestInterface $serverRequest, callable $sessionReader)
     {
@@ -847,8 +850,9 @@ class Request implements ServerRequestInterface
      */
     public function getSessionParams()
     {
-        if ($this->sessionParams === -1) {
+        if (!$this->sessionParamsSet) {
             $this->sessionParams = ($this->sessionReader)();
+            $this->sessionParamsSet = true;
         }
         return $this->sessionParams;
     }
