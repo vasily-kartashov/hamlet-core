@@ -39,10 +39,19 @@ class SQLiteProcedure extends AbstractProcedure
         $this->bindParameters()->execute();
     }
 
-    public function fetchOne(): array
+    /**
+     * @return array|null
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
+     */
+    public function fetchOne()
     {
         $result = $this->bindParameters()->execute();
-        return $result->fetchArray(SQLITE3_ASSOC);
+        $record = $result->fetchArray(SQLITE3_ASSOC);
+        if ($record !== false) {
+            return $record;
+        }
+        return null;
     }
 
     public function fetchAll(): array

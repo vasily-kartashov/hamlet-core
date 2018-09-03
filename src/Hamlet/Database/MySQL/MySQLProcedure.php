@@ -54,6 +54,7 @@ class MySQLProcedure extends AbstractProcedure
      * @param callable $callback
      * @return void
      * @throws MySQLException
+     * @psalm-suppress TypeDoesNotContainNull
      */
     public function fetch(callable $callback)
     {
@@ -79,6 +80,8 @@ class MySQLProcedure extends AbstractProcedure
     /**
      * @return array|null
      * @throws Exception
+     * @psalm-suppress TypeDoesNotContainNull
+     * @psalm-suppress RedundantCondition
      */
     public function fetchOne()
     {
@@ -108,6 +111,10 @@ class MySQLProcedure extends AbstractProcedure
         return $result;
     }
 
+    /**
+     * @return StreamSelector
+     * @psalm-suppress TypeDoesNotContainNull
+     */
     public function stream(): StreamSelector
     {
         return new StreamSelector(function () {
