@@ -43,6 +43,7 @@ class SQLiteProcedure extends AbstractProcedure
      * @return array|null
      * @psalm-suppress InvalidReturnType
      * @psalm-suppress InvalidReturnStatement
+     * @psalm-suppress RedundantCondition
      */
     public function fetchOne()
     {
