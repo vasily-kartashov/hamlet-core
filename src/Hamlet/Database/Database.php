@@ -56,8 +56,14 @@ abstract class Database implements LoggerAwareInterface
     }
 
     /**
+     * @template T
+     *
      * @param callable $callable
      * @return mixed
+     *
+     * @psalm-param callable():T $callable
+     * @psalm-return T
+     *
      * @throws Throwable
      */
     public function withTransaction(callable $callable)
@@ -84,9 +90,16 @@ abstract class Database implements LoggerAwareInterface
     }
 
     /**
+     * @template T
+     *
      * @param callable $callable
      * @param int $maxAttempts
      * @return mixed
+     *
+     * @psalm-param callable():T $callable
+     * @psalm-param int $maxAttempts
+     * @psalm-return T
+     *
      * @throws Throwable
      */
     public function tryWithTransaction(callable $callable, int $maxAttempts)
