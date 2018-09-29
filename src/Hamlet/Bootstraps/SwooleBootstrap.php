@@ -20,15 +20,19 @@ class SwooleBootstrap
      * @param string $host
      * @param int $port
      * @param callable $applicationProvider
+     * @param callable|null $initializer
      * @return void
      */
-    public static function run(string $host, int $port, callable $applicationProvider)
+    public static function run(string $host, int $port, callable $applicationProvider, callable $initializer = null)
     {
         $application = $applicationProvider();
         if (!($application instanceof AbstractApplication)) {
             throw new RuntimeException('Application required');
         }
         $server = new Server($host, $port);
+        if ($initializer !== null) {
+            $initializer($server);
+        }
         $server->on('request', function (SwooleRequest $swooleRequest, SwooleResponse $swooleResponse) use ($application) {
             $request = Request::fromSwooleRequest($swooleRequest);
             $writer = new SwooleResponseWriter($swooleResponse);
