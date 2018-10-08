@@ -56,7 +56,7 @@ class Normalizer
         $uri = $uri->withHost($hostHeaderParts[0]);
         if (isset($hostHeaderParts[1])) {
             $hasPort = true;
-            $uri = $uri->withPort($hostHeaderParts[1]);
+            $uri = $uri->withPort((int) $hostHeaderParts[1]);
         }
 
         if (!$hasPort && isset($request->server['server_port'])) {
