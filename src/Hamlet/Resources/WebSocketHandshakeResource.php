@@ -39,12 +39,15 @@ class WebSocketHandshakeResource implements WebResource
             return new BadRequestResponse(new PlainTextEntity('Missing Sec-WebSocket-Key header'));
         }
 
-        $key = base64_decode($keys[0]);
+        $key = $keys[0];
         $pattern = '#^[+/0-9A-Za-z]{21}[AQgw]==$#';
+        if (!preg_match($pattern, $key)) {
+            return new BadRequestResponse(new PlainTextEntity('Invalid Sec-WebSocket-Key format'));
+        }
 
-
-        if (!$key || !preg_match($pattern, $key) || strlen($key) !== 16) {
-            return new BadRequestResponse(new PlainTextEntity('Invalid Sec-WebSocket-Key header'));
+        $decodedKey = base64_decode($key);
+        if (!$decodedKey || strlen($decodedKey) !== 16) {
+            return new BadRequestResponse(new PlainTextEntity('Invalid Sec-WebSocket-Key value'));
         }
 
         $acceptHash = base64_encode(sha1($key . '258EAFA5-E914-47DA-95CA-C5AB0DC85B11', true));
