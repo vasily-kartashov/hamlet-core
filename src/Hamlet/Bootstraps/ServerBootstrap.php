@@ -7,7 +7,7 @@ use Hamlet\Requests\Request;
 use Hamlet\Writers\DefaultResponseWriter;
 use RuntimeException;
 
-class ServerBootstrap
+final class ServerBootstrap
 {
     private function __construct()
     {

@@ -8,9 +8,9 @@ use Hamlet\Writers\SwooleResponseWriter;
 use RuntimeException;
 use Swoole\Http\Request as SwooleRequest;
 use Swoole\Http\Response as SwooleResponse;
-use Swoole\Http\Server;
+use Swoole\WebSocket\Server;
 
-class SwooleBootstrap
+final class SwooleBootstrap
 {
     private function __construct()
     {
@@ -33,6 +33,9 @@ class SwooleBootstrap
         if ($initializer !== null) {
             $initializer($server);
         }
+        $server->on('message', function () {
+            // @todo add implementation and all possible callbacks for sockets
+        });
         $server->on('request', function (SwooleRequest $swooleRequest, SwooleResponse $swooleResponse) use ($application) {
             $request = Request::fromSwooleRequest($swooleRequest);
             $writer = new SwooleResponseWriter($swooleResponse);

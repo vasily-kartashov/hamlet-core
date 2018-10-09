@@ -2,6 +2,4 @@ parameters:
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - '|Access to an undefined property object::\$name\.|'
-        - '|.*Swoole\\Http\\Request.*|'
-        - '|.*Swoole\\Http\\Response.*|'
-        - '|.*Swoole\\Http\\Server.*|'
+        - '|.*Swoole.*|'

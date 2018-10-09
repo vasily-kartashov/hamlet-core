@@ -26,7 +26,9 @@
     "phpunit/phpunit": "^6",
     "phpstan/phpstan": "*",
     "squizlabs/php_codesniffer": "*",
-    "vimeo/psalm": "*"
+    "vimeo/psalm": "*",
+    "react/http": "*",
+    "swoft/swoole-ide-helper": "*"
   },
   "autoload": {
     "psr-4": {

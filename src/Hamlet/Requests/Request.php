@@ -58,6 +58,18 @@ class Request implements ServerRequestInterface
         return new self($serverRequest, $sessionReader);
     }
 
+    public static function fromServerRequest(ServerRequestInterface $request): self
+    {
+        $sessionReader = function () {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+                return $_SESSION;
+            }
+            return null;
+        };
+        return new self($request, $sessionReader);
+    }
+
     public static function fromSwooleRequest(SwooleRequest $request): self
     {
         $body = new BufferStream();
