@@ -13,7 +13,9 @@ class ReactResponseWriter implements ResponseWriter
 
     public function __construct()
     {
-        $this->response = new Response();
+        $this->response = new Response(200, [
+            'Server' => 'ReactPHP'
+        ]);
     }
 
     /**

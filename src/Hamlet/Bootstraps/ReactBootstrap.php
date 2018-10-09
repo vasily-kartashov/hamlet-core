@@ -7,7 +7,7 @@ use Hamlet\Requests\Request;
 use Hamlet\Writers\ReactResponseWriter;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Factory;
-use React\Http\StreamingServer;
+use React\Http\Server as HttpServer;
 use React\Socket\Server as SocketServer;
 use RuntimeException;
 
@@ -29,8 +29,7 @@ final class ReactBootstrap
             throw new RuntimeException('Application required');
         }
 
-        $loop = Factory::create();
-        $server = new StreamingServer(function (ServerRequestInterface $serverRequest) use ($application) {
+        $server = new HttpServer(function (ServerRequestInterface $serverRequest) use ($application) {
             $request = Request::fromServerRequest($serverRequest);
             $response = $application->run($request);
             $writer = new ReactResponseWriter();
@@ -38,6 +37,7 @@ final class ReactBootstrap
             return $writer->response();
         });
 
+        $loop = Factory::create();
         $socket = new SocketServer($uri, $loop);
         $server->listen($socket);
 
