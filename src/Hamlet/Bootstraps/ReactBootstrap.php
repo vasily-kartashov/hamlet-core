@@ -18,11 +18,11 @@ final class ReactBootstrap
     }
 
     /**
-     * @param int $port
+     * @param string $uri
      * @param callable $applicationProvider
      * @return void
      */
-    public static function run(int $port, callable $applicationProvider)
+    public static function run(string $uri, callable $applicationProvider)
     {
         $application = $applicationProvider();
         if (!($application instanceof AbstractApplication)) {
@@ -38,7 +38,7 @@ final class ReactBootstrap
             return $writer->response();
         });
 
-        $socket = new SocketServer($port, $loop);
+        $socket = new SocketServer($uri, $loop);
         $server->listen($socket);
 
         $loop->run();
