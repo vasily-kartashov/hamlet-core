@@ -2,6 +2,7 @@
 
 namespace Hamlet\Entities;
 
+use Hamlet\Cache\CacheValue;
 use Psr\Cache\CacheItemPoolInterface;
 
 interface Entity

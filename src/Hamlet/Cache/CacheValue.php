@@ -1,6 +1,6 @@
 <?php
 
-namespace Hamlet\Entities;
+namespace Hamlet\Cache;
 
 class CacheValue
 {

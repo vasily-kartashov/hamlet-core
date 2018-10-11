@@ -9,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Factory;
 use React\Http\Server as HttpServer;
 use React\Socket\Server as SocketServer;
-use RuntimeException;
+use SessionHandlerInterface;
 
 final class ReactBootstrap
 {
@@ -18,19 +18,16 @@ final class ReactBootstrap
     }
 
     /**
-     * @param string $uri
-     * @param callable $applicationProvider
+     * @param string $host
+     * @param int $port
+     * @param AbstractApplication $application
+     * @param SessionHandlerInterface|null $sessionHandler
      * @return void
      */
-    public static function run(string $uri, callable $applicationProvider)
+    public static function run(string $host, int $port, AbstractApplication $application, SessionHandlerInterface $sessionHandler = null)
     {
-        $application = $applicationProvider();
-        if (!($application instanceof AbstractApplication)) {
-            throw new RuntimeException('Application required');
-        }
-
-        $server = new HttpServer(function (ServerRequestInterface $serverRequest) use ($application) {
-            $request = Request::fromServerRequest($serverRequest);
+        $server = new HttpServer(function (ServerRequestInterface $serverRequest) use ($application, $sessionHandler) {
+            $request = Request::fromServerRequest($serverRequest, $sessionHandler);
             $response = $application->run($request);
             $writer = new ReactResponseWriter();
             $application->output($request, $response, $writer);
@@ -38,7 +35,7 @@ final class ReactBootstrap
         });
 
         $loop = Factory::create();
-        $socket = new SocketServer($uri, $loop);
+        $socket = new SocketServer($host . ':' . $port, $loop);
         $server->listen($socket);
 
         $loop->run();

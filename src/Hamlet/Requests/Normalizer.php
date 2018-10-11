@@ -9,9 +9,10 @@ use Swoole\Http\Request as SwooleRequest;
 class Normalizer
 {
     /**
+     * @param array $serverParams
      * @return string[]
      */
-    public static function readHeadersFromSuperGlobals()
+    public static function readHeadersFromSuperGlobals(array $serverParams)
     {
         $headers = [];
         if (\function_exists('getallheaders')) {
@@ -26,7 +27,7 @@ class Normalizer
                 'REDIRECT_HTTP_AUTHORIZATION' => 'Authorization',
                 'PHP_AUTH_DIGEST' => 'Authorization',
             ];
-            foreach ($_SERVER as $name => &$value) {
+            foreach ($serverParams as $name => &$value) {
                 if (\substr($name, 0, 5) == "HTTP_") {
                     $headerName = \str_replace(
                         ' ',
@@ -38,9 +39,9 @@ class Normalizer
                     $headers[$aliases[$name]] = (string)$value;
                 }
             }
-            if (!isset($headers['Authorization']) and isset($_SERVER['PHP_AUTH_USER'])) {
-                $password = $_SERVER['PHP_AUTH_PW'] ?? '';
-                $headers['Authorization'] = 'Basic ' . \base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $password);
+            if (!isset($headers['Authorization']) and isset($serverParams['PHP_AUTH_USER'])) {
+                $password = $serverParams['PHP_AUTH_PW'] ?? '';
+                $headers['Authorization'] = 'Basic ' . \base64_encode($serverParams['PHP_AUTH_USER'] . ':' . $password);
             }
         }
         return $headers;
@@ -76,6 +77,52 @@ class Normalizer
 
         if (!$hasQuery && isset($request->server['query_string'])) {
             $uri = $uri->withQuery($request->server['query_string']);
+        }
+
+        return $uri;
+    }
+
+    /**
+     * Get a Uri populated with values from server params.
+     * @param array $serverParams
+     * @return UriInterface
+     */
+    public static function getUriFromGlobals(array $serverParams): UriInterface
+    {
+        $uri = new Uri('');
+
+        $uri = $uri->withScheme(!empty($serverParams['HTTPS']) && $serverParams['HTTPS'] !== 'off' ? 'https' : 'http');
+
+        $hasPort = false;
+        if (isset($serverParams['HTTP_HOST'])) {
+            $hostHeaderParts = explode(':', $serverParams['HTTP_HOST']);
+            $uri = $uri->withHost($hostHeaderParts[0]);
+            if (isset($hostHeaderParts[1])) {
+                $hasPort = true;
+                $uri = $uri->withPort((int) $hostHeaderParts[1]);
+            }
+        } elseif (isset($serverParams['SERVER_NAME'])) {
+            $uri = $uri->withHost($serverParams['SERVER_NAME']);
+        } elseif (isset($serverParams['SERVER_ADDR'])) {
+            $uri = $uri->withHost($serverParams['SERVER_ADDR']);
+        }
+
+        if (!$hasPort && isset($serverParams['SERVER_PORT'])) {
+            $uri = $uri->withPort($serverParams['SERVER_PORT']);
+        }
+
+        $hasQuery = false;
+        if (isset($serverParams['REQUEST_URI'])) {
+            $requestUriParts = explode('?', $serverParams['REQUEST_URI']);
+            $uri = $uri->withPath($requestUriParts[0]);
+            if (isset($requestUriParts[1])) {
+                $hasQuery = true;
+                $uri = $uri->withQuery($requestUriParts[1]);
+            }
+        }
+
+        if (!$hasQuery && isset($serverParams['QUERY_STRING'])) {
+            $uri = $uri->withQuery($serverParams['QUERY_STRING']);
         }
 
         return $uri;

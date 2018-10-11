@@ -5,7 +5,7 @@ namespace Hamlet\Bootstraps;
 use Hamlet\Applications\AbstractApplication;
 use Hamlet\Requests\Request;
 use Hamlet\Writers\DefaultResponseWriter;
-use RuntimeException;
+use SessionHandlerInterface;
 
 final class ServerBootstrap
 {
@@ -14,16 +14,13 @@ final class ServerBootstrap
     }
 
     /**
-     * @param callable $applicationProvider
+     * @param AbstractApplication $application
+     * @param SessionHandlerInterface|null $sessionHandler
      * @return void
      */
-    public static function run(callable $applicationProvider)
+    public static function run(AbstractApplication $application, SessionHandlerInterface $sessionHandler = null)
     {
-        $application = $applicationProvider();
-        if (!($application instanceof AbstractApplication)) {
-            throw new RuntimeException('Application required');
-        }
-        $request = Request::fromSuperGlobals();
+        $request = Request::fromSuperGlobals($sessionHandler);
         $writer = new DefaultResponseWriter();
         $response = $application->run($request);
         $application->output($request, $response, $writer);

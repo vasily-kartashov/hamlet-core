@@ -13,9 +13,8 @@ Hamlet Core
 ```php
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-\Hamlet\Bootstraps\ServerBootstrap::run(function () {
-    return new \Example\Application;
-});
+$application = new new \Example\Application;
+\Hamlet\Bootstraps\ServerBootstrap::run($application);
 ```
 
 ### Bootstrapping an application with Swoole Http Server
@@ -23,9 +22,17 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 ```php
 require_once __DIR__ . '/../../vendor/autoload.php';
 
-\Hamlet\Bootstraps\SwooleBootstrap::run('0.0.0.0', 8080, function () {
-    return new \Example\Application;
-});
+$application = new new \Example\Application;
+\Hamlet\Bootstraps\SwooleBootstrap::run('0.0.0.0', 8080, $application);
+```
+
+### Bootstrapping an application with ReactPHP
+
+```php
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+$application = new new \Example\Application;
+\Hamlet\Bootstraps\ReactBootstrap::run('0.0.0.0', 8080, $application);
 ```
 
 ### How to use database package:
@@ -115,9 +122,11 @@ return $procedure->stream()
 
 ### To Do:
 
-* Fix Request/Response sessions ping pong
-* Swoole authentication + session handling
-* Support for WebSockets
+* Fix Request/Response sessions ping pong (make sure sessions passing works between Raw, Swoole and React)
+* Check cookies for all
+* Support for WebSockets (swoole and react)
 * Support for HTTP/2.0
-* Add more unit tests for travis
+* Add more unit tests for Request implementation
 * Support for OAuth server (PHP League)
+* Support for GraphQL
+* Support for Alexa
