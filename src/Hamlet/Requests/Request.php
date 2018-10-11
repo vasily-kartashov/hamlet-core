@@ -122,7 +122,9 @@ class Request implements ServerRequestInterface
         $request = new self;
 
         $request->method = $serverParams['REQUEST_METHOD'] ?? 'GET';
-        $request->path   = $serverParams['REQUEST_URI'] ?? null;
+        if (isset($serverParams['REQUEST_URI'])) {
+            $request->path = strtok($serverParams['REQUEST_URI'],'?') ?: null;
+        }
 
         $request->headersProvider = function () use ($serverParams) {
             return Normalizer::readHeadersFromSuperGlobals($serverParams);
