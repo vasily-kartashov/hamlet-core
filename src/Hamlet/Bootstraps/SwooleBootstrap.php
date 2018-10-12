@@ -5,7 +5,6 @@ namespace Hamlet\Bootstraps;
 use Hamlet\Applications\AbstractApplication;
 use Hamlet\Requests\Request;
 use Hamlet\Writers\SwooleResponseWriter;
-use SessionHandlerInterface;
 use Swoole\Http\Request as SwooleRequest;
 use Swoole\Http\Response as SwooleResponse;
 use Swoole\WebSocket\Server;
@@ -20,10 +19,9 @@ final class SwooleBootstrap
      * @param string $host
      * @param int $port
      * @param AbstractApplication $application
-     * @param SessionHandlerInterface|null $sessionHandler
      * @return void
      */
-    public static function run(string $host, int $port, AbstractApplication $application, SessionHandlerInterface $sessionHandler = null)
+    public static function run(string $host, int $port, AbstractApplication $application)
     {
         $server = new Server($host, $port);
 
@@ -31,9 +29,9 @@ final class SwooleBootstrap
             // @todo add implementation and all possible callbacks for sockets
         });
 
-        $server->on('request', function (SwooleRequest $swooleRequest, SwooleResponse $swooleResponse) use ($application, $sessionHandler) {
-            $request = Request::fromSwooleRequest($swooleRequest, $sessionHandler);
-            $writer = new SwooleResponseWriter($swooleResponse);
+        $server->on('request', function (SwooleRequest $swooleRequest, SwooleResponse $swooleResponse) use ($application) {
+            $request = Request::fromSwooleRequest($swooleRequest, $application->sessionHandler());
+            $writer = new SwooleResponseWriter($swooleResponse, $application->sessionHandler());
             $response = $application->run($request);
             $application->output($request, $response, $writer);
         });

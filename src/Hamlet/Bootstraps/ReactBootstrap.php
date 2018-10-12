@@ -21,15 +21,14 @@ final class ReactBootstrap
      * @param string $host
      * @param int $port
      * @param AbstractApplication $application
-     * @param SessionHandlerInterface|null $sessionHandler
      * @return void
      */
-    public static function run(string $host, int $port, AbstractApplication $application, SessionHandlerInterface $sessionHandler = null)
+    public static function run(string $host, int $port, AbstractApplication $application)
     {
-        $server = new HttpServer(function (ServerRequestInterface $serverRequest) use ($application, $sessionHandler) {
-            $request = Request::fromServerRequest($serverRequest, $sessionHandler);
+        $server = new HttpServer(function (ServerRequestInterface $serverRequest) use ($application) {
+            $request = Request::fromServerRequest($serverRequest, $application->sessionHandler());
             $response = $application->run($request);
-            $writer = new ReactResponseWriter();
+            $writer = new ReactResponseWriter($application->sessionHandler());
             $application->output($request, $response, $writer);
             return $writer->response();
         });

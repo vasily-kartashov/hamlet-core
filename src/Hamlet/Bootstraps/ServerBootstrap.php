@@ -5,7 +5,6 @@ namespace Hamlet\Bootstraps;
 use Hamlet\Applications\AbstractApplication;
 use Hamlet\Requests\Request;
 use Hamlet\Writers\DefaultResponseWriter;
-use SessionHandlerInterface;
 
 final class ServerBootstrap
 {
@@ -15,12 +14,11 @@ final class ServerBootstrap
 
     /**
      * @param AbstractApplication $application
-     * @param SessionHandlerInterface|null $sessionHandler
      * @return void
      */
-    public static function run(AbstractApplication $application, SessionHandlerInterface $sessionHandler = null)
+    public static function run(AbstractApplication $application)
     {
-        $request = Request::fromSuperGlobals($sessionHandler);
+        $request = Request::fromSuperGlobals($application->sessionHandler());
         $writer = new DefaultResponseWriter();
         $response = $application->run($request);
         $application->output($request, $response, $writer);

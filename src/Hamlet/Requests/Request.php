@@ -93,6 +93,9 @@ class Request implements ServerRequestInterface
     /** @var array|null */
     private $sessionParams = null;
 
+    /** @var bool */
+    private $sessionParamsSet = false;
+
     /** @var array */
     private $attributes = [];
 
@@ -201,9 +204,20 @@ class Request implements ServerRequestInterface
         $request->uploadedFilesProvider = function () use ($serverRequest) {
             return $serverRequest->getUploadedFiles();
         };
-        $request->sessionParamsProvider = function () {
-            // @todo add proper session handling
-            return null;
+        $request->sessionParamsProvider = function () use ($serverRequest, $sessionHandler) {
+            if ($sessionHandler === null) {
+                return null;
+            }
+            $sessionName = session_name();
+            $cookies = $serverRequest->getCookieParams();
+            if (isset($cookies[$sessionName])) {
+                $sessionId = $cookies[session_name()];
+                $data = $sessionHandler->read($sessionId);
+                if (!empty($data)) {
+                    return unserialize($data);
+                }
+            }
+            return [];
         };
 
         return $request;
@@ -243,9 +257,19 @@ class Request implements ServerRequestInterface
         $request->uploadedFilesProvider = function () use ($swooleRequest) {
             return ServerRequest::normalizeFiles($swooleRequest->files);
         };
-        $request->sessionParamsProvider = function () {
-            // @todo implement session handling
-            return null;
+        $request->sessionParamsProvider = function () use ($swooleRequest, $sessionHandler) {
+            if ($sessionHandler === null) {
+                return null;
+            }
+            $sessionName = session_name();
+            if (isset($swooleRequest->cookie[$sessionName])) {
+                $sessionId = $swooleRequest->cookie[session_name()];
+                $data = $sessionHandler->read($sessionId);
+                if (!empty($data)) {
+                    return unserialize($data);
+                }
+            }
+            return [];
         };
 
         return $request;
@@ -1112,12 +1136,13 @@ class Request implements ServerRequestInterface
      */
     public function getSessionParams()
     {
-        if ($this->sessionParams === null) {
+        if (!$this->sessionParamsSet) {
             if ($this->sessionParamsProvider !== null) {
                 $this->sessionParams = ($this->sessionParamsProvider)();
             } else {
-                $this->sessionParams = [];
+                $this->sessionParams = null;
             }
+            $this->sessionParamsSet = true;
         }
         return $this->sessionParams;
     }

@@ -7,6 +7,7 @@ use Hamlet\Resources\WebResource;
 use Hamlet\Responses\Response;
 use Hamlet\Writers\ResponseWriter;
 use Psr\Cache\CacheItemPoolInterface;
+use SessionHandlerInterface;
 
 abstract class AbstractApplication
 {
@@ -30,5 +31,13 @@ abstract class AbstractApplication
     public function output(Request $request, Response $response, ResponseWriter $writer)
     {
         $response->output($request, $this->getCache($request), $writer);
+    }
+
+    /**
+     * @return SessionHandlerInterface|null
+     */
+    public function sessionHandler()
+    {
+        return null;
     }
 }

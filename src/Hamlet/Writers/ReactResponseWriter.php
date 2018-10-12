@@ -2,20 +2,26 @@
 
 namespace Hamlet\Writers;
 
+use Exception;
 use GuzzleHttp\Psr7\BufferStream;
 use Hamlet\Requests\Request;
 use React\Http\Response;
+use SessionHandlerInterface;
 
 class ReactResponseWriter implements ResponseWriter
 {
     /** @var Response */
     private $response;
 
-    public function __construct()
+    /** @var SessionHandlerInterface|null */
+    private $sessionHandler;
+
+    public function __construct(SessionHandlerInterface $sessionHandler = null)
     {
         $this->response = new Response(200, [
             'Server' => 'ReactPHP'
         ]);
+        $this->sessionHandler = $sessionHandler;
     }
 
     /**
@@ -52,12 +58,30 @@ class ReactResponseWriter implements ResponseWriter
 
     /**
      * @param Request $request
-     * @param array $params
+     * @param array $sessionParams
      * @return void
+     * @throws Exception
      */
-    public function session(Request $request, array $params)
+    public function session(Request $request, array $sessionParams)
     {
-        // TODO: Implement session() method.
+        if ($this->sessionHandler === null) {
+            return;
+        }
+
+        $sessionName = session_name();
+        $cookies = $request->getCookieParams();
+
+        if (isset($cookies[$sessionName])) {
+            $sessionId = $cookies[$sessionName];
+        } else {
+            $params = session_get_cookie_params();
+            $sessionId = \bin2hex(\random_bytes(8));
+
+            $lifeTime = $params['lifetime'] ? time() + ((int) $params['lifetime']) : 0;
+            $this->cookie($sessionName, $sessionId, $lifeTime, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+        }
+
+        $this->sessionHandler->write($sessionId, serialize($sessionParams));
     }
 
     /**
@@ -72,7 +96,20 @@ class ReactResponseWriter implements ResponseWriter
      */
     public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false)
     {
-        // TODO: Implement cookie() method.
+        $header = urlencode($name) . '=' . urlencode($value) . '; Path=' . $path;
+        if ($expires) {
+            $header .= '; Expires=' . date('D, d M Y, H:i:s \G\M\T', $expires);
+        }
+        if (!empty($domain)) {
+            $header .= '; Domain=' . urlencode($domain);
+        }
+        if (!$secure) {
+            $header .= '; Secure';
+        }
+        if ($httpOnly) {
+            $header .= '; HttpOnly';
+        }
+        $this->response = $this->response->withAddedHeader('Set-Cookie', $header);
     }
 
     /**

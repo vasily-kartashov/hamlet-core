@@ -122,6 +122,7 @@ return $procedure->stream()
 
 ### To Do:
 
+* Create abstract Application::sessionHandler to enable session handling
 * Fix Request/Response sessions ping pong (make sure sessions passing works between Raw, Swoole and React)
 * Check cookies for all
 * Support for WebSockets (swoole and react)

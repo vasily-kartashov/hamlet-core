@@ -3,6 +3,7 @@
 namespace Hamlet\Writers;
 
 use Hamlet\Requests\Request;
+use SessionHandlerInterface;
 use Swoole\Http\Response;
 
 class SwooleResponseWriter implements ResponseWriter
@@ -10,9 +11,13 @@ class SwooleResponseWriter implements ResponseWriter
     /** @var Response */
     private $response;
 
-    public function __construct(Response $response)
+    /** @var SessionHandlerInterface|null */
+    private $sessionHandler;
+
+    public function __construct(Response $response, SessionHandlerInterface $sessionHandler = null)
     {
         $this->response = $response;
+        $this->sessionHandler = $sessionHandler;
     }
 
     public function status(int $code, string $line = null)
@@ -40,28 +45,25 @@ class SwooleResponseWriter implements ResponseWriter
         $this->response->end();
     }
 
-    public function session(Request $request, array $params)
+    public function session(Request $request, array $sessionParams)
     {
-        if (session_status() != PHP_SESSION_ACTIVE) {
-            session_start();
+        if ($this->sessionHandler === null) {
+            return;
         }
 
+        $sessionName = session_name();
         $cookies = $request->getCookieParams();
 
-        if (isset($cookies[session_name()])) {
-            session_id($cookies[session_name()]);
+        if (isset($cookies[$sessionName])) {
+            $sessionId = $cookies[$sessionName];
         } else {
             $params = session_get_cookie_params();
-            if (session_id()) {
-                session_id(\bin2hex(\random_bytes(32)));
-            }
-            $_SESSION = [];
+            $sessionId = \bin2hex(\random_bytes(8));
+
             $lifeTime = $params['lifetime'] ? time() + ((int) $params['lifetime']) : time();
-            $this->cookie(session_name(), session_id(), $lifeTime, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+            $this->cookie($sessionName, $sessionId, $lifeTime, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
         }
 
-        foreach ($params as $name => $value) {
-            $_SESSION[$name] = $value;
-        }
+        $this->sessionHandler->write($sessionId, serialize($sessionParams));
     }
 }
