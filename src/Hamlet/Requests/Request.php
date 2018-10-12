@@ -6,6 +6,7 @@ use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
 use Hamlet\Entities\Entity;
+use InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -123,7 +124,7 @@ class Request implements ServerRequestInterface
 
         $request->method = $serverParams['REQUEST_METHOD'] ?? 'GET';
         if (isset($serverParams['REQUEST_URI'])) {
-            $request->path = strtok($serverParams['REQUEST_URI'],'?') ?: null;
+            $request->path = strtok($serverParams['REQUEST_URI'], '?') ?: null;
         }
 
         $request->headersProvider = function () use ($serverParams) {
@@ -336,6 +337,12 @@ class Request implements ServerRequestInterface
                 }
             }
         }
+        if (!\array_key_exists('Host', $this->headers)) {
+            $host = $this->getUri()->getHost();
+            if ($host) {
+                return ['Host' => [$host]] + $this->headers;
+            }
+        }
         return $this->headers;
     }
 
@@ -374,6 +381,11 @@ class Request implements ServerRequestInterface
         $key = \strtolower($name);
         if (\array_key_exists($key, $this->headerNames)) {
             return $this->headers[$this->headerNames[$key]];
+        } elseif ($key == 'host') {
+            $host = $this->getUri()->getHost();
+            if ($host != '') {
+                return [$host];
+            }
         }
         return [];
     }
@@ -427,6 +439,9 @@ class Request implements ServerRequestInterface
         if (\array_key_exists($key, $copy->headerNames)) {
             unset($copy->headerNames[$key]);
             unset($copy->headers[$key]);
+        }
+        if ($key == 'host') {
+            $name = 'Host';
         }
         $copy->headerNames[$key] = $name;
         $copy->headers[$name] = [];
@@ -598,6 +613,10 @@ class Request implements ServerRequestInterface
      */
     public function withRequestTarget($requestTarget)
     {
+        if (preg_match('#\s#', $requestTarget)) {
+            throw new InvalidArgumentException('Request target cannot contain whitespace');
+        }
+
         if ($this->requestTarget === $requestTarget) {
             return $this;
         } else {
@@ -706,6 +725,7 @@ class Request implements ServerRequestInterface
         $copy = clone $this;
         $copy->uri = $uri;
         $copy->path = null;
+        $copy->requestTarget = null;
         if (!$preserveHost || !$this->hasHeader('Host')) {
             $copy->updateHostFromUri();
         }
@@ -903,6 +923,11 @@ class Request implements ServerRequestInterface
      */
     public function withUploadedFiles(array $uploadedFiles)
     {
+        foreach ($uploadedFiles as $file) {
+            if ($file === null || !($file instanceof UploadedFileInterface)) {
+                throw new InvalidArgumentException('Uploaded files must implement UploadedFileInterface');
+            }
+        }
         $copy = clone $this;
         $copy->uploadedFiles = $uploadedFiles;
         return $copy;
@@ -1007,7 +1032,11 @@ class Request implements ServerRequestInterface
      */
     public function getAttribute($name, $default = null)
     {
-        return $this->attributes[$name] ?? $default;
+        if (\array_key_exists($name, $this->attributes)) {
+            return $this->attributes[$name];
+        } else {
+            return $default;
+        }
     }
 
     /**
@@ -1027,13 +1056,15 @@ class Request implements ServerRequestInterface
      */
     public function withAttribute($name, $value)
     {
-        if ($this->getAttribute($name) !== $value) {
-            $copy = clone $this;
-            $copy->attributes[$name] = $value;
-            return $copy;
-        } else {
-            return $this;
+        if (\array_key_exists($name, $this->attributes)) {
+            if ($this->attributes[$name] === $value) {
+                return $this;
+            }
         }
+
+        $copy = clone $this;
+        $copy->attributes[$name] = $value;
+        return $copy;
     }
 
     /**

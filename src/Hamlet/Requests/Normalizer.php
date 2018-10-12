@@ -50,7 +50,7 @@ class Normalizer
     public static function uriFromSwooleRequest(SwooleRequest $request): UriInterface
     {
         $uri = new Uri('');
-        $uri = $uri->withScheme(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http');
+        $uri = $uri->withScheme(!empty($request->server['HTTPS']) && $request->server['HTTPS'] !== 'off' ? 'https' : 'http');
 
         $hasPort = false;
         $hostHeaderParts = explode(':', $request->server['host'] ?? 'localhost');
@@ -95,9 +95,9 @@ class Normalizer
 
         $hasPort = false;
         if (isset($serverParams['HTTP_HOST'])) {
-            $hostHeaderParts = explode(':', $serverParams['HTTP_HOST']);
+            $hostHeaderParts = explode(':', $serverParams['HTTP_HOST'], 2);
             $uri = $uri->withHost($hostHeaderParts[0]);
-            if (isset($hostHeaderParts[1])) {
+            if (count($hostHeaderParts) > 1) {
                 $hasPort = true;
                 $uri = $uri->withPort((int) $hostHeaderParts[1]);
             }
@@ -113,9 +113,9 @@ class Normalizer
 
         $hasQuery = false;
         if (isset($serverParams['REQUEST_URI'])) {
-            $requestUriParts = explode('?', $serverParams['REQUEST_URI']);
+            $requestUriParts = explode('?', $serverParams['REQUEST_URI'], 2);
             $uri = $uri->withPath($requestUriParts[0]);
-            if (isset($requestUriParts[1])) {
+            if (count($requestUriParts) > 1) {
                 $hasQuery = true;
                 $uri = $uri->withQuery($requestUriParts[1]);
             }

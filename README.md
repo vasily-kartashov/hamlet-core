@@ -126,7 +126,7 @@ return $procedure->stream()
 * Check cookies for all
 * Support for WebSockets (swoole and react)
 * Support for HTTP/2.0
-* Add more unit tests for Request implementation
+* Add more unit tests for Request implementation, fix mutability tests
 * Support for OAuth server (PHP League)
 * Support for GraphQL
 * Support for Alexa
