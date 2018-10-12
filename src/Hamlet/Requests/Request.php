@@ -858,6 +858,16 @@ class Request implements ServerRequestInterface
     }
 
     /**
+     * @param string $name
+     * @param string|null $default
+     * @return string|null
+     */
+    public function getQueryParam(string $name, string $default = null)
+    {
+        return $this->getQueryParams()[$name] ?? $default;
+    }
+
+    /**
      * Return an instance with the specified query string arguments.
      *
      * These values SHOULD remain immutable over the course of the incoming
