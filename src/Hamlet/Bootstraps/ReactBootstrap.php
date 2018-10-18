@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Factory;
 use React\Http\Server as HttpServer;
 use React\Socket\Server as SocketServer;
-use SessionHandlerInterface;
 
 final class ReactBootstrap
 {

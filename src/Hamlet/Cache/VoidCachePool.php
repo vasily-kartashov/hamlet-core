@@ -14,7 +14,7 @@ class VoidCachePool implements CacheItemPoolInterface
      */
     public function getItem($key): CacheItemInterface
     {
-        return new CacheItem($key, null, null);
+        return new CacheItem($key, false, null);
     }
 
     /**
@@ -25,7 +25,7 @@ class VoidCachePool implements CacheItemPoolInterface
     {
         $items = [];
         foreach ($keys as $key) {
-            $items[$key] = new CacheItem($key, null, null);
+            $items[$key] = new CacheItem($key, false, null);
         }
         return $items;
     }
