@@ -14,5 +14,5 @@ script:
   - ./vendor/bin/phpunit
   - ./vendor/bin/phpstan analyse --level 7 src -c phpstan.neon
   - ./vendor/bin/psalm
-  - ./vendor/bin/phan
+  - ./vendor/bin/phan --allow-polyfill-parser
   - ./vendor/bin/phpcs --standard=PSR2 -n src

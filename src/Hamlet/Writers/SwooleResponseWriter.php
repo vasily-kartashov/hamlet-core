@@ -2,6 +2,7 @@
 
 namespace Hamlet\Writers;
 
+use Exception;
 use Hamlet\Requests\Request;
 use SessionHandlerInterface;
 use Swoole\Http\Response;
@@ -45,6 +46,11 @@ class SwooleResponseWriter implements ResponseWriter
         $this->response->end();
     }
 
+    /**
+     * @param Request $request
+     * @param array $sessionParams
+     * @throws Exception
+     */
     public function session(Request $request, array $sessionParams)
     {
         if ($this->sessionHandler === null) {
