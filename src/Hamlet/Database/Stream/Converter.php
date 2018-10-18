@@ -63,6 +63,9 @@ class Converter
                 list($item, $record) = ($this->splitter)($record);
                 if ($lastRecord !== $record) {
                     if (!$this->isNull($currentGroup)) {
+                        if ($lastRecord === null) {
+                            $lastRecord = [];
+                        }
                         $lastRecord[$name] = $currentGroup;
                         if (!$this->isNull($lastRecord)) {
                             yield [$index++, $lastRecord];

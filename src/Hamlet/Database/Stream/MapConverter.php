@@ -33,6 +33,9 @@ class MapConverter extends Converter
                 list($item, $record) = ($this->splitter)($record);
                 if ($lastRecord !== $record) {
                     if ($currentGroup !== null) {
+                        if ($lastRecord === null) {
+                            $lastRecord = [];
+                        }
                         $lastRecord[$name] = $currentGroup;
                         if (!$this->isNull($lastRecord)) {
                             yield [$index++, $lastRecord];
@@ -41,7 +44,9 @@ class MapConverter extends Converter
                     $currentGroup = [];
                 }
                 if (!$this->isNull($item)) {
-                    /** @psalm-suppress PossiblyNullOperand */
+                    if ($currentGroup === null) {
+                        $currentGroup = [];
+                    }
                     $currentGroup += $item;
                 }
                 $lastRecord = $record;

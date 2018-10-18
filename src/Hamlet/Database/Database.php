@@ -14,6 +14,9 @@ use RuntimeException;
 use SQLite3;
 use Throwable;
 
+/**
+ * @suppress PhanInvalidCommentForDeclarationType
+ */
 abstract class Database implements LoggerAwareInterface
 {
     /** @var LoggerInterface */

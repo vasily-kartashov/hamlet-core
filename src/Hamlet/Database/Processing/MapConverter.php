@@ -8,7 +8,7 @@ class MapConverter extends Converter
     {
         $map = [];
         foreach ($this->flattenRecordsInto(':property:') as &$record) {
-            $map += $record[':property:'];
+            $map += (array) $record[':property:'];
         }
         return new Collector($map);
     }

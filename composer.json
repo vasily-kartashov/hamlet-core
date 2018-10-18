@@ -17,10 +17,13 @@
     "psr/cache": "1.*",
     "psr/http-message": "1.*",
     "psr/log": "1.*",
-    "symfony/console": "3.*",
+    "symfony/console": "4.*",
     "twig/twig": "2.5.*"
   },
   "require-dev": {
+    "ext-ast": "*",
+    "ext-pdo": "*",
+    "ext-mysqli": "*",
     "cache/void-adapter": "^1",
     "cache/array-adapter": "^1",
     "phpunit/phpunit": "^6",

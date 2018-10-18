@@ -123,6 +123,8 @@ return $procedure->stream()
 ### To Do:
 
 * Support for WebSockets (swoole and react)
+* Add test coverage for alternative DB engines
+* Extend for easy addition of a CLI layer to any application (should work with shyaml)
 * Support for HTTP/2.0
 * Add more unit tests for Request implementation, fix mutability tests
 * Support for OAuth server (PHP League)

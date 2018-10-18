@@ -2,11 +2,15 @@
 
 namespace Hamlet\Templating;
 
+use Exception;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 class TwigRendererTest extends TestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testVariableSubstitution()
     {
         $renderer = new TwigRenderer();
