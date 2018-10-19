@@ -13,16 +13,14 @@
   "require": {
     "php": "^7.0",
     "ext-json": "*",
-    "guzzlehttp/psr7": "1.*",
-    "psr/cache": "1.*",
-    "psr/http-message": "1.*",
+    "guzzlehttp/psr7": "^1",
+    "psr/cache": "^1",
+    "psr/http-message": "^1",
     "psr/log": "1.*",
-    "symfony/console": "4.*",
-    "twig/twig": "2.5.*"
+    "symfony/console": "^3",
+    "twig/twig": "^2.5"
   },
   "require-dev": {
-    "ext-pdo": "*",
-    "ext-mysqli": "*",
     "cache/void-adapter": "^1",
     "cache/array-adapter": "^1",
     "phpunit/phpunit": "^6",
