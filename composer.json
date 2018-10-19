@@ -21,7 +21,6 @@
     "twig/twig": "2.5.*"
   },
   "require-dev": {
-    "ext-ast": "*",
     "ext-pdo": "*",
     "ext-mysqli": "*",
     "cache/void-adapter": "^1",
