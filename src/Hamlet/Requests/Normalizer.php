@@ -11,6 +11,7 @@ class Normalizer
     /**
      * @param array $serverParams
      * @return string[]
+     * @suppress PhanUndeclaredFunction
      */
     public static function readHeadersFromSuperGlobals(array $serverParams)
     {

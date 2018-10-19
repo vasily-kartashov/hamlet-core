@@ -108,7 +108,7 @@ class Selector extends Collector
     public function withKey(string $keyField): Collector
     {
         $generator = function () use ($keyField) {
-            foreach (($this->generator)() as list($key, $record)) {
+            foreach (($this->generator)() as list($_, $record)) {
                 yield [$record[$keyField], $record];
             }
         };

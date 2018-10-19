@@ -59,7 +59,7 @@ class Converter
             $currentGroup = null;
             $lastRecord = null;
             $index = 0;
-            foreach (($this->generator)() as list($key, $record)) {
+            foreach (($this->generator)() as list($_, $record)) {
                 list($item, $record) = ($this->splitter)($record);
                 if ($lastRecord !== $record) {
                     if (!$this->isNull($currentGroup)) {

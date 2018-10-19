@@ -183,7 +183,7 @@ class MySQLProcedure extends AbstractProcedure
         $blobs = [];
         $callParameters[] = &$types;
         $counter = 0;
-        foreach ($this->parameters as $i => $parameter) {
+        foreach ($this->parameters as &$parameter) {
             $values = is_array($parameter[1]) ? $parameter[1] : [$parameter[1]];
             foreach ($values as $value) {
                 $types .= $parameter[0];
@@ -203,7 +203,7 @@ class MySQLProcedure extends AbstractProcedure
         if (!$success) {
             throw new MySQLException($this->connection);
         }
-        foreach ($blobs as $i => $data) {
+        foreach ($blobs as $i => &$data) {
             $success = $statement->send_long_data($i, $data);
             if (!$success) {
                 throw new MySQLException($this->connection);
