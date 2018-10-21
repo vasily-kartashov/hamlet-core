@@ -312,6 +312,8 @@ return [
         'PrintfCheckerPlugin',
         'SleepCheckerPlugin',
         'UnreachableCodePlugin',
+        'InvalidVariableIssetPlugin',
+        'UnusedSuppressionPlugin'
     ],
 
     // A list of directories that should be parsed for class and
