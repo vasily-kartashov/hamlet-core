@@ -28,8 +28,8 @@
     "squizlabs/php_codesniffer": "*",
     "vimeo/psalm": "*",
     "react/http": "*",
-    "swoft/swoole-ide-helper": "*",
-    "phan/phan": "*"
+    "phan/phan": "*",
+    "swoft/swoole-ide-helper": "*"
   },
   "autoload": {
     "psr-4": {

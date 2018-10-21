@@ -3,3 +3,4 @@ parameters:
     ignoreErrors:
         - '|Access to an undefined property object::\$name\.|'
         - '|.*Swoole.*|'
+        - '|.*SWOOLE_.*|'
