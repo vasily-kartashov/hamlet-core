@@ -2,12 +2,18 @@
 
 namespace Hamlet\Entities;
 
-use Exception;
+use RuntimeException;
 
 class JsonEntity extends AbstractJsonEntity
 {
     /** @var mixed */
-    protected $data;
+    private $data;
+
+    /** @var string|null */
+    private $content = null;
+
+    /** @var string|null */
+    private $key = null;
 
     /**
      * @param mixed $data
@@ -20,15 +26,27 @@ class JsonEntity extends AbstractJsonEntity
     /**
      * Get the entity key, still important for 304 to use proper key
      * @return string
-     * @throws Exception
      */
     public function getKey(): string
     {
-        $json = \json_encode($this->data);
-        if ($json === false) {
-            throw new Exception('Cannot serialize data');
+        if ($this->key === null) {
+            $this->key = \crc32($this->getContent());
         }
-        return md5($json);
+        return $this->key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent(): string
+    {
+        if ($this->content === null) {
+            $this->content = \json_encode($this->data);
+        }
+        if ($this->content === false) {
+            throw new RuntimeException(\json_last_error_msg(), \json_last_error());
+        }
+        return $this->content;
     }
 
     /**

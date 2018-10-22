@@ -28,7 +28,7 @@ class StreamEntity extends AbstractEntity
 
     public function getKey(): string
     {
-        return md5($this->getContent());
+        return \crc32($this->getContent());
     }
 
     /**

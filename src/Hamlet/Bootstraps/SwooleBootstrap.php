@@ -23,9 +23,11 @@ final class SwooleBootstrap
      */
     public static function run(string $host, int $port, AbstractApplication $application)
     {
-        $server = new Server($host, $port, SWOOLE_BASE);
+        $server = new Server($host, $port, SWOOLE_PROCESS);
+        $workers = (int) shell_exec('grep -c processor /proc/cpuinfo');
         $server->set([
-            'worker_num' => (int) shell_exec('grep -c processor /proc/cpuinfo')
+            'worker_num'    => $workers,
+            'max_request'   => $workers * 512
         ]);
 
         $server->on('request', function (SwooleRequest $swooleRequest, SwooleResponse $swooleResponse) use ($application) {
