@@ -157,7 +157,7 @@ class Response
         return $this;
     }
 
-    private function getStatusLine(): string
+    protected function getStatusLine(): string
     {
         static $phrases = [
             100 => 'Continue',
