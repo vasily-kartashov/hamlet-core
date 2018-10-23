@@ -18,9 +18,14 @@ class DefaultResponseWriter implements ResponseWriter
         header($key . ': ' . $value);
     }
 
-    public function write(string $payload)
+    public function writeAndEnd(string $payload)
     {
         echo $payload;
+        exit;
+    }
+
+    public function end()
+    {
         exit;
     }
 

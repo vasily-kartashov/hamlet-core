@@ -21,9 +21,14 @@ class SwooleResponseWriter implements ResponseWriter
         $this->sessionHandler = $sessionHandler;
     }
 
+    /**
+     * @param int $code
+     * @param string|null $line
+     * @suppress PhanParamTooManyInternal
+     */
     public function status(int $code, string $line = null)
     {
-        $this->response->status($code);
+        $this->response->status((string) $code, $line);
     }
 
     public function header(string $key, string $value)
@@ -31,11 +36,26 @@ class SwooleResponseWriter implements ResponseWriter
         $this->response->header($key, $value);
     }
 
-    public function write(string $payload)
+    public function writeAndEnd(string $payload)
     {
         $this->response->end($payload);
     }
 
+    public function end()
+    {
+        $this->response->end();
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     * @param int $expires
+     * @param string $path
+     * @param string $domain
+     * @param bool $secure
+     * @param bool $httpOnly
+     * @suppress PhanTypeMismatchArgumentInternal
+     */
     public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false)
     {
         $this->response->cookie($name, $value, $expires, $path, $domain, $secure, $httpOnly);

@@ -18,7 +18,7 @@ class PlainTextEntity extends AbstractEntity
     public function getKey(): string
     {
         if ($this->key === null) {
-            $this->key = \crc32($this->data);
+            $this->key = \md5($this->data);
         }
         return $this->key;
     }

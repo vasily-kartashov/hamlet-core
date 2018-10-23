@@ -255,7 +255,10 @@ class Request implements ServerRequestInterface
             return $swooleRequest->post;
         };
         $request->uploadedFilesProvider = function () use ($swooleRequest) {
-            return ServerRequest::normalizeFiles($swooleRequest->files);
+            if (empty($swooleRequest->files)) {
+                return [];
+            }
+            return ServerRequest::normalizeFiles((array) $swooleRequest->files);
         };
         $request->sessionParamsProvider = function () use ($swooleRequest, $sessionHandler) {
             if ($sessionHandler === null) {

@@ -21,13 +21,13 @@ class SimpleOKResponse extends Response
     public function output(Request $request, CacheItemPoolInterface $cache, ResponseWriter $writer)
     {
         $writer->status($this->statusCode, $this->getStatusLine());
-
+        assert($this->entity !== null);
         $content = $this->entity->getContent();
         $writer->header('Content-Length', (string) strlen($content));
         $mediaType = $this->entity->getMediaType();
         if ($mediaType) {
             $writer->header('Content-Type', $mediaType);
         }
-        $writer->write($content);
+        $writer->writeAndEnd($content);
     }
 }

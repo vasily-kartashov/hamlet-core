@@ -30,7 +30,7 @@ class JsonEntity extends AbstractJsonEntity
     public function getKey(): string
     {
         if ($this->key === null) {
-            $this->key = \crc32($this->getContent());
+            $this->key = \md5($this->getContent());
         }
         return $this->key;
     }
@@ -41,10 +41,11 @@ class JsonEntity extends AbstractJsonEntity
     public function getContent(): string
     {
         if ($this->content === null) {
-            $this->content = \json_encode($this->data);
-        }
-        if ($this->content === false) {
-            throw new RuntimeException(\json_last_error_msg(), \json_last_error());
+            $content = \json_encode($this->data);
+            if ($content === false) {
+                throw new RuntimeException(\json_last_error_msg(), \json_last_error());
+            }
+            $this->content = $content;
         }
         return $this->content;
     }

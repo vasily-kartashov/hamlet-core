@@ -24,7 +24,12 @@ interface ResponseWriter
      * @param string $payload
      * @return void
      */
-    public function write(string $payload);
+    public function writeAndEnd(string $payload);
+
+    /**
+     * @return void
+     */
+    public function end();
 
     /**
      * @param Request $request

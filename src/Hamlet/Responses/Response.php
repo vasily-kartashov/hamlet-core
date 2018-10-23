@@ -116,8 +116,12 @@ class Response
                 if ($mediaType) {
                     $writer->header('Content-Type', $mediaType);
                 }
-                $writer->write($cacheValue->content());
+                $writer->writeAndEnd($cacheValue->content());
+            } else {
+                $writer->end();
             }
+        } else {
+            $writer->end();
         }
     }
 

@@ -13,6 +13,6 @@ class PlainTextEntityTest extends TestCase
 
         Assert::assertTrue(is_string($entity->getKey()));
         Assert::assertNotEmpty($entity->getKey());
-        Assert::assertTrue($entity->getContent());
+        Assert::assertNotEmpty($entity->getContent());
     }
 }
