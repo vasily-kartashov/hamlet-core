@@ -29,6 +29,5 @@ class SimpleOKResponse extends Response
             $writer->header('Content-Type', $mediaType);
         }
         $writer->write($content);
-        $writer->end();
     }
 }

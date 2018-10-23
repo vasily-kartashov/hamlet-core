@@ -112,13 +112,6 @@ class ReactResponseWriter implements ResponseWriter
         $this->response = $this->response->withAddedHeader('Set-Cookie', $header);
     }
 
-    /**
-     * @return void
-     */
-    public function end()
-    {
-    }
-
     public function response(): Response
     {
         return $this->response;

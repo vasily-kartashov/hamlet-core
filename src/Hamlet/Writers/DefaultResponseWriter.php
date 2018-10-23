@@ -21,16 +21,12 @@ class DefaultResponseWriter implements ResponseWriter
     public function write(string $payload)
     {
         echo $payload;
+        exit;
     }
 
     public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false)
     {
         setcookie($name, $value, $expires, $path, $domain, $secure, $httpOnly);
-    }
-
-    public function end()
-    {
-        exit;
     }
 
     public function session(Request $request, array $params)

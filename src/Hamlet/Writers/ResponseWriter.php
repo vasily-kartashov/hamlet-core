@@ -44,9 +44,4 @@ interface ResponseWriter
      * @return void
      */
     public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false);
-
-    /**
-     * @return void
-     */
-    public function end();
 }

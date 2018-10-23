@@ -33,17 +33,12 @@ class SwooleResponseWriter implements ResponseWriter
 
     public function write(string $payload)
     {
-        $this->response->write($payload);
+        $this->response->end($payload);
     }
 
     public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false)
     {
         $this->response->cookie($name, $value, $expires, $path, $domain, $secure, $httpOnly);
-    }
-
-    public function end()
-    {
-        $this->response->end();
     }
 
     /**

@@ -119,7 +119,6 @@ class Response
                 $writer->write($cacheValue->content());
             }
         }
-        $writer->end();
     }
 
     protected function formatTimestamp(int $timestamp): string
