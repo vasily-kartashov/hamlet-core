@@ -33,6 +33,10 @@ class SwooleResponseWriter implements ResponseWriter
 
     public function header(string $key, string $value)
     {
+        // @bug not sure but for whatever reason swoole dislikes this header
+        if (strtolower($key) == 'content-length') {
+            return;
+        }
         $this->response->header($key, $value);
     }
 
