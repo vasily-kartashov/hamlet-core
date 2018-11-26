@@ -64,10 +64,43 @@ trait ConverterTrait
      */
     private function instantiateEntity(string $typeName, array $data)
     {
+        /**
+         * @var \ReflectionClass $type
+         * @var \ReflectionProperty[] $properties
+         * @var \ReflectionMethod|null $typeResolver
+         */
+        list($type, $properties, $typeResolver) = $this->getType($typeName);
+
+        if ($typeResolver) {
+            list($type, $properties) = $this->getType($typeResolver->invoke(null, $data));
+        }
+        $object = $type->newInstanceWithoutConstructor();
+        $propertiesSet = [];
+        foreach ($data as $name => &$value) {
+            if (!isset($properties[$name])) {
+                throw new RuntimeException('Property ' . $name . ' not found in class ' . $typeName);
+            }
+            $propertiesSet[$name] = 1;
+            $properties[$name]->setValue($object, $value);
+        }
+        /** @noinspection PhpUnusedLocalVariableInspection */
+        foreach ($properties as $name => &$_) {
+            if (!isset($propertiesSet[$name])) {
+                throw new RuntimeException('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
+            }
+        }
+        return $object;
+    }
+
+    private function getType(string $typeName): array
+    {
         /** @var ReflectionClass[] $types */
         static $types = [];
         /** @var \ReflectionProperty[][] $properties */
         static $properties = [];
+        /** @var \ReflectionMethod[] $typeResolvers */
+        static $typeResolvers = [];
+
         if (!isset($types[$typeName])) {
             $properties[$typeName] = [];
             try {
@@ -80,24 +113,15 @@ trait ConverterTrait
                 $property->setAccessible(true);
                 $properties[$typeName][$property->getName()] = $property;
             }
-        }
 
-        // @todo deal with private constructors
-        $object = new $typeName();
-        $propertiesSet = [];
-        foreach ($data as $name => &$value) {
-            if (!isset($properties[$typeName][$name])) {
-                throw new RuntimeException('Property ' . $name . ' not found in class ' . $typeName);
-            }
-            $propertiesSet[$name] = 1;
-            $properties[$typeName][$name]->setValue($object, $value);
-        }
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        foreach ($properties[$typeName] as $name => &$_) {
-            if (!isset($propertiesSet[$name])) {
-                throw new RuntimeException('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
+            if ($types[$typeName]->hasMethod('__resolveType')) {
+                $method = $types[$typeName]->getMethod('__resolveType');
+                if (!$method->isStatic() || !$method->isPublic()) {
+                    throw new RuntimeException('Method __resolveType must be public static method');
+                }
+                $typeResolvers[$typeName] = $method;
             }
         }
-        return $object;
+        return [$types[$typeName], $properties[$typeName], $typeResolvers[$typeName] ?? null];
     }
 }
