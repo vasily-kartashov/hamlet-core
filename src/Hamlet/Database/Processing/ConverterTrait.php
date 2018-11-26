@@ -72,7 +72,16 @@ trait ConverterTrait
         list($type, $properties, $typeResolver) = $this->getType($typeName);
 
         if ($typeResolver) {
-            list($type, $properties) = $this->getType($typeResolver->invoke(null, $data));
+            /**
+             * @var \ReflectionClass $resolvedType
+             * @var \ReflectionProperty[] $resolvedProperties
+             */
+            list($resolvedType, $resolvedProperties) = $this->getType($typeResolver->invoke(null, $data));
+            if ($resolvedType !== $type && !$resolvedType->isSubclassOf($type)) {
+                throw new RuntimeException('Resolved type ' . $resolvedType->getName() . ' is not subclass of ' . $type->getName());
+            }
+            $type = $resolvedType;
+            $properties = $resolvedProperties;
         }
         $object = $type->newInstanceWithoutConstructor();
         $propertiesSet = [];
@@ -114,13 +123,17 @@ trait ConverterTrait
                 $properties[$typeName][$property->getName()] = $property;
             }
 
-            if ($types[$typeName]->hasMethod('__resolveType')) {
-                $method = $types[$typeName]->getMethod('__resolveType');
-                if (!$method->isStatic() || !$method->isPublic()) {
-                    throw new RuntimeException('Method __resolveType must be public static method');
+            do {
+                $type = $types[$typeName];
+                if ($types[$typeName]->hasMethod('__resolveType')) {
+                    $method = $types[$typeName]->getMethod('__resolveType');
+                    if (!$method->isStatic() || !$method->isPublic()) {
+                        throw new RuntimeException('Method __resolveType must be public static method');
+                    }
+                    $typeResolvers[$typeName] = $method;
+                    break;
                 }
-                $typeResolvers[$typeName] = $method;
-            }
+            } while ($type = $type->getParentClass());
         }
         return [$types[$typeName], $properties[$typeName], $typeResolvers[$typeName] ?? null];
     }

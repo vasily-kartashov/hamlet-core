@@ -6,6 +6,7 @@ namespace Hamlet\Database\Processing;
 use Hamlet\Database\Entity;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class AbstractUser implements Entity
 {
@@ -84,5 +85,15 @@ class TypeResolverTest extends TestCase
         Assert::assertInstanceOf(User::class, $collection[1]);
         Assert::assertInstanceOf(AnonymousUser::class, $collection[2]);
         Assert::assertInstanceOf(User::class, $collection[3]);
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testTypeResolverThrowsException()
+    {
+        (new Selector($this->users()))
+            ->selectAll()->cast(AnonymousUser::class)
+            ->collectAll();
     }
 }
