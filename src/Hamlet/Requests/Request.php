@@ -163,9 +163,8 @@ class Request implements ServerRequestInterface
                     session_set_save_handler($sessionHandler);
                 }
                 session_start();
-                return $_SESSION;
             }
-            return null;
+            return $_SESSION ?? null;
         };
 
         return $request;
