@@ -123,8 +123,8 @@ trait ConverterTrait
                 $properties[$typeName][$property->getName()] = $property;
             }
 
+            $type = $types[$typeName];
             do {
-                $type = $types[$typeName];
                 if ($type->hasMethod('__resolveType')) {
                     try {
                         $method = $type->getMethod('__resolveType');
@@ -136,7 +136,6 @@ trait ConverterTrait
                         throw new RuntimeException('Method __resolveType must be public static method');
                     }
                     $typeResolvers[$typeName] = $method;
-                    break;
                 }
             } while ($type = $type->getParentClass());
         }
