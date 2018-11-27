@@ -46,6 +46,14 @@ class AnonymousUser extends AbstractUser
 {
 }
 
+class SuperAnonymousUser extends AnonymousUser
+{
+}
+
+class RandomClass implements Entity
+{
+}
+
 class TypeResolverTest extends TestCase
 {
     private function users()
@@ -93,7 +101,17 @@ class TypeResolverTest extends TestCase
     public function testTypeResolverThrowsException()
     {
         (new Selector($this->users()))
-            ->selectAll()->cast(AnonymousUser::class)
+            ->selectAll()->cast(SuperAnonymousUser::class)
+            ->collectAll();
+    }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testTypeResolverThrowsExceptionOfUnrelatedClass()
+    {
+        (new Selector($this->users()))
+            ->selectAll()->cast(RandomClass::class)
             ->collectAll();
     }
 }

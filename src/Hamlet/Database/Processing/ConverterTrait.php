@@ -125,8 +125,13 @@ trait ConverterTrait
 
             do {
                 $type = $types[$typeName];
-                if ($types[$typeName]->hasMethod('__resolveType')) {
-                    $method = $types[$typeName]->getMethod('__resolveType');
+                if ($type->hasMethod('__resolveType')) {
+                    try {
+                        $method = $type->getMethod('__resolveType');
+                    } catch (ReflectionException $e) {
+                        throw new RuntimeException('Cannot access __resolveType method', $e->getCode(), $e);
+                    }
+
                     if (!$method->isStatic() || !$method->isPublic()) {
                         throw new RuntimeException('Method __resolveType must be public static method');
                     }
