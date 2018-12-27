@@ -24,6 +24,7 @@ final class SwooleBootstrap
     public static function run(string $host, int $port, AbstractApplication $application)
     {
         $server = new Server($host, $port, SWOOLE_BASE);
+        /** @psalm-suppress ForbiddenCode */
         $workers = (int) shell_exec('grep -c processor /proc/cpuinfo');
         $server->set([
             'worker_num' => $workers

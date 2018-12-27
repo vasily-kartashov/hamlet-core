@@ -21,15 +21,14 @@
     "twig/twig": "^2.5"
   },
   "require-dev": {
-    "cache/void-adapter": "^1",
-    "cache/array-adapter": "^1",
-    "phpunit/phpunit": "^6",
-    "phpstan/phpstan": "*",
-    "squizlabs/php_codesniffer": "*",
-    "vimeo/psalm": "*",
-    "react/http": "*",
-    "phan/phan": "*",
-    "swoft/swoole-ide-helper": "*"
+    "cache/void-adapter": "@stable",
+    "cache/array-adapter": "@stable",
+    "phpunit/phpunit": "@stable",
+    "phpstan/phpstan": "@stable",
+    "squizlabs/php_codesniffer": "@stable",
+    "vimeo/psalm": "@stable",
+    "react/http": "@stable",
+    "swoft/swoole-ide-helper": "@stable"
   },
   "autoload": {
     "psr-4": {

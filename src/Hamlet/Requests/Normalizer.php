@@ -92,7 +92,7 @@ class Normalizer
     {
         $uri = new Uri('');
 
-        $uri = $uri->withScheme(!empty($serverParams['HTTPS']) && $serverParams['HTTPS'] !== 'off' ? 'https' : 'http');
+        $uri = $uri->withScheme(isset($serverParams['HTTPS']) && $serverParams['HTTPS'] !== 'off' ? 'https' : 'http');
 
         $hasPort = false;
         if (isset($serverParams['HTTP_HOST'])) {
