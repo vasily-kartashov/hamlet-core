@@ -1,6 +1,7 @@
 parameters:
-    reportUnmatchedIgnoredErrors: false
-    ignoreErrors:
-        - '|Access to an undefined property object::\$name\.|'
-        - '|.*Swoole.*|'
-        - '|.*SWOOLE_.*|'
+  reportUnmatchedIgnoredErrors: false
+  ignoreErrors:
+    - '|Access to an undefined property object::\$name\.|'
+    - '|.*Swoole.*|'
+    - '|.*SWOOLE_.*|'
+    - '|Argument of an invalid type string supplied for foreach, only iterables are supported.|'
