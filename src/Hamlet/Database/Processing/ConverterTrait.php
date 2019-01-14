@@ -129,7 +129,7 @@ trait ConverterTrait
                     try {
                         $method = $type->getMethod('__resolveType');
                     } catch (ReflectionException $e) {
-                        throw new RuntimeException('Cannot access __resolveType method', $e->getCode(), $e);
+                        throw new RuntimeException('Cannot access __resolveType method', 0, $e);
                     }
 
                     if (!$method->isStatic() || !$method->isPublic()) {

@@ -31,7 +31,7 @@ abstract class AbstractEntity implements Entity
         try {
             $cacheItem = $cache->getItem($key);
         } catch (InvalidArgumentException $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode());
+            throw new RuntimeException($e->getMessage(), 0, $e);
         }
 
         if ($cacheItem->isHit()) {
