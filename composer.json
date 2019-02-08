@@ -23,7 +23,7 @@
   "require-dev": {
     "cache/void-adapter": "@stable",
     "cache/array-adapter": "@stable",
-    "phpunit/phpunit": "^6 || ^7",
+    "phpunit/phpunit": "^6 || ^7 || ^8",
     "phpstan/phpstan": "@stable",
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
