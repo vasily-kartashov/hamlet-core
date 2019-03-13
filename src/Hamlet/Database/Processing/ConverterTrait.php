@@ -104,10 +104,8 @@ trait ConverterTrait
     /**
      * @param       string       $typeName
      * @psalm-param class-string $typeName
-     *
      * @return       array
      * @psalm-return array{0:ReflectionClass,1:array<ReflectionProperty>,2:ReflectionMethod|null}
-     * 
      * @psalm-suppress MoreSpecificReturnType
      */
     private function getType(string $typeName): array
