@@ -29,12 +29,13 @@ class CacheValue
      */
     public function __construct($content, int $modified, int $expiry)
     {
-        $md5 = md5($content);
+        $contentAsString = (string) $content;
+        $md5 = md5($contentAsString);
 
         $this->content  = $content;
         $this->tag      = '"' . $md5 . '"';
         $this->digest   = base64_encode(pack('H*', $md5));
-        $this->length   = strlen($content);
+        $this->length   = strlen($contentAsString);
         $this->modified = $modified;
         $this->expiry   = $expiry;
     }

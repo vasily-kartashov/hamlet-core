@@ -5,3 +5,4 @@ parameters:
     - '|.*Swoole.*|'
     - '|.*SWOOLE_.*|'
     - '|Argument of an invalid type string supplied for foreach, only iterables are supported.|'
+    - '/Result of || is always true\./'

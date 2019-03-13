@@ -60,6 +60,7 @@ abstract class AbstractProcedure implements Procedure
     public function bindFloatList(array $values)
     {
         assert(!empty($values));
+        /** @psalm-suppress MixedAssignment */
         foreach ($values as $value) {
             assert(is_float($value));
         }
@@ -69,6 +70,7 @@ abstract class AbstractProcedure implements Procedure
     public function bindIntegerList(array $values)
     {
         assert(!empty($values));
+        /** @psalm-suppress MixedAssignment */
         foreach ($values as $value) {
             assert(is_int($value));
         }
@@ -78,6 +80,7 @@ abstract class AbstractProcedure implements Procedure
     public function bindStringList(array $values)
     {
         assert(!empty($values));
+        /** @psalm-suppress MixedAssignment */
         foreach ($values as $value) {
             assert(is_string($value));
         }

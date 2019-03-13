@@ -27,7 +27,6 @@
     "phpstan/phpstan": "@stable",
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
-    "react/http": "@stable",
     "swoft/swoole-ide-helper": "@stable"
   },
   "autoload": {
