@@ -15,9 +15,9 @@ class TwigRendererTest extends TestCase
     {
         $renderer = new TwigRenderer();
         $data = [
-            "name" => "World"
+            'name' => 'World'
         ];
         $path = realpath(__DIR__ . '/variable-substitution.twig');
-        Assert::assertEquals($renderer->render($data, $path), "Hello, World!");
+        Assert::assertEquals('Hello, World!', $renderer->render($data, $path));
     }
 }
