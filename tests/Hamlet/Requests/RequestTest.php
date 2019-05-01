@@ -93,7 +93,7 @@ class RequestTest extends TestCase
             ->withQueryParams(['id' => '22']);
 
         $id = $request->getTypedQueryParam('id', _int());
-        Assert::assertIsInt($id);
+        Assert::assertTrue(is_int($id));
         Assert::assertSame(22, $id);
     }
 
