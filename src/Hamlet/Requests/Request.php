@@ -5,6 +5,7 @@ namespace Hamlet\Requests;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
+use Hamlet\Cast\Type;
 use Hamlet\Entities\Entity;
 use InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface;
@@ -891,6 +892,19 @@ class Request implements ServerRequestInterface
     public function getQueryParam(string $name, string $default = null)
     {
         return $this->getQueryParams()[$name] ?? $default;
+    }
+
+    /**
+     * @template T
+     * @param string $name
+     * @param Type $type
+     * @psalm-param Type<T> $type
+     * @return mixed
+     * @psalm-return T
+     */
+    public function getTypedQueryParam(string $name, Type $type)
+    {
+        return $type->cast($this->getQueryParam($name));
     }
 
     /**

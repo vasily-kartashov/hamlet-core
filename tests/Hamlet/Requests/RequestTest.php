@@ -4,10 +4,13 @@ namespace Hamlet\Requests;
 
 use Cache\Adapter\PHPArray\ArrayCachePool;
 use Cache\Adapter\Void\VoidCachePool;
+use DateTime;
 use GuzzleHttp\Psr7\Uri;
 use Hamlet\Entities\JsonEntity;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use function Hamlet\Cast\_class;
+use function Hamlet\Cast\_int;
 
 class RequestTest extends TestCase
 {
@@ -82,5 +85,26 @@ class RequestTest extends TestCase
             ->withHeader('If-Unmodified-Since', gmdate('D, d M Y H:i:s', $modified - 10) . ' GMT');
 
         Assert::assertFalse($request2->preconditionFulfilled($entity, $cache));
+    }
+
+    public function testGetTypedQueryParam()
+    {
+        $request = Request::empty()
+            ->withQueryParams(['id' => '22']);
+
+        $id = $request->getTypedQueryParam('id', _int());
+        Assert::assertIsInt($id);
+        Assert::assertSame(22, $id);
+    }
+
+    /**
+     * @expectedException \Hamlet\Cast\CastException
+     */
+    public function testGetTypedQueryParamThrowsExceptionIfCastNotPossible()
+    {
+        $request = Request::empty()
+            ->withQueryParams(['id' => new \stdClass()]);
+
+        $request->getTypedQueryParam('id', _class(DateTime::class));
     }
 }
