@@ -907,7 +907,7 @@ class Request implements ServerRequestInterface
         return $type->cast($this->getQueryParam($name));
     }
 
-    public function hasBodyParam($name): bool
+    public function hasBodyParam(string $name): bool
     {
         $body = $this->getParsedBody();
         return is_array($body) && array_key_exists($name, $body);
@@ -924,6 +924,7 @@ class Request implements ServerRequestInterface
     public function getTypedBodyParam(string $name, Type $type)
     {
         $body = $this->getParsedBody();
+        assert(is_array($body));
         return $type->cast($body[$name]);
     }
 
