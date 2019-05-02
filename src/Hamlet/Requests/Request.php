@@ -907,6 +907,26 @@ class Request implements ServerRequestInterface
         return $type->cast($this->getQueryParam($name));
     }
 
+    public function hasBodyParam($name): bool
+    {
+        $body = $this->getParsedBody();
+        return is_array($body) && array_key_exists($name, $body);
+    }
+
+    /**
+     * @template T
+     * @param string $name
+     * @param Type $type
+     * @psalm-param Type<T> $type
+     * @return mixed
+     * @psalm-return T
+     */
+    public function getTypedBodyParam(string $name, Type $type)
+    {
+        $body = $this->getParsedBody();
+        return $type->cast($body[$name]);
+    }
+
     /**
      * Return an instance with the specified query string arguments.
      *

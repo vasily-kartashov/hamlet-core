@@ -107,4 +107,25 @@ class RequestTest extends TestCase
 
         $request->getTypedQueryParam('id', _class(DateTime::class));
     }
+
+    public function testGetTypedBodyParam()
+    {
+        $request = Request::empty()
+            ->withParsedBody(['id' => '22']);
+
+        $id = $request->getTypedBodyParam('id', _int());
+        Assert::assertTrue(is_int($id));
+        Assert::assertSame(22, $id);
+    }
+
+    /**
+     * @expectedException \Hamlet\Cast\CastException
+     */
+    public function testGetTypedBodyParamThrowsExceptionIfCastNotPossible()
+    {
+        $request = Request::empty()
+            ->withParsedBody(['id' => new \stdClass()]);
+
+        $request->getTypedQueryParam('id', _class(DateTime::class));
+    }
 }
