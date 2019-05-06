@@ -8,13 +8,18 @@ use PHPUnit\Framework\TestCase;
 
 class Phone
 {
-    public $name, $phone;
+    /** @var string */
+    public $name;
+
+    /** @var string */
+    public $phone;
 }
 
 class Address
 {
     /** @var string */
     public $street;
+
     /** @var int */
     public $number;
 }
@@ -23,13 +28,22 @@ class AddressBookEntry
 {
     /** @var string */
     public $name;
+
     /** @var Address[] */
     public $addresses;
 }
 
 class PhoneEntity implements Entity
 {
-    private $name, $phone;
+    /**
+     * @var string
+     */
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $phone;
 
     public function name(): string
     {

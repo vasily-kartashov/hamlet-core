@@ -2,6 +2,7 @@
 
 namespace Hamlet\Database\Processing;
 
+use Hamlet\Cast\Type;
 use Hamlet\Database\Entity;
 use ReflectionClass;
 use ReflectionException;
@@ -90,6 +91,7 @@ trait ConverterTrait
                 throw new RuntimeException('Property ' . $name . ' not found in class ' . $typeName);
             }
             $propertiesSet[$name] = 1;
+            assert($this->assertPropertyType($properties[$name], $value), 'Property ' . $name . ' of class ' . $typeName . ' accepts ' . var_export($value, true));
             $properties[$name]->setValue($object, $value);
         }
         /** @noinspection PhpUnusedLocalVariableInspection */
@@ -147,5 +149,32 @@ trait ConverterTrait
             } while ($type = $type->getParentClass());
         }
         return [$types[$typeName], $properties[$typeName], $typeResolvers[$typeName] ?? null];
+    }
+
+    /**
+     * @param \ReflectionProperty $property
+     * @param mixed $value
+     * @return bool
+     */
+    private function assertPropertyType(\ReflectionProperty $property, $value): bool
+    {
+        $comment = $property->getDocComment();
+        $types = [];
+        foreach (preg_split('/$\R?^/m', $comment) as $line) {
+            $line = preg_replace('|^\s*/\*\*\s+|', '', $line);
+            $line = preg_replace('|\s+\*/\s*$|', '', $line);
+            if (preg_match('|@((psalm-)?var)\s+(.*)|', $line, $matches)) {
+                $scope = $matches[1];
+                $declaration = trim($matches[3]);
+                $types[$scope] = $declaration;
+            }
+        }
+        if (isset($types['psalm-var'])) {
+            return Type::of($types['psalm-var'])->matches($value);
+        } elseif (isset($types['var'])) {
+            return Type::of($types['var'])->matches($value);
+        } else {
+            return false;
+        }
     }
 }

@@ -10,8 +10,19 @@ use RuntimeException;
 
 class AbstractUser implements Entity
 {
+    /**
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var float|null
+     */
     protected $latitude;
+
+    /**
+     * @var float|null
+     */
     protected $longitude;
 
     public static function __resolveType(array $properties)

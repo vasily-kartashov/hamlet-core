@@ -29,7 +29,11 @@ class AddressBookEntry
 
 class PhoneEntity implements Entity
 {
-    private $name, $phone;
+    /** @var string */
+    private $name;
+
+    /** @var string */
+    private $phone;
 
     public function name(): string
     {
