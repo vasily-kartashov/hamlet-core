@@ -24,7 +24,7 @@ class Address
     public $number;
 }
 
-class AddressBookEntry
+class AddressBookEntry implements Entity
 {
     /** @var string */
     public $name;
