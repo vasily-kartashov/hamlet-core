@@ -101,6 +101,7 @@ class Collector
      * @param callable $callback
      * @psalm-param callable(mixed,mixed):bool $callback
      * @return self
+     * @psalm-return Collector<K,V>
      */
     public function assertForEach(callable $callback): self
     {

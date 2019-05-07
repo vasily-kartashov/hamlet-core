@@ -26,13 +26,13 @@ class PDOProcedure extends AbstractProcedure
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function insert(): string
+    public function insert(): int
     {
         $statement = $this->prepareAndBind();
         $this->affectedRows = $statement->rowCount();
-        return $this->connection->lastInsertId();
+        return (int) $this->connection->lastInsertId();
     }
 
     /**

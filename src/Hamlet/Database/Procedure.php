@@ -75,7 +75,7 @@ interface Procedure extends LoggerAwareInterface
     public function bindStringList(array $values);
 
     /**
-     * @return mixed
+     * @return int
      */
     public function insert();
 
