@@ -2,6 +2,7 @@
 
 namespace Hamlet\Database;
 
+use Exception;
 use Hamlet\Database\MySQL\MySQLDatabase;
 use Hamlet\Database\PDO\PDODatabase;
 use Hamlet\Database\SQLite\SQLiteDatabase;
@@ -12,7 +13,6 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
 use SQLite3;
-use Throwable;
 
 /**
  * @suppress PhanInvalidCommentForDeclarationType
@@ -66,8 +66,6 @@ abstract class Database implements LoggerAwareInterface
      *
      * @psalm-param callable():T $callable
      * @psalm-return T
-     *
-     * @throws Throwable
      */
     public function withTransaction(callable $callable)
     {
@@ -83,12 +81,12 @@ abstract class Database implements LoggerAwareInterface
             }
             $this->transactionStarted = $nested;
             return $result;
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             if ($this->transactionStarted) {
                 $this->rollback();
                 $this->transactionStarted = false;
             }
-            throw $e;
+            throw new RuntimeException('Exception within transaction caught', 0, $e);
         }
     }
 
@@ -102,17 +100,15 @@ abstract class Database implements LoggerAwareInterface
      * @psalm-param callable():T $callable
      * @psalm-param int $maxAttempts
      * @psalm-return T
-     *
-     * @throws Throwable
      */
     public function tryWithTransaction(callable $callable, int $maxAttempts)
     {
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             try {
                 return $this->withTransaction($callable);
-            } catch (Throwable $e) {
+            } catch (Exception $e) {
                 if ($attempt == $maxAttempts) {
-                    throw $e;
+                    throw new RuntimeException('Exception within transaction caught', 0, $e);
                 }
             }
         }
