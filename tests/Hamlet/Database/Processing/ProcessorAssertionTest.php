@@ -5,6 +5,7 @@ namespace Hamlet\Database\Processing;
 use AssertionError;
 use DateTime;
 use Exception;
+use Hamlet\Cast\CastException;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use function Hamlet\Cast\_class;
@@ -36,7 +37,7 @@ class ProcessorAssertionTest extends TestCase
             $this->collector()
                 ->assertType(_mixed(), _class(DateTime::class))
                 ->collectAll();
-        } catch (AssertionError $e) {
+        } catch (CastException $e) {
             $errorThrown = true;
         }
         Assert::assertTrue($errorThrown);
@@ -73,7 +74,7 @@ class ProcessorAssertionTest extends TestCase
                     return is_string($value);
                 })
                 ->collectAll();
-        } catch (AssertionError $exception) {
+        } catch (RuntimeException $exception) {
             $errorThrown = true;
         }
         Assert::assertTrue($errorThrown);

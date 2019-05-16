@@ -3,6 +3,7 @@
 namespace Hamlet\Database\Processing;
 
 use Hamlet\Cast\Type;
+use RuntimeException;
 
 /**
  * @template K as array-key
@@ -126,7 +127,7 @@ class Collector
             $this->valueType->assert($value);
         }
         if ($this->assertion) {
-            assert(($this->assertion)($key, $value));
+            assert(($this->assertion)($key, $value), new RuntimeException());
         }
     }
 }
