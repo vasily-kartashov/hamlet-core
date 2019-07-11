@@ -138,6 +138,8 @@ class Collector
      * @param mixed $value
      * @psalm-param V $value
      * @return void
+     *
+     * @psalm-suppress DocblockTypeContradiction
      */
     private function validate($key, $value)
     {
