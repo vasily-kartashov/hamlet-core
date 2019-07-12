@@ -11,6 +11,11 @@
     }
   ],
   "minimum-stability": "dev",
+  "config": {
+    "optimize-autoloader": true,
+    "classmap-authoritative": true,
+    "sort-packages": true
+  },
   "require": {
     "php": "^7.0",
     "ext-json": "@stable",
@@ -28,7 +33,9 @@
     "phpunit/phpunit": "^6 || ^7",
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
-    "swoft/swoole-ide-helper": "@stable"
+    "swoft/swoole-ide-helper": "@stable",
+    "phake/phake": "@stable",
+    "jakub-onderka/php-parallel-lint": "@stable"
   },
   "autoload": {
     "psr-4": {

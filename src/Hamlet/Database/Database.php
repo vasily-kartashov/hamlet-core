@@ -19,11 +19,21 @@ use SQLite3;
  */
 abstract class Database implements LoggerAwareInterface
 {
-    /** @var LoggerInterface */
+    /**
+     * @var LoggerInterface
+     */
     protected $logger;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $transactionStarted = false;
+
+    /**
+     * @var callable[]
+     * @psalm-var array<string,callable():void>
+     */
+    protected $onSuccess = [];
 
     protected function __construct()
     {
@@ -61,27 +71,36 @@ abstract class Database implements LoggerAwareInterface
     /**
      * @template T
      *
-     * @param callable $callable
-     * @return mixed
+     * @param       callable                      $callable
+     * @psalm-param callable():T                  $callable
      *
-     * @psalm-param callable():T $callable
+     * @param       callable[]                    $onSuccess
+     * @psalm-param array<string,callable():void> $onSuccess
+     *
+     * @return       mixed
      * @psalm-return T
      */
-    public function withTransaction(callable $callable)
+    public function withTransaction(callable $callable, array $onSuccess = [])
     {
         try {
             $nested = $this->transactionStarted;
             if (!$nested) {
                 $this->startTransaction();
             }
+            $this->onSuccess = array_merge($this->onSuccess, $onSuccess);
             $this->transactionStarted = true;
             $result = $callable();
             if (!$nested) {
                 $this->commit();
+                foreach ($this->onSuccess as $callback) {
+                    $callback();
+                }
+                $this->onSuccess = [];
             }
             $this->transactionStarted = $nested;
             return $result;
         } catch (Exception $e) {
+            $this->onSuccess = [];
             if ($this->transactionStarted) {
                 $this->rollback();
                 $this->transactionStarted = false;
@@ -93,19 +112,22 @@ abstract class Database implements LoggerAwareInterface
     /**
      * @template T
      *
-     * @param callable $callable
-     * @param int $maxAttempts
-     * @return mixed
+     * @param       callable                      $callable
+     * @psalm-param callable():T                  $callable
      *
-     * @psalm-param callable():T $callable
-     * @psalm-param int $maxAttempts
+     * @param       int                           $maxAttempts
+     *
+     * @param       callable[]                    $onSuccess
+     * @psalm-param array<string,callable():void> $onSuccess
+     *
+     * @return       mixed
      * @psalm-return T
      */
-    public function tryWithTransaction(callable $callable, int $maxAttempts)
+    public function tryWithTransaction(callable $callable, int $maxAttempts, array $onSuccess = [])
     {
         for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
             try {
-                return $this->withTransaction($callable);
+                return $this->withTransaction($callable, $onSuccess);
             } catch (Exception $e) {
                 if ($attempt == $maxAttempts) {
                     throw new RuntimeException('Exception within transaction caught', 0, $e);
