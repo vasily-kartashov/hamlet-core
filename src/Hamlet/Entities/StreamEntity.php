@@ -23,7 +23,7 @@ class StreamEntity extends AbstractEntity
             $this->stream->rewind();
             $this->content = $this->stream->getContents();
         }
-        return $this->content ?? '';
+        return $this->content;
     }
 
     public function getKey(): string

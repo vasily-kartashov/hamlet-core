@@ -14,6 +14,9 @@ abstract class AbstractTemplateEntity extends AbstractEntity
 
     abstract protected function getTemplateRenderer(): TemplateRenderer;
 
+    /**
+     * @return array
+     */
     abstract protected function getTemplateData();
 
     abstract protected function getTemplatePath(): string;

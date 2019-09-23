@@ -137,9 +137,18 @@ abstract class Database implements LoggerAwareInterface
         throw new RuntimeException('Number of attempts must be greater than 0');
     }
 
+    /**
+     * @return void
+     */
     abstract public function startTransaction();
 
+    /**
+     * @return void
+     */
     abstract public function commit();
 
+    /**
+     * @return void
+     */
     abstract public function rollback();
 }
