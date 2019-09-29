@@ -14,7 +14,7 @@ class Selector extends Collector
         return new Converter($this->records, $splitter);
     }
 
-    public function selectFields(string... $fields): Converter
+    public function selectFields(string ...$fields): Converter
     {
         $splitter = function (array $record) use ($fields): array {
             $item = [];
@@ -75,7 +75,7 @@ class Selector extends Collector
         return new Converter($this->records, $splitter);
     }
 
-    public function collate(string... $fields): Converter
+    public function collate(string ...$fields): Converter
     {
         $splitter = function (array $record) use ($fields): array {
             $item = null;

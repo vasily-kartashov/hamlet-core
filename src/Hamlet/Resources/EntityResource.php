@@ -16,7 +16,7 @@ class EntityResource implements WebResource
     /** @var string[] */
     protected $methods;
 
-    public function __construct(Entity $entity, string ... $methods)
+    public function __construct(Entity $entity, string ...$methods)
     {
         $this->entity  = $entity;
         $this->methods = $methods ?: ['GET'];
@@ -28,6 +28,6 @@ class EntityResource implements WebResource
             $response = new OKOrNotModifiedResponse($this->entity);
             return $response;
         }
-        return new MethodNotAllowedResponse(... $this->methods);
+        return new MethodNotAllowedResponse(...$this->methods);
     }
 }
