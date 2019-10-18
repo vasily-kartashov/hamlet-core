@@ -1188,6 +1188,7 @@ class Request implements ServerRequestInterface
     {
         $copy = clone $this;
         $copy->sessionParams = $session;
+        $copy->sessionParamsSet = true;
         return $copy;
     }
 
