@@ -89,6 +89,8 @@ class Collector
      * @return Collector
      * @psalm-return Collector<K1,V1>
      * @psalm-suppress MixedTypeCoercion
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     public function assertType(Type $keyType, Type $valueType)
     {

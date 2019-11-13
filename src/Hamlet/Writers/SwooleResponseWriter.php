@@ -28,7 +28,7 @@ class SwooleResponseWriter implements ResponseWriter
      */
     public function status(int $code, string $line = null)
     {
-        $this->response->status((string) $code, $line);
+        $this->response->status((string) $code);
     }
 
     public function header(string $key, string $value)
@@ -58,7 +58,7 @@ class SwooleResponseWriter implements ResponseWriter
      * @param string $domain
      * @param bool $secure
      * @param bool $httpOnly
-     * @suppress PhanTypeMismatchArgumentInternal
+     * @psalm-suppress InvalidScalarArgument
      */
     public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false)
     {
