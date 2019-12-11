@@ -35,7 +35,7 @@
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
     "swoft/swoole-ide-helper": "@stable",
-    "phake/phake": "3.1.6",
+    "phake/phake": "<3.1.7 || >3.1.7",
     "jakub-onderka/php-parallel-lint": "@stable"
   },
   "autoload": {
