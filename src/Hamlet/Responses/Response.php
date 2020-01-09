@@ -83,7 +83,7 @@ class Response
     {
         $writer->status($this->statusCode, $this->getStatusLine());
 
-        if (!empty($request->getSessionParams()) || !empty($this->sessionParams)) {
+        if ($request->sessionStarted() || !empty($this->sessionParams)) {
             $writer->session($request, $this->sessionParams);
         }
 

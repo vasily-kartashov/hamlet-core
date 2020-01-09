@@ -1165,7 +1165,7 @@ class Request implements ServerRequestInterface
 
     public function sessionStarted(): bool
     {
-        return $this->getSessionParams() !== null;
+        return session_status() != PHP_SESSION_NONE;
     }
 
     /**

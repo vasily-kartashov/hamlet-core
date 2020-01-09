@@ -2,7 +2,8 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/7.5/phpunit.xsd"
          colors="true"
          backupGlobals="true"
-         bootstrap="vendor/autoload.php">
+         bootstrap="vendor/autoload.php"
+         convertErrorsToExceptions="false">
     <testsuites>
         <testsuite name="hamlet-core">
             <directory>tests</directory>

@@ -20,10 +20,10 @@
   "require": {
     "php": "^7.0",
     "ext-json": "@stable",
-    "guzzlehttp/psr7": "^1",
-    "psr/cache": "^1",
-    "psr/http-message": "^1",
-    "psr/log": "1.*",
+    "guzzlehttp/psr7": "@stable",
+    "psr/cache": "@stable",
+    "psr/http-message": "@stable",
+    "psr/log": "@stable",
     "symfony/console": "^3",
     "twig/twig": "^2.5",
     "hamlet-framework/type": "@stable"
@@ -35,7 +35,7 @@
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
     "swoft/swoole-ide-helper": "@stable",
-    "phake/phake": "<3.1.7 || >3.1.7",
+    "phake/phake": "3.1.6",
     "jakub-onderka/php-parallel-lint": "@stable"
   },
   "autoload": {
