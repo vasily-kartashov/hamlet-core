@@ -52,7 +52,11 @@ class PDOProcedure extends AbstractProcedure
     {
         $statement = $this->prepareAndBind();
         $statement->execute();
-        return $statement->fetch(PDO::FETCH_ASSOC);
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($result === false) {
+            return null;
+        }
+        return $result;
     }
 
     public function fetchAll(): array
