@@ -12,6 +12,7 @@ class Collector
 {
     /**
      * @var callable
+     * @psalm-var callable():array<array{0:K,1:V}>
      */
     protected $generator;
 
@@ -36,6 +37,10 @@ class Collector
      */
     protected $validationEnabled = false;
 
+    /**
+     * @param callable $generator
+     * @psalm-param @psalm-var callable():array<array{0:K,1:V}> $generator
+     */
     public function __construct(callable $generator)
     {
         $this->generator = $generator;
@@ -60,15 +65,13 @@ class Collector
      */
     public function collectHead()
     {
-        $entry = ($this->generator)();
-        if ($entry) {
+        foreach (($this->generator)() as list($key, $value)) {
             if ($this->validationEnabled) {
-                $this->validate($entry[0], $entry[1]);
+                $this->validate($key, $value);
             }
-            return $entry[1];
-        } else {
-            return null;
+            return $value;
         }
+        return null;
     }
 
     /**
