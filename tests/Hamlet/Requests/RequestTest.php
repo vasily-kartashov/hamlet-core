@@ -6,10 +6,13 @@ use Cache\Adapter\PHPArray\ArrayCachePool;
 use Cache\Adapter\Void\VoidCachePool;
 use DateTime;
 use GuzzleHttp\Psr7\Uri;
+use Hamlet\Cast\CastException;
 use Hamlet\Entities\JsonEntity;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use function Hamlet\Cast\_class;
+use function Hamlet\Cast\_float;
 use function Hamlet\Cast\_int;
 
 class RequestTest extends TestCase
@@ -97,15 +100,13 @@ class RequestTest extends TestCase
         Assert::assertSame(22, $id);
     }
 
-    /**
-     * @expectedException \Hamlet\Cast\CastException
-     */
     public function testGetTypedQueryParamThrowsExceptionIfCastNotPossible()
     {
         $request = Request::empty()
-            ->withQueryParams(['id' => new \stdClass()]);
+            ->withQueryParams(['id' => new stdClass]);
 
-        $request->getTypedQueryParam('id', _class(DateTime::class));
+        $this->expectException(CastException::class);
+        $request->getTypedQueryParam('id', _float());
     }
 
     public function testGetTypedBodyParam()
@@ -118,14 +119,12 @@ class RequestTest extends TestCase
         Assert::assertSame(22, $id);
     }
 
-    /**
-     * @expectedException \Hamlet\Cast\CastException
-     */
     public function testGetTypedBodyParamThrowsExceptionIfCastNotPossible()
     {
         $request = Request::empty()
-            ->withParsedBody(['id' => new \stdClass()]);
+            ->withParsedBody(['id' => new stdClass()]);
 
+        $this->expectException(CastException::class);
         $request->getTypedQueryParam('id', _class(DateTime::class));
     }
 }
