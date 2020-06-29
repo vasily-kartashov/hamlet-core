@@ -6,6 +6,7 @@ use Hamlet\Cast\Parser\DocBlockParser;
 use Hamlet\Database\Entity;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionProperty;
 use RuntimeException;
 
 trait ConverterTrait
@@ -67,7 +68,7 @@ trait ConverterTrait
     {
         /**
          * @var \ReflectionClass $type
-         * @var \ReflectionProperty[] $properties
+         * @var ReflectionProperty[] $properties
          * @var \ReflectionMethod|null $typeResolver
          */
         list($type, $properties, $typeResolver) = $this->getType($typeName);
@@ -75,7 +76,7 @@ trait ConverterTrait
         if ($typeResolver) {
             /**
              * @var \ReflectionClass $resolvedType
-             * @var \ReflectionProperty[] $resolvedProperties
+             * @var ReflectionProperty[] $resolvedProperties
              */
             list($resolvedType, $resolvedProperties) = $this->getType($typeResolver->invoke(null, $data));
             if ($resolvedType !== $type && !$resolvedType->isSubclassOf($type)) {
@@ -92,7 +93,7 @@ trait ConverterTrait
             }
             $propertiesSet[$name] = 1;
             assert(
-                $this->assertPropertyType($properties[$name], $value),
+                $this->assertPropertyType($type, $properties[$name], $value),
                 'Property ' . $name . ' of class ' . $typeName . ' accepts ' . var_export($value, true)
             );
             $properties[$name]->setValue($object, $value);
@@ -117,7 +118,7 @@ trait ConverterTrait
     {
         /** @var \ReflectionClass[] $types */
         static $types = [];
-        /** @var \ReflectionProperty[][] $properties */
+        /** @var ReflectionProperty[][] $properties */
         static $properties = [];
         /** @var \ReflectionMethod[] $typeResolvers */
         static $typeResolvers = [];
@@ -155,13 +156,14 @@ trait ConverterTrait
     }
 
     /**
-     * @param \ReflectionProperty $property
+     * @param ReflectionClass $reflectionClass
+     * @param ReflectionProperty $reflectionProperty
      * @param mixed $value
      * @return bool
      */
-    private function assertPropertyType(\ReflectionProperty $property, $value): bool
+    private function assertPropertyType(ReflectionClass $reflectionClass, ReflectionProperty $reflectionProperty, $value): bool
     {
-        $type = DocBlockParser::fromProperty($property);
+        $type = DocBlockParser::fromProperty($reflectionClass, $reflectionProperty);
         return $type->matches($value);
     }
 }
