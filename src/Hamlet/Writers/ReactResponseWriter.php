@@ -62,11 +62,11 @@ class ReactResponseWriter implements ResponseWriter
 
     /**
      * @param Request $request
-     * @param array $sessionParams
+     * @param array $params
      * @return void
      * @throws Exception
      */
-    public function session(Request $request, array $sessionParams)
+    public function session(Request $request, array $params)
     {
         if ($this->sessionHandler === null) {
             return;
@@ -85,7 +85,7 @@ class ReactResponseWriter implements ResponseWriter
             $this->cookie($sessionName, $sessionId, $lifeTime, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
         }
 
-        $this->sessionHandler->write($sessionId, serialize($sessionParams));
+        $this->sessionHandler->write($sessionId, serialize($params));
     }
 
     /**

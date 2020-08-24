@@ -67,10 +67,10 @@ class SwooleResponseWriter implements ResponseWriter
 
     /**
      * @param Request $request
-     * @param array $sessionParams
+     * @param array $params
      * @throws Exception
      */
-    public function session(Request $request, array $sessionParams)
+    public function session(Request $request, array $params)
     {
         if ($this->sessionHandler === null) {
             return;
@@ -82,13 +82,13 @@ class SwooleResponseWriter implements ResponseWriter
         if (isset($cookies[$sessionName])) {
             $sessionId = $cookies[$sessionName];
         } else {
-            $params = session_get_cookie_params();
+            $cookieParams = session_get_cookie_params();
             $sessionId = \bin2hex(\random_bytes(8));
 
-            $lifeTime = $params['lifetime'] ? time() + ((int) $params['lifetime']) : time();
-            $this->cookie($sessionName, $sessionId, $lifeTime, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+            $lifeTime = $cookieParams['lifetime'] ? time() + ((int) $cookieParams['lifetime']) : time();
+            $this->cookie($sessionName, $sessionId, $lifeTime, $cookieParams['path'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
         }
 
-        $this->sessionHandler->write($sessionId, serialize($sessionParams));
+        $this->sessionHandler->write($sessionId, serialize($params));
     }
 }
