@@ -70,7 +70,7 @@ class Request implements ServerRequestInterface
     /** @var callable|null */
     private $queryParamsProvider = null;
 
-    /** #var array|null */
+    /** @var array|null */
     private $queryParams = null;
 
     /** @var callable|null */
