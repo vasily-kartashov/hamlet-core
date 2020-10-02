@@ -5,6 +5,7 @@ namespace Hamlet\Requests;
 use GuzzleHttp\Psr7\LazyOpenStream;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\Utils;
 use Hamlet\Cast\Type;
 use Hamlet\Entities\Entity;
 use InvalidArgumentException;
@@ -15,7 +16,6 @@ use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use SessionHandlerInterface;
 use Swoole\Http\Request as SwooleRequest;
-use function GuzzleHttp\Psr7\stream_for;
 
 class Request implements ServerRequestInterface
 {
@@ -237,7 +237,7 @@ class Request implements ServerRequestInterface
             return Normalizer::uriFromSwooleRequest($swooleRequest);
         };
         $request->bodyProvider = function () use ($swooleRequest) {
-            return stream_for($swooleRequest->rawcontent());
+            return Utils::streamFor($swooleRequest->rawcontent());
         };
         $request->protocolProvider = function () use ($swooleRequest) {
             return Normalizer::extractVersion($swooleRequest->server['server_protocol'] ?? null);
@@ -558,7 +558,7 @@ class Request implements ServerRequestInterface
             if ($this->bodyProvider !== null) {
                 $this->body = ($this->bodyProvider)();
             } else {
-                $this->body = stream_for(null);
+                $this->body = Utils::streamFor(null);
             }
         }
         return $this->body;
