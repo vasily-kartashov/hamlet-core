@@ -106,21 +106,17 @@ class TypeResolverTest extends TestCase
         Assert::assertInstanceOf(User::class, $collection[3]);
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testTypeResolverThrowsException()
     {
+        $this->expectException(RuntimeException::class);
         (new Selector($this->users()))
             ->selectAll()->cast(SuperAnonymousUser::class)
             ->collectAll();
     }
 
-    /**
-     * @expectedException RuntimeException
-     */
     public function testTypeResolverThrowsExceptionOfUnrelatedClass()
     {
+        $this->expectException(RuntimeException::class);
         (new Selector($this->users()))
             ->selectAll()->cast(RandomClass::class)
             ->collectAll();

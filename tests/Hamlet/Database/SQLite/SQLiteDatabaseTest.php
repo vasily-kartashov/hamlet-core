@@ -11,7 +11,10 @@ class SQLiteDatabaseTest extends TestCase
     /** @var Database */
     private $database;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    public function setUp_()
     {
         $this->database = Database::sqlite3(tempnam(sys_get_temp_dir(), '.sqlite'));
         $this->database->prepare('
@@ -61,5 +64,15 @@ class SQLiteDatabaseTest extends TestCase
                 Assert::assertEquals(1, $id);
                 Assert::assertCount(2, $user['addresses']);
             });
+
+        $result = $procedure->processAll()
+            ->selectValue('address')->groupInto('addresses')
+            ->selectAll()->cast(User::class)
+            ->collectAll();
+
+        Assert::assertCount(1, $result);
+        Assert::assertInstanceOf(User::class, $result[0]);
+        Assert::assertEquals('Vladimir', $result[0]->name());
+        Assert::assertCount(2, $result[0]->addresses());
     }
 }

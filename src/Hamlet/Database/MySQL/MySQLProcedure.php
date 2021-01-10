@@ -43,6 +43,8 @@ class MySQLProcedure extends AbstractProcedure
     /**
      * @return int
      * @throws MySQLException
+     * @psalm-suppress InvalidReturnType
+     * @psalm-suppress InvalidReturnStatement
      */
     public function insert(): int
     {

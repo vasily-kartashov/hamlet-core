@@ -18,7 +18,7 @@
     "sort-packages": true
   },
   "require": {
-    "php": "^7.0",
+    "php": "^7.0 || ^8.0",
     "ext-json": "@stable",
     "guzzlehttp/psr7": "@stable",
     "psr/cache": "@stable",
@@ -31,12 +31,13 @@
   "require-dev": {
     "cache/void-adapter": "@stable",
     "cache/array-adapter": "@stable",
-    "phpunit/phpunit": "^6 || ^7",
+    "phpunit/phpunit": "^6 || ^7 || ^8",
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
     "swoft/swoole-ide-helper": "@stable",
-    "phake/phake": "3.1.6",
-    "php-parallel-lint/php-parallel-lint": "@stable"
+    "phake/phake": "@stable",
+    "php-parallel-lint/php-parallel-lint": "@stable",
+    "symfony/polyfill-mbstring": "<=1.20.0"
   },
   "autoload": {
     "psr-4": {

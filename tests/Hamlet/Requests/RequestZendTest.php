@@ -170,12 +170,10 @@ class RequestZendTest extends TestCase
         Assert::assertSame($requestTarget, $request->getRequestTarget());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testRequestTargetCannotContainWhitespace()
     {
         $request = Request::empty();
+        $this->expectException(InvalidArgumentException::class);
         $request->withRequestTarget('foo bar baz');
     }
 
@@ -258,7 +256,7 @@ class RequestZendTest extends TestCase
     {
         $request = Request::empty()->withUri(new Uri('http://www.example.com'));
         $header = $request->getHeaderLine('host');
-        Assert::assertContains('example.com', $header);
+        Assert::assertStringContainsString('example.com', $header);
     }
 
     public function testGetHostHeaderLineReturnsEmptyStringIfNoUriPresent()
@@ -454,14 +452,14 @@ class RequestZendTest extends TestCase
     public function testCookieParamsAreAnEmptyArrayAtInitialization()
     {
         $request = Request::empty();
-        Assert::assertInternalType('array', $request->getCookieParams());
+        Assert::assertTrue(is_array($request->getCookieParams()));
         Assert::assertCount(0, $request->getCookieParams());
     }
 
     public function testQueryParamsAreAnEmptyArrayAtInitialization()
     {
         $request = Request::empty();
-        Assert::assertInternalType('array', $request->getQueryParams());
+        Assert::assertTrue(is_array($request->getQueryParams()));
         Assert::assertCount(0, $request->getQueryParams());
     }
 
@@ -486,12 +484,10 @@ class RequestZendTest extends TestCase
         Assert::assertSame([], $request->getAttributes());
     }
 
-    /**
-     * @expectedException InvalidArgumentException
-     */
     public function testTryToAddInvalidUploadedFiles()
     {
         $request = Request::empty();
+        $this->expectException(InvalidArgumentException::class);
         $request->withUploadedFiles([null]);
     }
 

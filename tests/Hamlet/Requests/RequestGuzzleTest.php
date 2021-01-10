@@ -3,6 +3,7 @@
 namespace Hamlet\Requests;
 
 use GuzzleHttp\Psr7\FnStream;
+use InvalidArgumentException;
 use function GuzzleHttp\Psr7\stream_for;
 use GuzzleHttp\Psr7\UploadedFile;
 use GuzzleHttp\Psr7\Uri;
@@ -63,11 +64,9 @@ class RequestGuzzleTest extends TestCase
         Assert::assertEquals('/', $request1->getRequestTarget());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testRequestTargetDoesNotAllowSpaces()
     {
+        $this->expectException(InvalidArgumentException::class);
         Request::empty()->withRequestTarget('/foo bar');
     }
 
