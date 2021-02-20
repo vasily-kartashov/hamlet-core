@@ -79,6 +79,9 @@ trait ConverterTrait
              * @var ReflectionProperty[] $resolvedProperties
              */
             list($resolvedType, $resolvedProperties) = $this->getType($typeResolver->invoke(null, $data));
+            /**
+             * @psalm-suppress ImplicitToStringCast
+             */
             if ($resolvedType !== $type && !$resolvedType->isSubclassOf($type)) {
                 throw new RuntimeException('Resolved type ' . $resolvedType->getName() . ' is not subclass of ' . $type->getName());
             }
