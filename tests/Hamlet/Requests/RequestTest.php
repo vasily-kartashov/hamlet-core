@@ -127,4 +127,10 @@ class RequestTest extends TestCase
         $this->expectException(CastException::class);
         $request->getTypedQueryParam('id', _class(DateTime::class));
     }
+
+    public function testGetTypedAttribute()
+    {
+        $request = Request::empty()->withAttribute('value', '123');
+        $this->assertSame(123, $request->getTypedAttribute('value', _int()));
+    }
 }

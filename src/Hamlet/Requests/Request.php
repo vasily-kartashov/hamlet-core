@@ -1111,6 +1111,19 @@ class Request implements ServerRequestInterface
     }
 
     /**
+     * @template T
+     * @param string $name
+     * @param Type $type
+     * @psalm-param Type<T> $type
+     * @return mixed
+     * @psalm-return T
+     */
+    public function getTypedAttribute(string $name, Type $type)
+    {
+        return $type->cast($this->getAttribute($name));
+    }
+
+    /**
      * Return an instance with the specified derived request attribute.
      *
      * This method allows setting a single derived request attribute as
