@@ -32,7 +32,7 @@ class SQLiteJsonMappingTest extends TestCase
     {
         $procedure = $this->database->prepare('SELECT * FROM users');
         $users = $procedure->processAll()
-            ->selectValue('preferences')->castInto(UserPreferences2::class, 'preferences', true)
+            ->selectValue('preferences')->castInto(UserPreferences2::class, 'preferences')
             ->selectAll()->cast(User2::class)->collectAll();
 
         $this->assertCount(1, $users);

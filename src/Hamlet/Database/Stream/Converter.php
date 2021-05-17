@@ -97,13 +97,12 @@ class Converter
     /**
      * @template T as object
      * @param class-string<T> $type
-     * @param bool $jsonDecode
      * @return Collector
      */
-    public function cast(string $type, bool $jsonDecode = false): Collector
+    public function cast(string $type): Collector
     {
-        $generator = function () use ($type, $jsonDecode): Generator {
-            $converter = $this->castRecordsInto($type, ':property:', $jsonDecode);
+        $generator = function () use ($type): Generator {
+            $converter = $this->castRecordsInto($type, ':property:');
             foreach (($converter)() as list($key, $record)) {
                 yield [$key, $record[':property:']];
             }
@@ -115,28 +114,26 @@ class Converter
      * @template T as object
      * @param class-string<T> $type
      * @param string $name
-     * @param bool $jsonDecode
      * @return Selector
      */
-    public function castInto(string $type, string $name, bool $jsonDecode = false): Selector
+    public function castInto(string $type, string $name): Selector
     {
-        return new Selector($this->castRecordsInto($type, $name, $jsonDecode));
+        return new Selector($this->castRecordsInto($type, $name));
     }
 
     /**
      * @template T as object
      * @param class-string<T> $type
      * @param string $name
-     * @param bool $jsonDecode
      * @return callable
      */
-    private function castRecordsInto(string $type, string $name, bool $jsonDecode): callable
+    private function castRecordsInto(string $type, string $name): callable
     {
-        return function () use ($type, $name, $jsonDecode): Generator {
+        return function () use ($type, $name): Generator {
             foreach (($this->generator)() as [$key, $record]) {
                 list($item, $record) = ($this->splitter)(_map(_string(), _mixed())->cast($record));
-                if ($jsonDecode) {
-                    $item = json_decode((string) $item, true);
+                if (is_string($item)) {
+                    $item = json_decode($item, true);
                 }
                 $record[$name] = $this->instantiate(_map(_string(), _mixed())->cast($item), $type);
                 yield [$key, $record];
