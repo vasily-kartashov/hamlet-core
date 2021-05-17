@@ -25,7 +25,8 @@
     "psr/log": "@stable",
     "symfony/console": "@stable",
     "twig/twig": "^2.5",
-    "hamlet-framework/type": "@stable"
+    "hamlet-framework/type": "@stable",
+    "hamlet-framework/http": "@stable"
   },
   "require-dev": {
     "cache/void-adapter": "@stable",

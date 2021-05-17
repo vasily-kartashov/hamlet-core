@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <psalm name="Psalm config"
+       errorLevel="1"
        resolveFromConfigFile="true"
        useDocblockTypes="true"
        totallyTyped="true"

@@ -85,14 +85,15 @@ class Converter
     }
 
     /**
-     * @param string $type
-     * @psalm-param class-string $type
+     * @template T as object
+     * @param class-string<T> $type
+     * @param bool $jsonDecode
      * @return Collector
      */
-    public function cast(string $type): Collector
+    public function cast(string $type, bool $jsonDecode = false): Collector
     {
         $records = [];
-        foreach ($this->castRecordsInto($type, ':property:') as $record) {
+        foreach ($this->castRecordsInto($type, ':property:', $jsonDecode) as $record) {
             assert(array_key_exists(':property:', $record));
             $records[] = $record[':property:'];
         }
@@ -100,27 +101,32 @@ class Converter
     }
 
     /**
-     * @param string $type
-     * @psalm-param class-string $type
+     * @template T as object
+     * @param class-string<T> $type
      * @param string $name
+     * @param bool $jsonDecode
      * @return Selector
      */
-    public function castInto(string $type, string $name): Selector
+    public function castInto(string $type, string $name, bool $jsonDecode = false): Selector
     {
-        return new Selector($this->castRecordsInto($type, $name));
+        return new Selector($this->castRecordsInto($type, $name, $jsonDecode));
     }
 
     /**
      * @template T
      * @param class-string<T> $type
      * @param string $name
+     * @param bool $jsonDecode
      * @return array<array<string,mixed>>
      */
-    private function castRecordsInto(string $type, string $name): array
+    private function castRecordsInto(string $type, string $name, bool $jsonDecode): array
     {
         $records = [];
         foreach ($this->records as &$record) {
             list($item, $record) = ($this->splitter)($record);
+            if ($jsonDecode) {
+                $item = json_decode((string) $item, true);
+            }
             $record[$name] = $this->instantiate(_map(_string(), _mixed())->cast($item), $type);
             $records[] = $record;
         }
