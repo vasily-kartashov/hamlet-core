@@ -6,9 +6,7 @@ use Hamlet\Entities\JsonEntity;
 
 class JsonEntityResource extends EntityResource
 {
-    /** @noinspection PhpDocSignatureInspection */
     /**
-     * JsonEntityResource constructor.
      * @param mixed $value
      * @param string ...$methods
      */

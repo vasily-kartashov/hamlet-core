@@ -16,7 +16,7 @@ final class ServerBootstrap
      * @param AbstractApplication $application
      * @return void
      */
-    public static function run(AbstractApplication $application)
+    public static function run(AbstractApplication $application): void
     {
         $request = Request::fromSuperGlobals($application->sessionHandler());
         $writer = new DefaultResponseWriter();

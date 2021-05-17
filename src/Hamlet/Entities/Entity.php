@@ -19,9 +19,8 @@ interface Entity
 
     /**
      * Get content language
-     * @return string|null
      */
-    public function getContentLanguage();
+    public function getContentLanguage(): ?string;
 
     /**
      * Get cache key of the entity
@@ -30,14 +29,11 @@ interface Entity
 
     /**
      * Get media type
-     * @return string|null
      */
-    public function getMediaType();
+    public function getMediaType(): ?string;
 
     /**
      * Load entity from cache or generate it
-     * @param CacheItemPoolInterface $cache
-     * @return CacheValue
      */
     public function load(CacheItemPoolInterface $cache): CacheValue;
 }

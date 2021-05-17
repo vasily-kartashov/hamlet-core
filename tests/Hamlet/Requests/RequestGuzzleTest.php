@@ -3,10 +3,10 @@
 namespace Hamlet\Requests;
 
 use GuzzleHttp\Psr7\FnStream;
-use InvalidArgumentException;
-use function GuzzleHttp\Psr7\stream_for;
 use GuzzleHttp\Psr7\UploadedFile;
 use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\Utils;
+use InvalidArgumentException;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +20,7 @@ class RequestGuzzleTest extends TestCase
     public function testConstructorDoesNotReadStreamBody()
     {
         $streamIsRead = false;
-        $body = FnStream::decorate(stream_for(''), [
+        $body = FnStream::decorate(Utils::streamFor(), [
             '__toString' => function () use (&$streamIsRead) {
                 $streamIsRead = true;
                 return '';
@@ -41,7 +41,7 @@ class RequestGuzzleTest extends TestCase
     {
         $request1 = Request::empty();
         $uri1 = $request1->getUri();
-        $uri2 = new Uri('http://www.example.com');
+        $uri2 = new Uri('https://www.example.com');
         $request2 = $request1->withUri($uri2);
 
         Assert::assertNotSame($request1, $request2);
@@ -51,7 +51,7 @@ class RequestGuzzleTest extends TestCase
 
     public function testSameInstanceWhenSameUri()
     {
-        $request1 = Request::empty()->withUri(new Uri('http://foo.com'));
+        $request1 = Request::empty()->withUri(new Uri('https://foo.com'));
         $request2 = $request1->withUri($request1->getUri());
         Assert::assertSame($request1, $request2);
     }
@@ -81,26 +81,26 @@ class RequestGuzzleTest extends TestCase
         $request3 = Request::empty()->withUri(new Uri('*'));
         Assert::assertEquals('*', $request3->getRequestTarget());
 
-        $request4 = Request::empty()->withUri(new Uri('http://foo.com/bar baz/'));
+        $request4 = Request::empty()->withUri(new Uri('https://foo.com/bar baz/'));
         Assert::assertEquals('/bar%20baz/', $request4->getRequestTarget());
     }
 
     public function testBuildsRequestTarget()
     {
-        $request = Request::empty()->withUri(new Uri('http://foo.com/baz?bar=bam'));
+        $request = Request::empty()->withUri(new Uri('https://foo.com/baz?bar=bam'));
         Assert::assertEquals('/baz?bar=bam', $request->getRequestTarget());
     }
 
     public function testBuildsRequestTargetWithFalseyQuery()
     {
-        $request = Request::empty()->withUri(new Uri('http://foo.com/baz?0'));
+        $request = Request::empty()->withUri(new Uri('https://foo.com/baz?0'));
         Assert::assertEquals('/baz?0', $request->getRequestTarget());
     }
 
     public function testHostIsAddedFirst()
     {
         $request = Request::empty()
-            ->withUri(new Uri('http://foo.com/baz?bar=bam'))
+            ->withUri(new Uri('https://foo.com/baz?bar=bam'))
             ->withHeader('Foo', 'Bar');
 
         Assert::assertEquals([
@@ -112,7 +112,7 @@ class RequestGuzzleTest extends TestCase
     public function testCanGetHeaderAsCsv()
     {
         $request = Request::empty()
-            ->withUri(new Uri('http://foo.com/baz?bar=bam'))
+            ->withUri(new Uri('https://foo.com/baz?bar=bam'))
             ->withHeader('Foo', ['a', 'b', 'c']);
 
         Assert::assertEquals('a, b, c', $request->getHeaderLine('Foo'));
@@ -122,20 +122,20 @@ class RequestGuzzleTest extends TestCase
     public function testHostIsNotOverwrittenWhenPreservingHost()
     {
         $request1 = Request::empty()
-            ->withUri(new Uri('http://foo.com/baz?bar=bam'))
+            ->withUri(new Uri('https://foo.com/baz?bar=bam'))
             ->withHeader('Host', 'a.com');
         Assert::assertEquals(['Host' => ['a.com']], $request1->getHeaders());
 
-        $request2 = $request1->withUri(new Uri('http://www.foo.com/bar'), true);
+        $request2 = $request1->withUri(new Uri('https://www.foo.com/bar'), true);
         Assert::assertEquals('a.com', $request2->getHeaderLine('Host'));
     }
 
     public function testOverridesHostWithUri()
     {
-        $request1 = Request::empty()->withUri(new Uri('http://foo.com/baz?bar=bam'));
+        $request1 = Request::empty()->withUri(new Uri('https://foo.com/baz?bar=bam'));
         Assert::assertEquals(['Host' => ['foo.com']], $request1->getHeaders());
 
-        $request2 = $request1->withUri(new Uri('http://www.baz.com/bar'));
+        $request2 = $request1->withUri(new Uri('https://www.baz.com/bar'));
         Assert::assertEquals('www.baz.com', $request2->getHeaderLine('Host'));
     }
 
@@ -151,20 +151,20 @@ class RequestGuzzleTest extends TestCase
 
     public function testAddsPortToHeader()
     {
-        $r = Request::empty()->withUri(new Uri('http://foo.com:8124/bar'));
+        $r = Request::empty()->withUri(new Uri('https://foo.com:8124/bar'));
         Assert::assertEquals('foo.com:8124', $r->getHeaderLine('host'));
     }
 
     public function testAddsPortToHeaderAndReplacePreviousPort()
     {
-        $request1 = Request::empty()->withUri(new Uri('http://foo.com:8124/bar'));
-        $request2 = $request1->withUri(new Uri('http://foo.com:8125/bar'));
+        $request1 = Request::empty()->withUri(new Uri('https://foo.com:8124/bar'));
+        $request2 = $request1->withUri(new Uri('https://foo.com:8125/bar'));
 
         Assert::assertEquals('foo.com:8124', $request1->getHeaderLine('host'));
         Assert::assertEquals('foo.com:8125', $request2->getHeaderLine('host'));
     }
 
-    public function dataGetUriFromGlobals()
+    public function dataGetUriFromGlobals(): array
     {
         $server = [
             'REQUEST_URI' => '/blog/article.php?id=10&user=foo',

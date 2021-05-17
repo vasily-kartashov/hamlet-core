@@ -9,7 +9,9 @@ use mysqli;
 
 class MySQLDatabase extends Database
 {
-    /** @var mysqli */
+    /**
+     * @var mysqli
+     */
     private $connection;
 
     public function __construct(mysqli $connection)

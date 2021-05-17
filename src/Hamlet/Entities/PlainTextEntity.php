@@ -2,6 +2,8 @@
 
 namespace Hamlet\Entities;
 
+use function md5;
+
 class PlainTextEntity extends AbstractEntity
 {
     /** @var string */
@@ -18,12 +20,12 @@ class PlainTextEntity extends AbstractEntity
     public function getKey(): string
     {
         if ($this->key === null) {
-            $this->key = \md5($this->data);
+            $this->key = md5($this->data);
         }
         return $this->key;
     }
 
-    public function getMediaType()
+    public function getMediaType(): string
     {
         return "text/plain";
     }

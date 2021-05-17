@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <psalm name="Psalm config"
+       resolveFromConfigFile="true"
        useDocblockTypes="true"
-       totallyTyped="false"
-       addParamDefaultToDocblockType="true"
+       totallyTyped="true"
+       ensureArrayIntOffsetsExist="true"
+       findUnusedPsalmSuppress="true"
+       ensureArrayStringOffsetsExist="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="https://getpsalm.org/schema/config"
        xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd">
@@ -13,8 +16,8 @@
         </ignoreFiles>
     </projectFiles>
     <issueHandlers>
-        <MissingClosureReturnType errorLevel="suppress"/>
-        <RedundantConditionGivenDocblockType errorLevel="suppress"/>
-        <UndefinedClass errorLevel="suppress"/>
+        <MixedPropertyTypeCoercion errorLevel="suppress"/>
+        <MixedArrayAccess errorLevel="suppress"/>
+        <MixedAssignment errorLevel="suppress"/>
     </issueHandlers>
 </psalm>

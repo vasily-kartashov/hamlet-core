@@ -6,8 +6,12 @@ use Hamlet\Cast\Parser\DocBlockParser;
 use Hamlet\Database\Entity;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionMethod;
 use ReflectionProperty;
 use RuntimeException;
+use function Hamlet\Cast\_string;
+use function is_array;
+use function is_subclass_of;
 
 trait ConverterTrait
 {
@@ -17,8 +21,8 @@ trait ConverterTrait
      */
     protected function isNull($item): bool
     {
-        if (\is_array($item)) {
-            foreach ($item as &$value) {
+        if (is_array($item)) {
+            foreach ($item as $value) {
                 if (!$this->isNull($value)) {
                     return false;
                 }
@@ -30,58 +34,59 @@ trait ConverterTrait
     }
 
     /**
-     * @param array|null $row
-     * @param string $type
-     * @psalm-param class-string $type
-     * @return mixed|null
+     * @template T as object
+     * @param array<string,mixed>|null $row
+     * @param class-string<T> $type
+     * @return T|null
      */
-    private function instantiate($row, string $type)
+    private function instantiate(?array $row, string $type)
     {
         if ($row === null) {
             return null;
         } elseif ($this->isNull($row)) {
             return null;
         } else {
+            /**
+             * @var array<string,bool> $entitySubclasses
+             */
             static $entitySubclasses = [];
             if (!isset($entitySubclasses[$type])) {
-                $entitySubclasses[$type] = \is_subclass_of($type, Entity::class);
+                $entitySubclasses[$type] = is_subclass_of($type, Entity::class);
             }
             if ($entitySubclasses[$type]) {
                 return $this->instantiateEntity($type, $row);
-            } else {
+            } elseif (class_exists($type)) {
+                /**
+                 * @psalm-suppress MixedMethodCall
+                 */
                 $object = new $type;
-                foreach ($row as $key => &$value) {
+                foreach ($row as $key => $value) {
                     $object->$key = $value;
                 }
                 return $object;
+            } else {
+                throw new RuntimeException('Cannot instantiate class ' . $type);
             }
         }
     }
 
     /**
-     * @param string $typeName
-     * @psalm-param class-string $typeName
-     * @param array $data
-     * @return object
+     * @template T as object
+     * @param class-string<T> $typeName
+     * @param array<string,mixed> $data
+     * @return T
+     * @psalm-suppress InvalidReturnType
      */
-    private function instantiateEntity(string $typeName, array $data)
+    private function instantiateEntity(string $typeName, array $data): object
     {
-        /**
-         * @var \ReflectionClass $type
-         * @var ReflectionProperty[] $properties
-         * @var \ReflectionMethod|null $typeResolver
-         */
-        list($type, $properties, $typeResolver) = $this->getType($typeName);
+        [$type, $properties, $typeResolver] = $this->getType($typeName);
 
         if ($typeResolver) {
-            /**
-             * @var \ReflectionClass $resolvedType
-             * @var ReflectionProperty[] $resolvedProperties
-             */
-            list($resolvedType, $resolvedProperties) = $this->getType($typeResolver->invoke(null, $data));
-            /**
-             * @psalm-suppress ImplicitToStringCast
-             */
+            $resolvedTypeName = _string()->assert($typeResolver->invoke(null, $data));
+            if (!class_exists($resolvedTypeName)) {
+                throw new RuntimeException('Resolved type ' . $resolvedTypeName . ' does not exist');
+            }
+            [$resolvedType, $resolvedProperties] = $this->getType($resolvedTypeName);
             if ($resolvedType !== $type && !$resolvedType->isSubclassOf($type)) {
                 throw new RuntimeException('Resolved type ' . $resolvedType->getName() . ' is not subclass of ' . $type->getName());
             }
@@ -101,9 +106,8 @@ trait ConverterTrait
             );
             $properties[$name]->setValue($object, $value);
         }
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        foreach ($properties as $name => &$_) {
-            if (!isset($propertiesSet[$name])) {
+        foreach ($properties as $name => $_) {
+            if (!array_key_exists($name, $propertiesSet)) {
                 throw new RuntimeException('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
             }
         }
@@ -111,19 +115,18 @@ trait ConverterTrait
     }
 
     /**
-     * @param       string       $typeName
-     * @psalm-param class-string $typeName
-     * @return       array
-     * @psalm-return array{0:\ReflectionClass,1:array<\ReflectionProperty>,2:\ReflectionMethod|null}
+     * @template T
+     * @param class-string<T> $typeName
+     * @return array{0:ReflectionClass<T>,1:array<ReflectionProperty>,2:ReflectionMethod|null}
      * @psalm-suppress MoreSpecificReturnType
      */
     private function getType(string $typeName): array
     {
-        /** @var \ReflectionClass[] $types */
+        /** @var ReflectionClass[] $types */
         static $types = [];
         /** @var ReflectionProperty[][] $properties */
         static $properties = [];
-        /** @var \ReflectionMethod[] $typeResolvers */
+        /** @var ReflectionMethod[] $typeResolvers */
         static $typeResolvers = [];
 
         if (!isset($types[$typeName])) {
@@ -134,7 +137,7 @@ trait ConverterTrait
                 throw new RuntimeException('Cannot load reflection information for ' . $typeName, 1, $e);
             }
 
-            foreach ($types[$typeName]->getProperties() as &$property) {
+            foreach ($types[$typeName]->getProperties() as $property) {
                 $property->setAccessible(true);
                 $properties[$typeName][$property->getName()] = $property;
             }
@@ -142,12 +145,7 @@ trait ConverterTrait
             $type = $types[$typeName];
             do {
                 if ($type->hasMethod('__resolveType')) {
-                    try {
-                        $method = $type->getMethod('__resolveType');
-                    } catch (ReflectionException $e) {
-                        throw new RuntimeException('Cannot access __resolveType method', 0, $e);
-                    }
-
+                    $method = $type->getMethod('__resolveType');
                     if (!$method->isStatic() || !$method->isPublic()) {
                         throw new RuntimeException('Method __resolveType must be public static method');
                     }

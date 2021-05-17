@@ -7,6 +7,16 @@ use Hamlet\Database\Stream\Selector as StreamSelector;
 use RuntimeException;
 use SQLite3;
 use SQLite3Stmt;
+use function array_fill;
+use function count;
+use function Hamlet\Cast\_map;
+use function Hamlet\Cast\_mixed;
+use function \Hamlet\Cast\_string;
+use function is_array;
+use function join;
+use function strlen;
+use function strpos;
+use function substr;
 
 class SQLiteProcedure extends AbstractProcedure
 {
@@ -31,36 +41,34 @@ class SQLiteProcedure extends AbstractProcedure
         return $this->connection->lastInsertRowID();
     }
 
-    /**
-     * @return void
-     */
-    public function execute()
+    public function execute(): void
     {
         $this->bindParameters()->execute();
     }
 
     /**
-     * @return array|null
-     * @psalm-suppress InvalidReturnType
-     * @psalm-suppress InvalidReturnStatement
-     * @psalm-suppress RedundantCondition
+     * @return array<string,mixed>|null
      */
-    public function fetchOne()
+    public function fetchOne(): ?array
     {
         $result = $this->bindParameters()->execute();
         $record = $result->fetchArray(SQLITE3_ASSOC);
         if ($record !== false) {
-            return $record;
+            return _map(_string(), _mixed())->cast($record);
         }
         return null;
     }
 
+    /**
+     * @return array<array<string,mixed>>
+     */
     public function fetchAll(): array
     {
         $result = $this->bindParameters()->execute();
         $data = [];
+        $type = _map(_string(), _mixed());
         while (($row = $result->fetchArray(SQLITE3_ASSOC)) !== false) {
-            $data[] = $row;
+            $data[] = $type->cast($row);
         }
         return $data;
     }
@@ -88,22 +96,21 @@ class SQLiteProcedure extends AbstractProcedure
         $counter = 0;
         if (!empty($this->parameters)) {
             while (true) {
-                $position = \strpos($query, '?', $position);
+                $position = strpos($query, '?', $position);
                 if ($position === false) {
                     break;
                 }
                 $value = $this->parameters[$counter++][1];
-                if (\is_array($value)) {
-                    $in = '(' . \join(', ', \array_fill(0, \count($value), '?')) . ')';
-                    $query = \substr($query, 0, $position) . $in . \substr($query, $position + 1);
-                    $position += \strlen($in);
+                if (is_array($value)) {
+                    $in = '(' . join(', ', array_fill(0, count($value), '?')) . ')';
+                    $query = substr($query, 0, $position) . $in . substr($query, $position + 1);
+                    $position += strlen($in);
                 } else {
                     $position++;
                 }
             }
         }
         $statement = $this->connection->prepare($query);
-        /** @psalm-suppress TypeDoesNotContainType */
         if ($statement === false) {
             throw new SQLiteException('Cannot prepare statement ' . $query);
         }

@@ -4,22 +4,34 @@ namespace Hamlet\Cache;
 
 class CacheValue
 {
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     private $content;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $tag;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $digest;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $length;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $modified;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $expiry;
 
     /**

@@ -7,6 +7,11 @@ use Hamlet\Database\Stream\Selector as StreamSelector;
 use PDO;
 use PDOStatement;
 use RuntimeException;
+use function Hamlet\Cast\_list;
+use function Hamlet\Cast\_map;
+use function Hamlet\Cast\_mixed;
+use function Hamlet\Cast\_string;
+use function strpos;
 
 class PDOProcedure extends AbstractProcedure
 {
@@ -35,10 +40,7 @@ class PDOProcedure extends AbstractProcedure
         return (int) $this->connection->lastInsertId();
     }
 
-    /**
-     * @return void
-     */
-    public function execute()
+    public function execute(): void
     {
         $statement = $this->prepareAndBind();
         $statement->execute();
@@ -46,9 +48,9 @@ class PDOProcedure extends AbstractProcedure
     }
 
     /**
-     * @return array|null
+     * @return array<string,mixed>|null
      */
-    public function fetchOne()
+    public function fetchOne(): ?array
     {
         $statement = $this->prepareAndBind();
         $statement->execute();
@@ -56,19 +58,18 @@ class PDOProcedure extends AbstractProcedure
         if ($result === false) {
             return null;
         }
-        return $result;
+        return _map(_string(), _mixed())->cast($result);
     }
 
+    /**
+     * @return array<array<string,mixed>>
+     */
     public function fetchAll(): array
     {
         $statement = $this->prepareAndBind();
         $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        /** @psalm-suppress TypeDoesNotContainType */
-        if ($result === false) {
-            throw new RuntimeException('Cannot fetch all');
-        }
-        return $result;
+        $records = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return _list(_map(_string(), _mixed()))->cast($records);
     }
 
     public function stream(): StreamSelector
@@ -99,7 +100,7 @@ class PDOProcedure extends AbstractProcedure
         $counter = 0;
         if (!empty($this->parameters)) {
             while (true) {
-                $position = \strpos($query, '?', $position);
+                $position = strpos($query, '?', $position);
                 if ($position === false) {
                     break;
                 }

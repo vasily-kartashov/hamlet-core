@@ -113,11 +113,10 @@ class Collector
      * @psalm-param Type<V1> $valueType
      * @return self
      * @psalm-return Collector<K1,V1>
-     * @psalm-suppress MixedTypeCoercion
      * @psalm-suppress InvalidReturnType
      * @psalm-suppress InvalidReturnStatement
      */
-    public function assertType(Type $keyType, Type $valueType)
+    public function assertType(Type $keyType, Type $valueType): Collector
     {
         $this->keyType = $keyType;
         $this->valueType = $valueType;
@@ -143,10 +142,8 @@ class Collector
      * @param mixed $value
      * @psalm-param V $value
      * @return void
-     *
-     * @psalm-suppress DocblockTypeContradiction
      */
-    private function validate($key, $value)
+    private function validate($key, $value): void
     {
         if ($this->keyType) {
             $this->keyType->assert($key);

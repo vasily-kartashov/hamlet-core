@@ -6,47 +6,15 @@ use Hamlet\Requests\Request;
 
 interface ResponseWriter
 {
-    /**
-     * @param int $code
-     * @param string|null $line
-     * @return void
-     */
-    public function status(int $code, string $line = null);
+    public function status(int $code, string $line = null): void;
 
-    /**
-     * @param string $key
-     * @param string $value
-     * @return void
-     */
-    public function header(string $key, string $value);
+    public function header(string $key, string $value): void;
 
-    /**
-     * @param string $payload
-     * @return void
-     */
-    public function writeAndEnd(string $payload);
+    public function writeAndEnd(string $payload): void;
 
-    /**
-     * @return void
-     */
-    public function end();
+    public function end(): void;
 
-    /**
-     * @param Request $request
-     * @param array $params
-     * @return void
-     */
-    public function session(Request $request, array $params);
+    public function session(Request $request, array $params): void;
 
-    /**
-     * @param string $name
-     * @param string $value
-     * @param int $expires
-     * @param string $path
-     * @param string $domain
-     * @param bool $secure
-     * @param bool $httpOnly
-     * @return void
-     */
-    public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false);
+    public function cookie(string $name, string $value, int $expires, string $path, string $domain = '', bool $secure = false, bool $httpOnly = false): void;
 }

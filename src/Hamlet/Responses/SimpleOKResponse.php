@@ -18,7 +18,7 @@ class SimpleOKResponse extends Response
         $this->withEntity($entity);
     }
 
-    public function output(Request $request, CacheItemPoolInterface $cache, ResponseWriter $writer)
+    public function output(Request $request, CacheItemPoolInterface $cache, ResponseWriter $writer): void
     {
         $writer->status($this->statusCode, $this->getStatusLine());
         assert($this->entity !== null);

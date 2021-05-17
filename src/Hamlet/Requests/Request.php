@@ -15,89 +15,152 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 use SessionHandlerInterface;
-use Swoole\Http\Request as SwooleRequest;
+use function array_key_exists;
+use function count;
+use function explode;
+use function Hamlet\Cast\_string;
+use function implode;
+use function is_array;
+use function strlen;
+use function strtolower;
+use function substr;
+use function urldecode;
 
 class Request implements ServerRequestInterface
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $method = 'GET';
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $path = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():array<string,string|array<string>>)|null
+     */
     private $headersProvider = null;
 
-    /** @var array|null */
+    /**
+     * @var array<string|string,array<string>>|null
+     */
     private $headers = null;
 
-    /** @var array<string,string> */
+    /**
+     * @var array<string,string>
+     */
     private $headerNames = [];
 
-    /** @var callable|null */
+    /**
+     * @var (callable():UriInterface)|null
+     */
     private $uriProvider = null;
 
-    /** @var UriInterface|null */
+    /**
+     * @var UriInterface|null
+     */
     private $uri = null;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $requestTarget = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():StreamInterface)|null
+     */
     private $bodyProvider = null;
 
-    /** @var StreamInterface|null */
+    /**
+     * @var StreamInterface|null
+     */
     private $body = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():string)|null
+     */
     private $protocolProvider = null;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     private $protocol = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():array<string,mixed>)|null
+     */
     private $serverParamsProvider = null;
 
-    /** @var array|null */
+    /**
+     * @var array<string,mixed>|null
+     */
     private $serverParams = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():array<string,mixed>)|null
+     */
     private $cookieParamsProvider = null;
 
-    /** @var array|null */
+    /**
+     * @var array<string,mixed>|null
+     */
     private $cookieParams = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():array<string,mixed>)|null
+     */
     private $queryParamsProvider = null;
 
-    /** @var array|null */
+    /**
+     * @var array<string,mixed>|null
+     */
     private $queryParams = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():(null|array|object))|null
+     */
     private $parsedBodyProvider = null;
 
-    /** @var mixed */
+    /**
+     * @var null|array|object
+     */
     private $parsedBody = null;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $parsedBodySet = false;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():array<UploadedFileInterface>)|null
+     */
     private $uploadedFilesProvider = null;
 
-    /** @var UploadedFileInterface[]|null */
+    /**
+     * @var array<UploadedFileInterface>|null
+     */
     private $uploadedFiles = null;
 
-    /** @var callable|null */
+    /**
+     * @var (callable():array<string,mixed>|null)|null
+     */
     private $sessionParamsProvider = null;
 
-    /** @var array|null */
+    /**
+     * @var array<string,mixed>|null
+     */
     private $sessionParams = null;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $sessionParamsSet = false;
 
-    /** @var array */
+    /**
+     * @var array<string,mixed>
+     */
     private $attributes = [];
 
     private function __construct()
@@ -107,10 +170,10 @@ class Request implements ServerRequestInterface
     public static function empty(): self
     {
         $request = new self;
-        $request->uriProvider = function () {
+        $request->uriProvider = function (): UriInterface {
             return new Uri('');
         };
-        $request->headersProvider = function () {
+        $request->headersProvider = function (): array {
             return [];
         };
         return $request;
@@ -118,6 +181,9 @@ class Request implements ServerRequestInterface
 
     public static function fromSuperGlobals(SessionHandlerInterface $sessionHandler = null): self
     {
+        /**
+         * @var array<string,mixed> $serverParams
+         */
         $serverParams  = $_SERVER;
         $cookieParams  = $_COOKIE;
         $queryParams   = $_GET;
@@ -126,39 +192,40 @@ class Request implements ServerRequestInterface
 
         $request = new self;
 
-        $request->method = $serverParams['REQUEST_METHOD'] ?? 'GET';
+        $request->method = isset($serverParams['REQUEST_METHOD']) ? _string()->cast($serverParams['REQUEST_METHOD']) : 'GET';
         if (isset($serverParams['REQUEST_URI'])) {
-            $request->path = strtok($serverParams['REQUEST_URI'], '?') ?: null;
+            $request->path = strtok(_string()->cast($serverParams['REQUEST_URI']), '?') ?: null;
         }
 
-        $request->headersProvider = function () use ($serverParams) {
+        $request->headersProvider = function () use ($serverParams): array {
             return Normalizer::readHeadersFromSuperGlobals($serverParams);
         };
-        $request->uriProvider = function () use ($serverParams) {
+        $request->uriProvider = function () use ($serverParams): UriInterface {
             return Normalizer::getUriFromGlobals($serverParams);
         };
-        $request->bodyProvider = function () {
+        $request->bodyProvider = function (): StreamInterface {
             return new LazyOpenStream('php://input', 'r+');
         };
-        $request->protocolProvider = function () use ($serverParams) {
-            return Normalizer::extractVersion($serverParams['SERVER_PROTOCOL'] ?? null);
+        $request->protocolProvider = function () use ($serverParams): string {
+            $protocol = isset($serverParams['SERVER_PROTOCOL']) ? _string()->cast($serverParams['SERVER_PROTOCOL']) : null;
+            return Normalizer::extractVersion($protocol);
         };
-        $request->serverParamsProvider = function () use ($serverParams) {
+        $request->serverParamsProvider = function () use ($serverParams): array {
             return $serverParams;
         };
-        $request->cookieParamsProvider = function () use ($cookieParams) {
+        $request->cookieParamsProvider = function () use ($cookieParams): array {
             return $cookieParams;
         };
-        $request->queryParamsProvider = function () use ($queryParams) {
+        $request->queryParamsProvider = function () use ($queryParams): array {
             return $queryParams;
         };
-        $request->parsedBodyProvider = function () use ($parsedBody) {
+        $request->parsedBodyProvider = function () use ($parsedBody): array {
             return $parsedBody;
         };
-        $request->uploadedFilesProvider = function () use ($uploadedFiles) {
+        $request->uploadedFilesProvider = function () use ($uploadedFiles): array {
             return ServerRequest::normalizeFiles($uploadedFiles);
         };
-        $request->sessionParamsProvider = function () use ($sessionHandler) {
+        $request->sessionParamsProvider = function () use ($sessionHandler): ?array {
             if (session_status() == PHP_SESSION_NONE) {
                 if ($sessionHandler !== null) {
                     session_set_save_handler($sessionHandler);
@@ -177,99 +244,50 @@ class Request implements ServerRequestInterface
 
         $request->method = $serverRequest->getMethod();
 
-        $request->headersProvider = function () use ($serverRequest) {
+        $request->headersProvider = function () use ($serverRequest): array {
             return $serverRequest->getHeaders();
         };
-        $request->uriProvider = function () use ($serverRequest) {
+        $request->uriProvider = function () use ($serverRequest): UriInterface {
             return $serverRequest->getUri();
         };
-        $request->bodyProvider = function () use ($serverRequest) {
+        $request->bodyProvider = function () use ($serverRequest): StreamInterface {
             return $serverRequest->getBody();
         };
-        $request->protocolProvider = function () use ($serverRequest) {
+        $request->protocolProvider = function () use ($serverRequest): string {
             return $serverRequest->getProtocolVersion();
         };
-        $request->serverParamsProvider = function () use ($serverRequest) {
+        $request->serverParamsProvider = function () use ($serverRequest): array {
             return $serverRequest->getServerParams();
         };
-        $request->cookieParamsProvider = function () use ($serverRequest) {
+        $request->cookieParamsProvider = function () use ($serverRequest): array {
             return $serverRequest->getCookieParams();
         };
-        $request->queryParamsProvider = function () use ($serverRequest) {
+        $request->queryParamsProvider = function () use ($serverRequest): array {
             return $serverRequest->getQueryParams();
         };
-        $request->parsedBodyProvider = function () use ($serverRequest) {
-            return $serverRequest->getParsedBody();
-        };
-        $request->uploadedFilesProvider = function () use ($serverRequest) {
+        $request->parsedBodyProvider =
+            /**
+             * @return array|null|object
+             */
+            function () use ($serverRequest) {
+                return $serverRequest->getParsedBody();
+            };
+        $request->uploadedFilesProvider = function () use ($serverRequest): array {
             return $serverRequest->getUploadedFiles();
         };
-        $request->sessionParamsProvider = function () use ($serverRequest, $sessionHandler) {
+        $request->sessionParamsProvider = function () use ($serverRequest, $sessionHandler): ?array {
             if ($sessionHandler === null) {
                 return null;
             }
             $sessionName = session_name();
             $cookies = $serverRequest->getCookieParams();
             if (isset($cookies[$sessionName])) {
-                $sessionId = $cookies[session_name()];
+                $sessionId = _string()->cast($cookies[session_name()]);
                 $data = $sessionHandler->read($sessionId);
                 if (!empty($data)) {
-                    return unserialize($data);
-                }
-            }
-            return [];
-        };
-
-        return $request;
-    }
-
-    public static function fromSwooleRequest(SwooleRequest $swooleRequest, SessionHandlerInterface $sessionHandler = null): self
-    {
-        $request = new self;
-
-        $request->method = strtoupper($swooleRequest->server['request_method'] ?? 'GET');
-        $request->path   = $swooleRequest->server['request_uri'] ?? null;
-
-        $request->headersProvider = function () use ($swooleRequest) {
-            return $swooleRequest->header;
-        };
-        $request->uriProvider = function () use ($swooleRequest) {
-            return Normalizer::uriFromSwooleRequest($swooleRequest);
-        };
-        $request->bodyProvider = function () use ($swooleRequest) {
-            return Utils::streamFor($swooleRequest->rawcontent());
-        };
-        $request->protocolProvider = function () use ($swooleRequest) {
-            return Normalizer::extractVersion($swooleRequest->server['server_protocol'] ?? null);
-        };
-        $request->serverParamsProvider = function () use ($swooleRequest) {
-            return Normalizer::serverParametersFromSwooleRequest($swooleRequest);
-        };
-        $request->cookieParamsProvider = function () use ($swooleRequest) {
-            return $swooleRequest->cookie;
-        };
-        $request->queryParamsProvider = function () use ($swooleRequest) {
-            return $swooleRequest->get;
-        };
-        $request->parsedBodyProvider = function () use ($swooleRequest) {
-            return $swooleRequest->post;
-        };
-        $request->uploadedFilesProvider = function () use ($swooleRequest) {
-            if (empty($swooleRequest->files)) {
-                return [];
-            }
-            return ServerRequest::normalizeFiles((array) $swooleRequest->files);
-        };
-        $request->sessionParamsProvider = function () use ($swooleRequest, $sessionHandler) {
-            if ($sessionHandler === null) {
-                return null;
-            }
-            $sessionName = session_name();
-            if (isset($swooleRequest->cookie[$sessionName])) {
-                $sessionId = $swooleRequest->cookie[session_name()];
-                $data = $sessionHandler->read($sessionId);
-                if (!empty($data)) {
-                    return unserialize($data);
+                    $sessionParams = unserialize($data);
+                    assert(is_array($sessionParams));
+                    return $sessionParams;
                 }
             }
             return [];
@@ -285,7 +303,7 @@ class Request implements ServerRequestInterface
      *
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion()
+    public function getProtocolVersion(): string
     {
         if ($this->protocol === null) {
             if ($this->protocolProvider !== null) {
@@ -310,7 +328,7 @@ class Request implements ServerRequestInterface
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version): Request
     {
         $copy = clone $this;
         $copy->protocol = $version;
@@ -342,19 +360,19 @@ class Request implements ServerRequestInterface
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         if ($this->headers === null) {
             $this->headers = [];
             if ($this->headersProvider !== null) {
-                foreach (($this->headersProvider)() as $name => &$value) {
-                    $key = \strtolower($name);
-                    if (\array_key_exists($key, $this->headerNames)) {
+                foreach (($this->headersProvider)() as $name => $value) {
+                    $key = strtolower($name);
+                    if (array_key_exists($key, $this->headerNames)) {
                         $name = $this->headerNames[$key];
                     } else {
                         $this->headerNames[$key] = $name;
                     }
-                    if (\is_array($value)) {
+                    if (is_array($value)) {
                         foreach ($value as $v) {
                             $this->headers[$name][] = $v;
                         }
@@ -364,7 +382,7 @@ class Request implements ServerRequestInterface
                 }
             }
         }
-        if (!\array_key_exists('Host', $this->headers)) {
+        if (!array_key_exists('Host', $this->headers)) {
             $host = $this->getUri()->getHost();
             if ($host) {
                 return ['Host' => [$host]] + $this->headers;
@@ -381,10 +399,10 @@ class Request implements ServerRequestInterface
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name)
+    public function hasHeader($name): bool
     {
-        $key = \strtolower($name);
-        return \array_key_exists($key, $this->headerNames);
+        $key = strtolower($name);
+        return array_key_exists($key, $this->headerNames);
     }
 
     /**
@@ -397,16 +415,16 @@ class Request implements ServerRequestInterface
      * empty array.
      *
      * @param string $name Case-insensitive header field name.
-     * @return string[] An array of string values as provided for the given
+     * @return array<string> An array of string values as provided for the given
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name)
+    public function getHeader($name): array
     {
         $this->getHeaders();
         assert($this->headers !== null);
-        $key = \strtolower($name);
-        if (\array_key_exists($key, $this->headerNames)) {
+        $key = strtolower($name);
+        if (array_key_exists($key, $this->headerNames)) {
             return $this->headers[$this->headerNames[$key]];
         } elseif ($key == 'host') {
             $host = $this->getUri()->getHost();
@@ -436,9 +454,9 @@ class Request implements ServerRequestInterface
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name)
+    public function getHeaderLine($name): string
     {
-        return \implode(', ', $this->getHeader($name));
+        return implode(', ', $this->getHeader($name));
     }
 
     /**
@@ -452,18 +470,18 @@ class Request implements ServerRequestInterface
      * new and/or updated header and value.
      *
      * @param string $name Case-insensitive header field name.
-     * @param string|string[] $value Header value(s).
+     * @param string|array<string> $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader($name, $value)
+    public function withHeader($name, $value): Request
     {
         $this->getHeaders();
 
         $copy = clone $this;
         assert($copy->headers !== null);
-        $key = \strtolower($name);
-        if (\array_key_exists($key, $copy->headerNames)) {
+        $key = strtolower($name);
+        if (array_key_exists($key, $copy->headerNames)) {
             unset($copy->headerNames[$key]);
             unset($copy->headers[$key]);
         }
@@ -472,7 +490,7 @@ class Request implements ServerRequestInterface
         }
         $copy->headerNames[$key] = $name;
         $copy->headers[$name] = [];
-        if (\is_array($value)) {
+        if (is_array($value)) {
             foreach ($value as $v) {
                 $copy->headers[$name][] = $v;
             }
@@ -496,21 +514,21 @@ class Request implements ServerRequestInterface
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
      * @return static
-     * @throws \InvalidArgumentException for invalid header names or values.
+     * @throws InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value): Request
     {
         $this->getHeaders();
 
         $copy = clone $this;
         assert($copy->headers !== null);
-        $key = \strtolower($name);
-        if (!\array_key_exists($key, $copy->headerNames)) {
+        $key = strtolower($name);
+        if (!array_key_exists($key, $copy->headerNames)) {
             $copy->headerNames[$key] = $name;
         } else {
             $name = $copy->headerNames[$key];
         }
-        if (\is_array($value)) {
+        if (is_array($value)) {
             foreach ($value as $v) {
                 $copy->headers[$name][] = $v;
             }
@@ -532,11 +550,11 @@ class Request implements ServerRequestInterface
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): Request
     {
         $this->getHeaders();
-        $key = \strtolower($name);
-        if (\array_key_exists($key, $this->headerNames)) {
+        $key = strtolower($name);
+        if (array_key_exists($key, $this->headerNames)) {
             $copy = clone $this;
             assert($copy->headers !== null);
             unset($copy->headers[$copy->headerNames[$key]]);
@@ -552,7 +570,7 @@ class Request implements ServerRequestInterface
      *
      * @return StreamInterface Returns the body as a stream.
      */
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         if ($this->body === null) {
             if ($this->bodyProvider !== null) {
@@ -575,9 +593,9 @@ class Request implements ServerRequestInterface
      *
      * @param StreamInterface $body Body.
      * @return static
-     * @throws \InvalidArgumentException When the body is not valid.
+     * @throws InvalidArgumentException When the body is not valid.
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): Request
     {
         $copy = clone $this;
         $copy->body = $body;
@@ -600,7 +618,7 @@ class Request implements ServerRequestInterface
      *
      * @return string
      */
-    public function getRequestTarget()
+    public function getRequestTarget(): string
     {
         if ($this->requestTarget === null) {
             $uri = $this->getUri();
@@ -638,9 +656,9 @@ class Request implements ServerRequestInterface
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget): Request
     {
-        if (preg_match('#\s#', $requestTarget)) {
+        if (is_string($requestTarget) && preg_match('#\s#', $requestTarget)) {
             throw new InvalidArgumentException('Request target cannot contain whitespace');
         }
 
@@ -658,7 +676,7 @@ class Request implements ServerRequestInterface
      *
      * @return string Returns the request method.
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -676,9 +694,9 @@ class Request implements ServerRequestInterface
      *
      * @param string $method Case-sensitive method.
      * @return static
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     * @throws InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod($method)
+    public function withMethod($method): Request
     {
         $copy = clone $this;
         $copy->method = $method;
@@ -744,7 +762,7 @@ class Request implements ServerRequestInterface
      * @param bool $preserveHost Preserve the original state of the Host header.
      * @return static
      */
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, $preserveHost = false): Request
     {
         if ($uri === $this->getUri()) {
             return $this;
@@ -797,7 +815,7 @@ class Request implements ServerRequestInterface
      *
      * @return array
      */
-    public function getServerParams()
+    public function getServerParams(): array
     {
         if ($this->serverParams === null) {
             if ($this->serverParamsProvider !== null) {
@@ -819,7 +837,7 @@ class Request implements ServerRequestInterface
      *
      * @return array
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
         if ($this->cookieParams === null) {
             if ($this->cookieParamsProvider !== null) {
@@ -848,7 +866,7 @@ class Request implements ServerRequestInterface
      * @param array $cookies Array of key/value pairs representing cookies.
      * @return static
      */
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): Request
     {
         $copy = clone $this;
         $copy->cookieParams = $cookies;
@@ -867,7 +885,7 @@ class Request implements ServerRequestInterface
      *
      * @return array
      */
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
         if ($this->queryParams === null) {
             if ($this->queryParamsProvider !== null) {
@@ -889,9 +907,13 @@ class Request implements ServerRequestInterface
      * @param string|null $default
      * @return string|null
      */
-    public function getQueryParam(string $name, string $default = null)
+    public function getQueryParam(string $name, string $default = null): ?string
     {
-        return $this->getQueryParams()[$name] ?? $default;
+        $queryParams = $this->getQueryParams();
+        if (isset($queryParams[$name])) {
+            return (string) $queryParams[$name];
+        }
+        return $default;
     }
 
     /**
@@ -950,7 +972,7 @@ class Request implements ServerRequestInterface
      *     $_GET.
      * @return static
      */
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): Request
     {
         $copy = clone $this;
         $copy->queryParams = $query;
@@ -969,7 +991,7 @@ class Request implements ServerRequestInterface
      * @return array An array tree of UploadedFileInterface instances; an empty
      *     array MUST be returned if no data is present.
      */
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
         if ($this->uploadedFiles === null) {
             if ($this->uploadedFilesProvider !== null) {
@@ -990,9 +1012,9 @@ class Request implements ServerRequestInterface
      *
      * @param array $uploadedFiles An array tree of UploadedFileInterface instances.
      * @return static
-     * @throws \InvalidArgumentException if an invalid structure is provided.
+     * @throws InvalidArgumentException if an invalid structure is provided.
      */
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): Request
     {
         foreach ($uploadedFiles as $file) {
             if ($file === null || !($file instanceof UploadedFileInterface)) {
@@ -1055,10 +1077,10 @@ class Request implements ServerRequestInterface
      * @param null|array|object $data The deserialized body data. This will
      *     typically be in an array or object.
      * @return static
-     * @throws \InvalidArgumentException if an unsupported argument type is
+     * @throws InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody($data)
+    public function withParsedBody($data): Request
     {
         if ($this->getParsedBody() !== $data) {
             $copy = clone $this;
@@ -1081,7 +1103,7 @@ class Request implements ServerRequestInterface
      *
      * @return array Attributes derived from the request.
      */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
@@ -1103,7 +1125,7 @@ class Request implements ServerRequestInterface
      */
     public function getAttribute($name, $default = null)
     {
-        if (\array_key_exists($name, $this->attributes)) {
+        if (array_key_exists($name, $this->attributes)) {
             return $this->attributes[$name];
         } else {
             return $default;
@@ -1138,9 +1160,9 @@ class Request implements ServerRequestInterface
      * @param mixed $value The value of the attribute.
      * @return static
      */
-    public function withAttribute($name, $value)
+    public function withAttribute($name, $value): Request
     {
-        if (\array_key_exists($name, $this->attributes)) {
+        if (array_key_exists($name, $this->attributes)) {
             if ($this->attributes[$name] === $value) {
                 return $this;
             }
@@ -1165,9 +1187,9 @@ class Request implements ServerRequestInterface
      * @param string $name The attribute name.
      * @return static
      */
-    public function withoutAttribute($name)
+    public function withoutAttribute($name): Request
     {
-        if (\array_key_exists($name, $this->attributes)) {
+        if (array_key_exists($name, $this->attributes)) {
             $copy = clone $this;
             unset($copy->attributes[$name]);
             return $copy;
@@ -1184,7 +1206,7 @@ class Request implements ServerRequestInterface
     /**
      * @return array|null
      */
-    public function getSessionParams()
+    public function getSessionParams(): ?array
     {
         if (!$this->sessionParamsSet) {
             if ($this->sessionParamsProvider !== null) {
@@ -1233,7 +1255,7 @@ class Request implements ServerRequestInterface
     protected function matchTokens(array $pathTokens, array $patternTokens)
     {
         $matches = [];
-        for ($i = 1; $i < \count($patternTokens); $i++) {
+        for ($i = 1; $i < count($patternTokens); $i++) {
             $pathToken = $pathTokens[$i];
             $patternToken = $patternTokens[$i];
             if ($pathToken == '' && $patternToken != '') {
@@ -1242,9 +1264,9 @@ class Request implements ServerRequestInterface
             if ($patternToken == '*') {
                 continue;
             }
-            if (\substr($patternToken, 0, 1) == '{') {
-                $matches[\substr($patternToken, 1, -1)] = \urldecode($pathToken);
-            } else if (\urldecode($pathToken) != $patternToken) {
+            if (substr($patternToken, 0, 1) == '{') {
+                $matches[substr($patternToken, 1, -1)] = urldecode($pathToken);
+            } else if (urldecode($pathToken) != $patternToken) {
                 return false;
             }
         }
@@ -1265,9 +1287,9 @@ class Request implements ServerRequestInterface
      */
     public function pathMatchesPattern(string $pattern)
     {
-        $pathTokens = \explode('/', $this->getPath());
-        $patternTokens = \explode('/', $pattern);
-        if (\count($pathTokens) != \count($patternTokens)) {
+        $pathTokens = explode('/', $this->getPath());
+        $patternTokens = explode('/', $pattern);
+        if (count($pathTokens) != count($patternTokens)) {
             return false;
         }
         return $this->matchTokens($pathTokens, $patternTokens);
@@ -1275,8 +1297,8 @@ class Request implements ServerRequestInterface
 
     public function pathStartsWith(string $prefix): bool
     {
-        $length = \strlen($prefix);
-        return \substr($this->getPath(), 0, $length) == $prefix;
+        $length = strlen($prefix);
+        return substr($this->getPath(), 0, $length) == $prefix;
     }
 
     /**
@@ -1314,7 +1336,7 @@ class Request implements ServerRequestInterface
         $tag          = $cacheEntry->tag();
         $lastModified = $cacheEntry->modified();
 
-        if (!empty($matchHeaders)) {
+        if (isset($matchHeaders[0])) {
             $matchHeader = $matchHeaders[0];
             if ($matchHeader == '*') {
                 return true;
@@ -1326,7 +1348,7 @@ class Request implements ServerRequestInterface
             }
         }
 
-        if (!empty($noneMatchHeaders)) {
+        if (isset($noneMatchHeaders[0])) {
             $noneMatchHeader = $noneMatchHeaders[0];
             if ($noneMatchHeader == '*') {
                 return true;
@@ -1343,14 +1365,14 @@ class Request implements ServerRequestInterface
             }
         }
 
-        if (!empty($modifiedSinceHeaders)) {
+        if (isset($modifiedSinceHeaders[0])) {
             $modifiedSinceHeader = $modifiedSinceHeaders[0];
             if ($lastModified > strtotime($modifiedSinceHeader)) {
                 return true;
             }
         }
 
-        if (!empty($unmodifiedSinceHeaders)) {
+        if (isset($unmodifiedSinceHeaders[0])) {
             $unmodifiedSinceHeader = $unmodifiedSinceHeaders[0];
             if ($lastModified < strtotime($unmodifiedSinceHeader)) {
                 return true;

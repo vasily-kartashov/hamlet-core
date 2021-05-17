@@ -7,19 +7,29 @@ use RuntimeException;
 
 class ResponseBuilder
 {
-    /** @var int|null */
+    /**
+     * @var int|null
+     */
     private $statusCode;
 
-    /** @var Entity|null */
+    /**
+     * @var Entity|null
+     */
     private $entity;
 
-    /** @var string[] */
+    /**
+     * @var array<string,string>
+     */
     private $headers = [];
 
-    /** @var Cookie[] */
+    /**
+     * @var array<Cookie>
+     */
     private $cookies = [];
 
-    /** @var string[] */
+    /**
+     * @var array<string,mixed>
+     */
     private $sessionParams = [];
 
     private function __construct()
@@ -69,14 +79,11 @@ class ResponseBuilder
         return new class($this->statusCode, $this->entity,  $this->entity !== null, $this->headers, $this->cookies, $this->sessionParams) extends Response
         {
             /**
-             * @param int $statusCode
-             * @param Entity|null $entity
-             * @param bool $embedEntity
-             * @param string[] $headers
-             * @param Cookie[] $cookies
-             * @param array $sessionParams
+             * @param array<string,string> $headers
+             * @param array<Cookie> $cookies
+             * @param array<string,mixed> $sessionParams
              */
-            public function __construct($statusCode, $entity, $embedEntity, array $headers, array $cookies, array $sessionParams)
+            public function __construct(int $statusCode, ?Entity $entity, bool $embedEntity, array $headers, array $cookies, array $sessionParams)
             {
                 parent::__construct($statusCode, $entity, $embedEntity, $headers, $cookies, $sessionParams);
             }

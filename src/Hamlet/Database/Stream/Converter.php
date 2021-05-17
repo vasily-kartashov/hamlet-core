@@ -2,21 +2,30 @@
 
 namespace Hamlet\Database\Stream;
 
+use Generator;
 use Hamlet\Database\Processing\ConverterTrait;
+use function Hamlet\Cast\_map;
+use function Hamlet\Cast\_mixed;
+use function Hamlet\Cast\_string;
 
 class Converter
 {
     use ConverterTrait;
 
-    /** @var callable */
+    /**
+     * @var callable():iterable<array>
+     */
     protected $generator;
 
     /**
-     * @var callable
-     * @psalm-var callable(array<int,array>) : array<int,array>
+     * @var callable(array<string,mixed>):array{0:mixed,1:array<string,mixed>}
      */
     protected $splitter;
 
+    /**
+     * @param callable():iterable<array> $generator
+     * @param callable(array<string,mixed>):array{mixed,array<string,mixed>} $splitter
+     */
     public function __construct(callable $generator, callable $splitter)
     {
         $this->generator = $generator;
@@ -25,9 +34,9 @@ class Converter
 
     public function name(string $name): Selector
     {
-        $generator = function () use ($name) {
+        $generator = function () use ($name): Generator {
             foreach (($this->generator)() as list($key, $record)) {
-                list($item, $record) = ($this->splitter)($record);
+                list($item, $record) = ($this->splitter)(_map(_string(), _mixed())->cast($record));
                 $record[$name] = $item;
                 yield [$key, $record];
             }
@@ -37,7 +46,7 @@ class Converter
 
     public function group(): Collector
     {
-        $generator = function () {
+        $generator = function (): Generator {
             $aggregator = $this->aggregateRecordsInto(':property:');
             foreach ($aggregator() as list($key, $record)) {
                 foreach ($record[':property:'] as $value) {
@@ -55,12 +64,12 @@ class Converter
 
     protected function aggregateRecordsInto(string $name): callable
     {
-        return function () use ($name) {
+        return function () use ($name): Generator {
             $currentGroup = null;
             $lastRecord = null;
             $index = 0;
-            foreach (($this->generator)() as list($_, $record)) {
-                list($item, $record) = ($this->splitter)($record);
+            foreach (($this->generator)() as [$_, $record]) {
+                list($item, $record) = ($this->splitter)(_map(_string(), _mixed())->cast($record));
                 if ($lastRecord !== $record) {
                     if (!$this->isNull($currentGroup)) {
                         if ($lastRecord === null) {
@@ -86,13 +95,13 @@ class Converter
     }
 
     /**
-     * @param string $type
-     * @psalm-param class-string $type
+     * @template T as object
+     * @param class-string<T> $type
      * @return Collector
      */
     public function cast(string $type): Collector
     {
-        $generator = function () use ($type) {
+        $generator = function () use ($type): Generator {
             $converter = $this->castRecordsInto($type, ':property:');
             foreach (($converter)() as list($key, $record)) {
                 yield [$key, $record[':property:']];
@@ -102,8 +111,8 @@ class Converter
     }
 
     /**
-     * @param string $type
-     * @psalm-param class-string $type
+     * @template T as object
+     * @param class-string<T> $type
      * @param string $name
      * @return Selector
      */
@@ -113,17 +122,17 @@ class Converter
     }
 
     /**
-     * @param string $type
-     * @psalm-param class-string $type
+     * @template T as object
+     * @param class-string<T> $type
      * @param string $name
      * @return callable
      */
     private function castRecordsInto(string $type, string $name): callable
     {
-        return function () use ($type, $name) {
-            foreach (($this->generator)() as list($key, $record)) {
-                list($item, $record) = ($this->splitter)($record);
-                $record[$name] = $this->instantiate($item, $type);
+        return function () use ($type, $name): Generator {
+            foreach (($this->generator)() as [$key, $record]) {
+                list($item, $record) = ($this->splitter)(_map(_string(), _mixed())->cast($record));
+                $record[$name] = $this->instantiate(_map(_string(), _mixed())->cast($item), $type);
                 yield [$key, $record];
             }
         };

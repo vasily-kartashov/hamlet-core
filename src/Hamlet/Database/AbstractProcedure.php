@@ -4,86 +4,87 @@ namespace Hamlet\Database;
 
 use Hamlet\Database\Processing\Selector;
 use Psr\Log\LoggerInterface;
+use function Hamlet\Cast\_float;
+use function Hamlet\Cast\_int;
+use function Hamlet\Cast\_list;
+use function Hamlet\Cast\_string;
 
 abstract class AbstractProcedure implements Procedure
 {
-    /** @var LoggerInterface|null */
+    /**
+     * @var LoggerInterface|null
+     */
     protected $logger;
 
-    /** @var array[]  */
+    /**
+     * @var list<array{0:'i'|'b'|'d'|'s',1:int|float|string|array<int>|array<float>|array<string>|null}>
+     */
     protected $parameters = [];
 
-    public function bindBlob(string $value)
+    public function bindBlob(string $value): void
     {
         $this->parameters[] = ['b', $value];
     }
 
-    public function bindFloat(float $value)
+    public function bindFloat(float $value): void
     {
         $this->parameters[] = ['d', $value];
     }
 
-    public function bindInteger(int $value)
+    public function bindInteger(int $value): void
     {
         $this->parameters[] = ['i', $value];
     }
 
-    public function bindString(string $value)
+    public function bindString(string $value): void
     {
         $this->parameters[] = ['s', $value];
     }
 
-    public function bindNullableBlob($value)
+    public function bindNullableBlob(?string $value): void
     {
-        assert($value === null || is_string($value));
         $this->parameters[] = ['b', $value];
     }
 
-    public function bindNullableFloat($value)
+    public function bindNullableFloat(?float $value): void
     {
-        assert($value === null || is_float($value));
         $this->parameters[] = ['d', $value];
     }
 
-    public function bindNullableInteger($value)
+    public function bindNullableInteger(?int $value): void
     {
-        assert($value === null || is_int($value));
         $this->parameters[] = ['i', $value];
     }
 
-    public function bindNullableString($value)
+    public function bindNullableString(?string $value): void
     {
-        assert($value === null || is_string($value));
         $this->parameters[] = ['s', $value];
     }
 
-    public function bindFloatList(array $values)
+    public function bindFloatList(array $values): void
     {
-        assert(!empty($values));
-        /** @psalm-suppress MixedAssignment */
-        foreach ($values as $value) {
-            assert(is_float($value));
-        }
+        /**
+         * @psalm-suppress RedundantCondition
+         */
+        _list(_float())->assert($values);
         $this->parameters[] = ['d', $values];
     }
 
-    public function bindIntegerList(array $values)
+    public function bindIntegerList(array $values): void
     {
-        assert(!empty($values));
-        /** @psalm-suppress MixedAssignment */
-        foreach ($values as $value) {
-            assert(is_int($value));
-        }
+        /**
+         * @psalm-suppress RedundantCondition
+         */
+        _list(_int())->assert($values);
         $this->parameters[] = ['i', $values];
     }
 
-    public function bindStringList(array $values)
+    public function bindStringList(array $values): void
     {
-        assert(!empty($values));
-        /** @psalm-suppress MixedAssignment */
-        foreach ($values as $value) {
-            assert(is_string($value));
-        }
+        /**
+         * @psalm-suppress RedundantCondition
+         */
+        _list(_string())->assert($values);
         $this->parameters[] = ['s', $values];
     }
 

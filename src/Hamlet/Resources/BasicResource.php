@@ -7,7 +7,9 @@ use Hamlet\Responses\Response;
 
 class BasicResource implements WebResource
 {
-    /** @var Response */
+    /**
+     * @var Response
+     */
     protected $response;
 
     public function __construct(Response $response)

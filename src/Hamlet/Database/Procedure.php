@@ -8,87 +8,49 @@ use Psr\Log\LoggerAwareInterface;
 
 interface Procedure extends LoggerAwareInterface
 {
-    /**
-     * @param string $value
-     * @return void
-     */
-    public function bindBlob(string $value);
+    public function bindBlob(string $value): void;
+
+    public function bindFloat(float $value): void;
+
+    public function bindInteger(int $value): void;
+
+    public function bindString(string $value): void;
+
+    public function bindNullableBlob(?string $value): void;
+
+    public function bindNullableFloat(?float $value): void;
+
+    public function bindNullableInteger(?int $value): void;
+
+    public function bindNullableString(?string $value): void;
 
     /**
-     * @param float $value
-     * @return void
+     * @param array<float> $values
      */
-    public function bindFloat(float $value);
+    public function bindFloatList(array $values): void;
 
     /**
-     * @param int $value
-     * @return void
+     * @param array<int> $values
      */
-    public function bindInteger(int $value);
+    public function bindIntegerList(array $values): void;
 
     /**
-     * @param string $value
-     * @return void
+     * @param array<string> $values
      */
-    public function bindString(string $value);
+    public function bindStringList(array $values): void;
+
+    public function insert(): int;
+
+    public function execute(): void;
 
     /**
-     * @param string|null $value
-     * @return void
+     * @return array<string,mixed>|null
      */
-    public function bindNullableBlob($value);
+    public function fetchOne(): ?array;
 
     /**
-     * @param float|null $value
-     * @return void
+     * @return array<array<string,mixed>>
      */
-    public function bindNullableFloat($value);
-
-    /**
-     * @param int|null $value
-     * @return void
-     */
-    public function bindNullableInteger($value);
-
-    /**
-     * @param string|null $value
-     * @return void
-     */
-    public function bindNullableString($value);
-
-    /**
-     * @param float[] $values
-     * @return void
-     */
-    public function bindFloatList(array $values);
-
-    /**
-     * @param int[] $values
-     * @return void
-     */
-    public function bindIntegerList(array $values);
-
-    /**
-     * @param string[] $values
-     * @return void
-     */
-    public function bindStringList(array $values);
-
-    /**
-     * @return int
-     */
-    public function insert();
-
-    /**
-     * @return void
-     */
-    public function execute();
-
-    /**
-     * @return array|null
-     */
-    public function fetchOne();
-
     public function fetchAll(): array;
 
     public function affectedRows(): int;

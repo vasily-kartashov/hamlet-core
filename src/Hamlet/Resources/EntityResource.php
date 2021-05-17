@@ -10,10 +10,14 @@ use Hamlet\Responses\OKOrNotModifiedResponse;
 
 class EntityResource implements WebResource
 {
-    /** @var Entity */
+    /**
+     * @var Entity
+     */
     protected $entity;
 
-    /** @var string[] */
+    /**
+     * @var array<string>
+     */
     protected $methods;
 
     public function __construct(Entity $entity, string ...$methods)
@@ -25,8 +29,7 @@ class EntityResource implements WebResource
     public function getResponse(Request $request): Response
     {
         if (in_array($request->getMethod(), $this->methods)) {
-            $response = new OKOrNotModifiedResponse($this->entity);
-            return $response;
+            return new OKOrNotModifiedResponse($this->entity);
         }
         return new MethodNotAllowedResponse(...$this->methods);
     }

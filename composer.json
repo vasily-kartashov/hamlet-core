@@ -10,7 +10,6 @@
       "email": "info@kartashov.com"
     }
   ],
-  "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
     "optimize-autoloader": true,
@@ -18,15 +17,15 @@
     "sort-packages": true
   },
   "require": {
-    "php": "^7.0 || ^8.0",
+    "php": "^7.3 || ^8",
     "ext-json": "@stable",
     "guzzlehttp/psr7": "@stable",
     "psr/cache": "@stable",
     "psr/http-message": "@stable",
     "psr/log": "@stable",
-    "symfony/console": "^3",
+    "symfony/console": "@stable",
     "twig/twig": "^2.5",
-    "hamlet-framework/type": "0.2.*"
+    "hamlet-framework/type": "@stable"
   },
   "require-dev": {
     "cache/void-adapter": "@stable",

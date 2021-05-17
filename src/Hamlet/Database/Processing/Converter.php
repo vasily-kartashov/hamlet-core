@@ -2,19 +2,31 @@
 
 namespace Hamlet\Database\Processing;
 
+use function array_values;
+use function Hamlet\Cast\_map;
+use function Hamlet\Cast\_mixed;
+use function Hamlet\Cast\_string;
+use function md5;
+use function serialize;
+
 class Converter
 {
     use ConverterTrait;
 
-    /** @var array */
+    /**
+     * @var array<array<string,mixed>>
+     */
     protected $records;
 
     /**
-     * @var callable
-     * @psalm-var callable(array<int,array>) : array<int,array>
+     * @var callable(array<string,mixed>):array{0:mixed,1:array<string,mixed>}
      */
     protected $splitter;
 
+    /**
+     * @param array<array<string,mixed>> $records
+     * @param callable(array<string,mixed>):array{0:mixed,1:array<string,mixed>} $splitter
+     */
     public function __construct(array $records, callable $splitter)
     {
         $this->records = $records;
@@ -35,7 +47,8 @@ class Converter
     public function group(): Collector
     {
         $records = [];
-        foreach ($this->groupRecordsInto(':property:') as &$record) {
+        foreach ($this->groupRecordsInto(':property:') as $record) {
+            assert(array_key_exists(':property:', $record));
             $records[] = $record[':property:'];
         }
         return new Collector($records);
@@ -46,13 +59,17 @@ class Converter
         return new Selector($this->groupRecordsInto($name));
     }
 
+    /**
+     * @param string $name
+     * @return array<array<string,mixed>>
+     */
     private function groupRecordsInto(string $name): array
     {
         $records = [];
         $groups = [];
         foreach ($this->records as &$record) {
             list($item, $record) = ($this->splitter)($record);
-            $key = \md5(\serialize($record));
+            $key = md5(serialize($record));
             if (!isset($groups[$key])) {
                 $groups[$key] = [];
             }
@@ -61,11 +78,10 @@ class Converter
             }
             $records[$key] = $record;
         }
-        /** @noinspection PhpUnusedLocalVariableInspection */
-        foreach ($records as $key => &$_) {
+        foreach ($records as $key => $_) {
             $records[$key][$name] = $groups[$key];
         }
-        return \array_values($records);
+        return array_values($records);
     }
 
     /**
@@ -76,7 +92,8 @@ class Converter
     public function cast(string $type): Collector
     {
         $records = [];
-        foreach ($this->castRecordsInto($type, ':property:') as &$record) {
+        foreach ($this->castRecordsInto($type, ':property:') as $record) {
+            assert(array_key_exists(':property:', $record));
             $records[] = $record[':property:'];
         }
         return new Collector($records);
@@ -94,17 +111,17 @@ class Converter
     }
 
     /**
-     * @param string $type
-     * @psalm-param class-string $type
+     * @template T
+     * @param class-string<T> $type
      * @param string $name
-     * @return array
+     * @return array<array<string,mixed>>
      */
     private function castRecordsInto(string $type, string $name): array
     {
         $records = [];
         foreach ($this->records as &$record) {
             list($item, $record) = ($this->splitter)($record);
-            $record[$name] = $this->instantiate($item, $type);
+            $record[$name] = $this->instantiate(_map(_string(), _mixed())->cast($item), $type);
             $records[] = $record;
         }
         return $records;
