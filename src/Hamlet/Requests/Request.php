@@ -18,6 +18,9 @@ use SessionHandlerInterface;
 use function array_key_exists;
 use function count;
 use function explode;
+use function Hamlet\Cast\_class;
+use function Hamlet\Cast\_map;
+use function Hamlet\Cast\_mixed;
 use function Hamlet\Cast\_string;
 use function implode;
 use function is_array;
@@ -139,7 +142,7 @@ class Request implements ServerRequestInterface
     private $uploadedFilesProvider = null;
 
     /**
-     * @var array<UploadedFileInterface>|null
+     * @var array<string,UploadedFileInterface|array<string,mixed>>|null
      */
     private $uploadedFiles = null;
 
@@ -869,7 +872,7 @@ class Request implements ServerRequestInterface
     public function withCookieParams(array $cookies): Request
     {
         $copy = clone $this;
-        $copy->cookieParams = $cookies;
+        $copy->cookieParams = _map(_string(), _mixed())->cast($cookies);
         return $copy;
     }
 
@@ -975,7 +978,7 @@ class Request implements ServerRequestInterface
     public function withQueryParams(array $query): Request
     {
         $copy = clone $this;
-        $copy->queryParams = $query;
+        $copy->queryParams = _map(_string(), _mixed())->cast($query);
         return $copy;
     }
 
@@ -1016,10 +1019,23 @@ class Request implements ServerRequestInterface
      */
     public function withUploadedFiles(array $uploadedFiles): Request
     {
-        foreach ($uploadedFiles as $file) {
-            if ($file === null || !($file instanceof UploadedFileInterface)) {
-                throw new InvalidArgumentException('Uploaded files must implement UploadedFileInterface');
+        /**
+         * @psalm-suppress MissingClosureParamType
+         * @psalm-suppress MixedFunctionCall
+         */
+        $validate = function ($uploadedFiles) use (&$validate): bool {
+            if (!is_array($uploadedFiles)) {
+                return false;
             }
+            foreach ($uploadedFiles as $value) {
+                if (!_class(UploadedFileInterface::class)->matches($value) && !$validate($value)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        if (!$validate($uploadedFiles)) {
+            throw new InvalidArgumentException('Uploaded files must implement UploadedFileInterface');
         }
         $copy = clone $this;
         $copy->uploadedFiles = $uploadedFiles;
@@ -1219,6 +1235,10 @@ class Request implements ServerRequestInterface
         return $this->sessionParams;
     }
 
+    /**
+     * @param array<string,mixed> $session
+     * @return $this
+     */
     public function withSessionParams(array $session): self
     {
         $copy = clone $this;

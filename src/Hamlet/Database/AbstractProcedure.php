@@ -63,27 +63,18 @@ abstract class AbstractProcedure implements Procedure
 
     public function bindFloatList(array $values): void
     {
-        /**
-         * @psalm-suppress RedundantCondition
-         */
         _list(_float())->assert($values);
         $this->parameters[] = ['d', $values];
     }
 
     public function bindIntegerList(array $values): void
     {
-        /**
-         * @psalm-suppress RedundantCondition
-         */
         _list(_int())->assert($values);
         $this->parameters[] = ['i', $values];
     }
 
     public function bindStringList(array $values): void
     {
-        /**
-         * @psalm-suppress RedundantCondition
-         */
         _list(_string())->assert($values);
         $this->parameters[] = ['s', $values];
     }

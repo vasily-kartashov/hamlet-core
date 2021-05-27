@@ -34,6 +34,7 @@ class MapConverter extends Converter
     {
         $records = [];
         $maps = [];
+        $mapType = _map(_string(), _mixed());
         foreach ($this->records as &$record) {
             list($item, $record) = ($this->splitter)($record);
             $key = md5(serialize($record));
@@ -41,7 +42,7 @@ class MapConverter extends Converter
                 $maps[$key] = [];
             }
             if (!$this->isNull($item)) {
-                $maps[$key] += _map(_string(), _mixed())->cast($item);
+                $maps[$key] += $mapType->cast($item);
             }
             $records[$key] = $record;
         }

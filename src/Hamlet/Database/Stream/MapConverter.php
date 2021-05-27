@@ -3,7 +3,6 @@
 namespace Hamlet\Database\Stream;
 
 use Generator;
-use function Hamlet\Cast\_list;
 use function Hamlet\Cast\_map;
 use function Hamlet\Cast\_mixed;
 use function Hamlet\Cast\_string;
@@ -31,12 +30,13 @@ class MapConverter extends Converter
 
     protected function aggregateRecordsInto(string $name): callable
     {
-        return function () use ($name): Generator {
+        $mapType = _map(_string(), _mixed());
+        return function () use ($name, $mapType): Generator {
             $currentGroup = null;
             $lastRecord = null;
             $index = 0;
             foreach (($this->generator)() as list($_, $record)) {
-                list($item, $record) = ($this->splitter)(_map(_string(), _mixed())->cast($record));
+                list($item, $record) = ($this->splitter)($mapType->cast($record));
                 if ($lastRecord !== $record) {
                     if ($currentGroup !== null) {
                         if ($lastRecord === null) {
@@ -53,7 +53,7 @@ class MapConverter extends Converter
                     if ($currentGroup === null) {
                         $currentGroup = [];
                     }
-                    $currentGroup += _list(_mixed())->assert($item);
+                    $currentGroup += $mapType->cast($item);
                 }
                 $lastRecord = $record;
             }
