@@ -194,34 +194,16 @@ class MySQLProcedure extends AbstractProcedure
         }
         $callParameters = [];
         $types = '';
-        $blobs = [];
-        $callParameters[] = &$types;
-        $counter = 0;
         foreach ($this->parameters as $parameter) {
             $values = is_array($parameter[1]) ? $parameter[1] : [$parameter[1]];
             foreach ($values as $value) {
-                if ($parameter[0] == 'b') {
-                    $nothing = null;
-                    $callParameters[] = &$nothing;
-                    $blobs[$counter] = $value;
-                } else {
-                    $name = "value$counter";
-                    $$name = $value;
-                    $callParameters[] = &$$name;
-                }
-                $counter++;
+                $types .= $parameter[0];
+                $callParameters[] = $value;
             }
         }
-        $success = call_user_func_array([$statement, 'bind_param'], $callParameters);
+        $success = $statement->bind_param($types, ...$callParameters);
         if (!$success) {
             throw new MySQLException($this->connection);
-        }
-        foreach ($blobs as $i => $data) {
-            assert(is_string($data));
-            $success = $statement->send_long_data($i, $data);
-            if (!$success) {
-                throw new MySQLException($this->connection);
-            }
         }
         $this->parameters = [];
         return $statement;
