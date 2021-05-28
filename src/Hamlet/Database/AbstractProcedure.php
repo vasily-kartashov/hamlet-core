@@ -4,9 +4,9 @@ namespace Hamlet\Database;
 
 use Hamlet\Database\Processing\Selector;
 use Psr\Log\LoggerInterface;
+use function Hamlet\Cast\_array;
 use function Hamlet\Cast\_float;
 use function Hamlet\Cast\_int;
-use function Hamlet\Cast\_list;
 use function Hamlet\Cast\_string;
 
 abstract class AbstractProcedure implements Procedure
@@ -63,19 +63,19 @@ abstract class AbstractProcedure implements Procedure
 
     public function bindFloatList(array $values): void
     {
-        _list(_float())->assert($values);
+        _array(_float())->assert($values);
         $this->parameters[] = ['d', $values];
     }
 
     public function bindIntegerList(array $values): void
     {
-        _list(_int())->assert($values);
+        _array(_int())->assert($values);
         $this->parameters[] = ['i', $values];
     }
 
     public function bindStringList(array $values): void
     {
-        _list(_string())->assert($values);
+        _array(_string())->assert($values);
         $this->parameters[] = ['s', $values];
     }
 

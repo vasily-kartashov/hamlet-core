@@ -20,5 +20,6 @@
         <MixedPropertyTypeCoercion errorLevel="suppress"/>
         <MixedArrayAccess errorLevel="suppress"/>
         <MixedAssignment errorLevel="suppress"/>
+        <RedundantCondition errorLevel="suppress"/>
     </issueHandlers>
 </psalm>
