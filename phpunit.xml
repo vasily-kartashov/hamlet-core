@@ -9,16 +9,16 @@
          beStrictAboutTodoAnnotatedTests="true"
          failOnRisky="true"
          failOnWarning="true"
+         backupGlobals="true"
          verbose="true">
-<testsuites>
-    <testsuite name="default">
-        <directory suffix="Test.php">tests</directory>
-    </testsuite>
-</testsuites>
-<coverage cacheDirectory=".phpunit.cache/code-coverage"
-          processUncoveredFiles="true">
-    <include>
-        <directory suffix=".php">src</directory>
-    </include>
-</coverage>
+    <testsuites>
+        <testsuite name="default">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+    <coverage cacheDirectory=".phpunit.cache/code-coverage" processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
 </phpunit>

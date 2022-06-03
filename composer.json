@@ -31,7 +31,7 @@
   "require-dev": {
     "cache/void-adapter": "@stable",
     "cache/array-adapter": "@stable",
-    "phpunit/phpunit": "^6 || ^7 || ^8",
+    "phpunit/phpunit": "@stable",
     "squizlabs/php_codesniffer": "@stable",
     "vimeo/psalm": "@stable",
     "swoft/swoole-ide-helper": "@stable",
