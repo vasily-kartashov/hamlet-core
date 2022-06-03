@@ -162,6 +162,7 @@ class MySQLProcedure extends AbstractProcedure
     /**
      * @return mysqli_stmt
      * @throws MySQLException
+     * @psalm-suppress UnusedVariable
      */
     private function bindParameters(): mysqli_stmt
     {

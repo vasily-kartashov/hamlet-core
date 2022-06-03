@@ -620,6 +620,7 @@ class Request implements ServerRequestInterface
      * provided, this method MUST return the string "/".
      *
      * @return string
+     * @psalm-suppress DocblockTypeContradiction
      */
     public function getRequestTarget(): string
     {
