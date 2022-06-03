@@ -63,7 +63,7 @@ abstract class Database implements LoggerAwareInterface
 
     abstract public function prepare(string $query): Procedure;
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }

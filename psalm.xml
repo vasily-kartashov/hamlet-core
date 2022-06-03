@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
 <psalm name="Psalm config"
        errorLevel="1"
-       resolveFromConfigFile="true"
-       useDocblockTypes="true"
-       totallyTyped="true"
-       ensureArrayIntOffsetsExist="true"
        findUnusedPsalmSuppress="true"
+       ensureArrayIntOffsetsExist="true"
        ensureArrayStringOffsetsExist="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="https://getpsalm.org/schema/config"

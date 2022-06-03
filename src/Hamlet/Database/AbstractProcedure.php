@@ -90,7 +90,7 @@ abstract class AbstractProcedure implements Procedure
         return new Selector($this->fetchAll());
     }
 
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
     }
