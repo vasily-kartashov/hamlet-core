@@ -26,6 +26,9 @@ abstract class AbstractEntity implements Entity
             return $this->cacheValue;
         }
         $key = $this->getKey();
+        /**
+         * @psalm-suppress InvalidCatch
+         */
         try {
             $cacheItem = $cache->getItem($key);
         } catch (InvalidArgumentException $e) {
