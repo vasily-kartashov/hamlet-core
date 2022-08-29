@@ -4,14 +4,13 @@ namespace Hamlet\Database\SQLite;
 
 use Hamlet\Database\AbstractProcedure;
 use Hamlet\Database\Stream\Selector as StreamSelector;
-use RuntimeException;
 use SQLite3;
 use SQLite3Stmt;
 use function array_fill;
 use function count;
 use function Hamlet\Cast\_map;
 use function Hamlet\Cast\_mixed;
-use function \Hamlet\Cast\_string;
+use function Hamlet\Cast\_string;
 use function is_array;
 use function join;
 use function strlen;
@@ -143,7 +142,7 @@ class SQLiteProcedure extends AbstractProcedure
             case 's':
                 return SQLITE3_TEXT;
             default:
-                throw new RuntimeException('Cannot resolve type alias "' . $alias . '"');
+                throw new SQLiteException('Cannot resolve type alias "' . $alias . '"');
         }
     }
 }

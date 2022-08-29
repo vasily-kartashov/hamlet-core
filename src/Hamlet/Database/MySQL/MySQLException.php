@@ -2,10 +2,10 @@
 
 namespace Hamlet\Database\MySQL;
 
+use Hamlet\Database\DatabaseException;
 use mysqli;
-use RuntimeException;
 
-class MySQLException extends RuntimeException
+class MySQLException extends DatabaseException
 {
     /**
      * @var mysqli

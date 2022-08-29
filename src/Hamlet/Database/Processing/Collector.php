@@ -3,7 +3,7 @@
 namespace Hamlet\Database\Processing;
 
 use Hamlet\Cast\Type;
-use RuntimeException;
+use Hamlet\Database\DatabaseException;
 use function reset;
 
 /**
@@ -129,7 +129,7 @@ class Collector
             $this->valueType->assert($value);
         }
         if ($this->assertion) {
-            assert(($this->assertion)($key, $value), new RuntimeException());
+            assert(($this->assertion)($key, $value), new DatabaseException());
         }
     }
 }

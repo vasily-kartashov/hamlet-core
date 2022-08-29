@@ -11,7 +11,6 @@ use PDO;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RuntimeException;
 use SQLite3;
 
 /**
@@ -105,7 +104,7 @@ abstract class Database implements LoggerAwareInterface
                 $this->rollback();
                 $this->transactionStarted = false;
             }
-            throw new RuntimeException('Exception within transaction caught', 0, $e);
+            throw new DatabaseException('Exception within transaction caught', 0, $e);
         }
     }
 
@@ -130,11 +129,11 @@ abstract class Database implements LoggerAwareInterface
                 return $this->withTransaction($callable, $onSuccess);
             } catch (Exception $e) {
                 if ($attempt == $maxAttempts) {
-                    throw new RuntimeException('Exception within transaction caught', 0, $e);
+                    throw new DatabaseException('Exception within transaction caught', 0, $e);
                 }
             }
         }
-        throw new RuntimeException('Number of attempts must be greater than 0');
+        throw new DatabaseException('Number of attempts must be greater than 0');
     }
 
     /**

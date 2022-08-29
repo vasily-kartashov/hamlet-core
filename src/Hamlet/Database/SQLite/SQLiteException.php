@@ -2,9 +2,9 @@
 
 namespace Hamlet\Database\SQLite;
 
-use RuntimeException;
+use Hamlet\Database\DatabaseException;
 
-class SQLiteException extends RuntimeException
+class SQLiteException extends DatabaseException
 {
     public function __construct(string $message)
     {

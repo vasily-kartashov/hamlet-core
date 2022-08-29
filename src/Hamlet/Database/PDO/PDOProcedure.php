@@ -3,10 +3,10 @@
 namespace Hamlet\Database\PDO;
 
 use Hamlet\Database\AbstractProcedure;
+use Hamlet\Database\DatabaseException;
 use Hamlet\Database\Stream\Selector as StreamSelector;
 use PDO;
 use PDOStatement;
-use RuntimeException;
 use function Hamlet\Cast\_list;
 use function Hamlet\Cast\_map;
 use function Hamlet\Cast\_mixed;
@@ -142,7 +142,7 @@ class PDOProcedure extends AbstractProcedure
             case 'i':
                 return PDO::PARAM_INT;
             default:
-                throw new RuntimeException('Cannot resolve type alias "' . $alias . '"');
+                throw new DatabaseException('Cannot resolve type alias "' . $alias . '"');
         }
     }
 }

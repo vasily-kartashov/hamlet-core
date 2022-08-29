@@ -3,12 +3,12 @@
 namespace Hamlet\Database\Processing;
 
 use Hamlet\Cast\Parser\DocBlockParser;
+use Hamlet\Database\DatabaseException;
 use Hamlet\Database\Entity;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionProperty;
-use RuntimeException;
 use function Hamlet\Cast\_string;
 use function is_array;
 use function is_subclass_of;
@@ -65,7 +65,7 @@ trait ConverterTrait
                 }
                 return $object;
             } else {
-                throw new RuntimeException('Cannot instantiate class ' . $type);
+                throw new DatabaseException('Cannot instantiate class ' . $type);
             }
         }
     }
@@ -84,11 +84,11 @@ trait ConverterTrait
         if ($typeResolver) {
             $resolvedTypeName = _string()->assert($typeResolver->invoke(null, $data));
             if (!class_exists($resolvedTypeName)) {
-                throw new RuntimeException('Resolved type ' . $resolvedTypeName . ' does not exist');
+                throw new DatabaseException('Resolved type ' . $resolvedTypeName . ' does not exist');
             }
             [$resolvedType, $resolvedProperties] = $this->getType($resolvedTypeName);
             if ($resolvedType !== $type && !$resolvedType->isSubclassOf($type)) {
-                throw new RuntimeException('Resolved type ' . $resolvedType->getName() . ' is not subclass of ' . $type->getName());
+                throw new DatabaseException('Resolved type ' . $resolvedType->getName() . ' is not subclass of ' . $type->getName());
             }
             $type = $resolvedType;
             $properties = $resolvedProperties;
@@ -97,7 +97,7 @@ trait ConverterTrait
         $propertiesSet = [];
         foreach ($data as $name => &$value) {
             if (!isset($properties[$name])) {
-                throw new RuntimeException('Property ' . $name . ' not found in class ' . $typeName);
+                throw new DatabaseException('Property ' . $name . ' not found in class ' . $typeName);
             }
             $propertiesSet[$name] = 1;
             assert(
@@ -108,7 +108,7 @@ trait ConverterTrait
         }
         foreach ($properties as $name => $_) {
             if (!array_key_exists($name, $propertiesSet)) {
-                throw new RuntimeException('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
+                throw new DatabaseException('Property ' . $typeName . '::' . $name . ' not set in ' . json_encode($data));
             }
         }
         return $object;
@@ -134,7 +134,7 @@ trait ConverterTrait
             try {
                 $types[$typeName] = new ReflectionClass($typeName);
             } catch (ReflectionException $e) {
-                throw new RuntimeException('Cannot load reflection information for ' . $typeName, 1, $e);
+                throw new DatabaseException('Cannot load reflection information for ' . $typeName, 1, $e);
             }
 
             foreach ($types[$typeName]->getProperties() as $property) {
@@ -147,7 +147,7 @@ trait ConverterTrait
                 if ($type->hasMethod('__resolveType')) {
                     $method = $type->getMethod('__resolveType');
                     if (!$method->isStatic() || !$method->isPublic()) {
-                        throw new RuntimeException('Method __resolveType must be public static method');
+                        throw new DatabaseException('Method __resolveType must be public static method');
                     }
                     $typeResolvers[$typeName] = $method;
                 }
